@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head lang="nn">
+    <meta charset="UTF-8"/>
+    <title>Integrasjon mot eID</title>
+    <link rel="stylesheet" href="main.css"/>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+          crossorigin="anonymous"/>
+</head>
+<body>
+<div class="container">
+    <h1>Innlogging med ID-porten</h1>
+
+    <form action="#" th:action="@{/authorize}" th:object="${authorizationRequest}" method="post">
+        <table border="1">
+            <tr>
+                <td><input type="submit" value="Submit" /></td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+server:
+  port: 7074
+  servlet:
+    context-path: /idporten-oidc-test-client
+    session:
+      tracking-modes:
+        - cookie  #to block session via url
+  tomcat:
+    accesslog:
+      directory: /var/log/idporten-oidc-test-client
+      enabled: true
+      rotate: false
+      pattern: "%h\u0009%l\u0009%u\u0009%t\u0009\u0022%r\u0022\u0009%s\u0009%b\u0009%D\u0009%{no.difi.correlationId}i"
+
+info:
+  version: @project.version@
+
+management:
+  health:
+    diskspace:
+      enabled: false
+  metrics:
+    tags:
+      application: "ID-porten OIDC test client"
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+      basePath: /
+      path-mapping:
+        info: /version
+
+eid-integration:
+  eid-provider:
+    connect-timeout-millis: 5000
+    read-timeout-millis: 5000
+    jwks-cache-lifetime-minutes: 60
+    jwks-cache-refresh-minutes: 5
+    issuer: http://127.0.0.1:7071/testid/
+    authorization-endpoint: http://localhost:7071/testid/authorize
+    token-endpoint: http://localhost:7071/testid/token
+    jwks-endpoint: http://localhost:7071/testid/jwks
+    client-id: idporten
+    client-auth-method: client_secret_basic
+    client-secret: password
+    redirect-uri: http://localhost:7074/idporten-oidc-test-client/callback
+    scopes:
+      - openid
+    id-token-config:
+      jws-algorithms:
+        - RS256
+      person-identifier-claim: sub
+    cancel-error-codes:
+      - access_denied
+
+---
+spring:
+  config:
+    activate:
+      on-cloud-platform: 'kubernetes'
+    import: 'file:/etc/config/config.yaml'
+server:
+  port: 8080
+
+
