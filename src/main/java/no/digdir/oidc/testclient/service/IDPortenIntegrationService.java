@@ -8,6 +8,8 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.nimbusds.langtag.LangTag;
+import com.nimbusds.langtag.LangTagException;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.*;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
@@ -16,19 +18,26 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
-import com.nimbusds.openid.connect.sdk.*;
-import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
+import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import com.nimbusds.openid.connect.sdk.Nonce;
+import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
+import com.nimbusds.openid.connect.sdk.OIDCTokenResponseParser;
+import com.nimbusds.openid.connect.sdk.claims.ACR;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.digdir.oidc.testclient.config.IDPortenIntegrationConfiguration;
 import no.digdir.oidc.testclient.crypto.KeyProvider;
+import no.digdir.oidc.testclient.web.AuthorizationRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.security.cert.Certificate;
 import java.time.Clock;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -36,65 +45,87 @@ import java.util.*;
 @RequiredArgsConstructor
 public class IDPortenIntegrationService {
 
-    private final IDPortenIntegrationConfiguration eidIntegrationConfiguration;
+    private final IDPortenIntegrationConfiguration idPortenIntegrationConfiguration;
     private final Optional<KeyProvider> keyProvider;
     private final IDTokenValidator idTokenValidator;
 
-    public AuthenticationRequest process(PushedAuthorizationRequest pushedAuthorizationRequest, CodeVerifier codeVerifier) {
+    public AuthenticationRequest process(AuthorizationRequest authorizationRequest) {
         try {
             AuthenticationRequest.Builder requestBuilder = new AuthenticationRequest.Builder(
                     new ResponseType(ResponseType.Value.CODE),
-                    new Scope(eidIntegrationConfiguration.getScopes().stream().toArray(String[]::new)),
-                    new ClientID(eidIntegrationConfiguration.getClientId()),
-                    eidIntegrationConfiguration.getRedirectUri());
+                    new Scope(authorizationRequest.getScopes().stream().toArray(String[]::new)),
+                    new ClientID(idPortenIntegrationConfiguration.getClientId()),
+                    idPortenIntegrationConfiguration.getRedirectUri());
             requestBuilder
-                    .endpointURI(eidIntegrationConfiguration.getAuthorizationEndpoint())
-                    .state(new State())
-                    .nonce(new Nonce())
-                    .codeChallenge(codeVerifier, CodeChallengeMethod.S256)
-                    // TODO
-//                    .uiLocales(Collections.singletonList(new LangTag(pushedAuthorizationRequest.getResolvedUiLocale())))
-                    .prompt(new Prompt(Prompt.Type.LOGIN));
-            eidIntegrationConfiguration.getCustomParameters().forEach(requestBuilder::customParameter);
+                    .endpointURI(idPortenIntegrationConfiguration.getAuthorizationEndpoint());
+            if (StringUtils.hasText(authorizationRequest.getState())) {
+                requestBuilder.state(new State(authorizationRequest.getState()));
+            }
+            if (StringUtils.hasText(authorizationRequest.getNonce())) {
+                requestBuilder.nonce(new Nonce(authorizationRequest.getNonce()));
+            }
+            if (! CollectionUtils.isEmpty(authorizationRequest.getUiLocales())) {
+                requestBuilder.uiLocales(authorizationRequest.getUiLocales().stream()
+                        .map(this::langTag)
+                        .filter(langTag -> langTag != null)
+                        .collect(Collectors.toList()));
+            }
+            if (! CollectionUtils.isEmpty(authorizationRequest.getAcrValues())) {
+                requestBuilder.acrValues(authorizationRequest.getAcrValues().stream()
+                        .map(acr -> new ACR(acr))
+                        .collect(Collectors.toList()));
+            }
+            if (StringUtils.hasText(authorizationRequest.getCodeVerifier())) {
+                requestBuilder.codeChallenge(
+                        new CodeVerifier(authorizationRequest.getCodeVerifier()),
+                        new CodeChallengeMethod(authorizationRequest.getCodeChallengeMethod()));
+            }
             return requestBuilder.build();
         } catch (Exception e) {
             throw new RuntimeException();
         }
     }
 
-    public IDToken process(AuthorizationResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
+    protected LangTag langTag(String locale) {
+        try {
+            return new LangTag(locale);
+        } catch (LangTagException e) {
+            return null;
+        }
+    }
+
+    public OIDCTokenResponse process(AuthorizationResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
         if (!Objects.equals(state, authorizationResponse.getState())) {
             throw new RuntimeException("Invalid state. State does not match state from original request."); // TODO
         }
         try {
             if (authorizationResponse.indicatesSuccess()) {
-                AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), eidIntegrationConfiguration.getRedirectUri(), codeVerifier);
-                final ClientAuthentication clientAuth = clientAuthentication(eidIntegrationConfiguration);
-                com.nimbusds.oauth2.sdk.TokenRequest tokenRequest = new com.nimbusds.oauth2.sdk.TokenRequest(eidIntegrationConfiguration.getTokenEndpoint(), clientAuth, codeGrant);
+                AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), idPortenIntegrationConfiguration.getRedirectUri(), codeVerifier);
+                final ClientAuthentication clientAuth = clientAuthentication(idPortenIntegrationConfiguration);
+                com.nimbusds.oauth2.sdk.TokenRequest tokenRequest = new com.nimbusds.oauth2.sdk.TokenRequest(idPortenIntegrationConfiguration.getTokenEndpoint(), clientAuth, codeGrant);
                 com.nimbusds.oauth2.sdk.TokenResponse tokenResponse = process(tokenRequest);
                 if (tokenResponse.indicatesSuccess()) {
                     OIDCTokenResponse successResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
-                    IDTokenClaimsSet idTokenClaimsSet = idTokenValidator.validate(successResponse.getOIDCTokens().getIDToken(), nonce);
-                    String personIdentifier = idTokenClaimsSet.getStringClaim(eidIntegrationConfiguration.getIdTokenConfig().getPersonIdentifierClaim());
-                    return new IDToken(personIdentifier, idTokenClaimsSet);
+                    idTokenValidator.validate(successResponse.getOIDCTokens().getIDToken(), nonce);
+                    return successResponse;
                 } else {
                     TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
-                    log.warn("Error response from {}: {}", eidIntegrationConfiguration.getTokenEndpoint(), errorResponse.toJSONObject().toJSONString());
+                    log.warn("Error response from {}: {}", idPortenIntegrationConfiguration.getTokenEndpoint(), errorResponse.toJSONObject().toJSONString());
                     throw new RuntimeException();
                 }
             } else {
                 AuthorizationErrorResponse errorResponse = authorizationResponse.toErrorResponse();
                 String error = errorResponse.getErrorObject().getCode();
-                if (eidIntegrationConfiguration.getCancelErrorCodes().contains(error)) {
-                    log.info("User cancel response from {}: {}", eidIntegrationConfiguration.getAuthorizationEndpoint(), errorResponse.getErrorObject().toJSONObject().toJSONString());
+                if (idPortenIntegrationConfiguration.getCancelErrorCodes().contains(error)) {
+                    log.info("User cancel response from {}: {}", idPortenIntegrationConfiguration.getAuthorizationEndpoint(), errorResponse.getErrorObject().toJSONObject().toJSONString());
                     throw new RuntimeException();
                 }
-                log.warn("Error response from {}: {}", eidIntegrationConfiguration.getAuthorizationEndpoint(), errorResponse.getErrorObject().toJSONObject().toJSONString());
+                log.warn("Error response from {}: {}", idPortenIntegrationConfiguration.getAuthorizationEndpoint(), errorResponse.getErrorObject().toJSONObject().toJSONString());
                 throw new RuntimeException();
 
             }
         } catch (Exception e) {
-            log.error("Failed to retrieve tokens from {}", eidIntegrationConfiguration.getTokenEndpoint(), e);
+            log.error("Failed to retrieve tokens from {}", idPortenIntegrationConfiguration.getTokenEndpoint(), e);
             throw new RuntimeException();
         }
     }
@@ -142,23 +173,10 @@ public class IDPortenIntegrationService {
         }
     }
 
-    protected void validateIDTokenClaims(IDTokenClaimsSet idTokenClaimsSet) {
-        String persinIdentifier = idTokenClaimsSet.getStringClaim(eidIntegrationConfiguration.getIdTokenConfig().getPersonIdentifierClaim());
-        if (persinIdentifier == null || persinIdentifier.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Missing value for person identifier claim %s in id_token.", eidIntegrationConfiguration.getIdTokenConfig().getPersonIdentifierClaim()));
-        }
-        eidIntegrationConfiguration.getIdTokenConfig().getRequiredClaims().forEach((claim, expectedValue) -> {
-            String value = idTokenClaimsSet.getStringClaim(claim);
-            if (! Objects.equals(value, expectedValue)) {
-                throw new IllegalArgumentException(String.format("Invalid value %s for claim %s in id_token, expected %s.", value, claim, expectedValue));
-            }
-        });
-    }
-
     protected TokenResponse process(com.nimbusds.oauth2.sdk.TokenRequest tokenRequest) throws IOException, ParseException {
         HTTPRequest httpRequest = tokenRequest.toHTTPRequest();
-        httpRequest.setConnectTimeout(eidIntegrationConfiguration.getConnectTimeOutMillis());
-        httpRequest.setReadTimeout(eidIntegrationConfiguration.getReadTimeOutMillis());
+        httpRequest.setConnectTimeout(idPortenIntegrationConfiguration.getConnectTimeOutMillis());
+        httpRequest.setReadTimeout(idPortenIntegrationConfiguration.getReadTimeOutMillis());
         HTTPResponse httpResponse = httpRequest.send();
         return OIDCTokenResponseParser.parse(httpResponse);
     }
