@@ -27,7 +27,7 @@ import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.digdir.oidc.testclient.config.TestClientProperties;
+import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
 import no.digdir.oidc.testclient.crypto.KeyProvider;
 import no.digdir.oidc.testclient.web.AuthorizationRequest;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OIDCIntegrationService {
 
-    private final TestClientProperties idPortenIntegrationConfiguration;
+    private final OIDCIntegrationProperties idPortenIntegrationConfiguration;
     private final Optional<KeyProvider> keyProvider;
     private final IDTokenValidator idTokenValidator;
     private final OIDCProviderMetadata oidcProviderMetadata;
@@ -118,10 +118,6 @@ public class OIDCIntegrationService {
             } else {
                 AuthorizationErrorResponse errorResponse = authorizationResponse.toErrorResponse();
                 String error = errorResponse.getErrorObject().getCode();
-                if (idPortenIntegrationConfiguration.getCancelErrorCodes().contains(error)) {
-                    log.info("User cancel response from {}: {}", oidcProviderMetadata.getAuthorizationEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
-                    throw new RuntimeException();
-                }
                 log.warn("Error response from {}: {}", oidcProviderMetadata.getAuthorizationEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
                 throw new RuntimeException();
 
@@ -132,7 +128,7 @@ public class OIDCIntegrationService {
         }
     }
 
-    protected ClientAuthentication clientAuthentication(TestClientProperties eidIntegrationConfiguration) {
+    protected ClientAuthentication clientAuthentication(OIDCIntegrationProperties eidIntegrationConfiguration) {
         ClientAuthenticationMethod clientAuthenticationMethod = ClientAuthenticationMethod.parse(eidIntegrationConfiguration.getClientAuthMethod());
         if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC == clientAuthenticationMethod) {
             return new ClientSecretBasic(new ClientID(eidIntegrationConfiguration.getClientId()), new Secret(eidIntegrationConfiguration.getClientSecret()));
@@ -146,7 +142,7 @@ public class OIDCIntegrationService {
         throw new IllegalStateException(String.format("Unknown client authentication method %s", clientAuthenticationMethod));
     }
 
-    protected ClientAuthentication clientAssertion(TestClientProperties eidIntegrationConfiguration, KeyProvider keyProvider) {
+    protected ClientAuthentication clientAssertion(OIDCIntegrationProperties eidIntegrationConfiguration, KeyProvider keyProvider) {
         try {
             List<Base64> encodedCertificates = new ArrayList<>();
             for (Certificate c : keyProvider.certificateChain()) {

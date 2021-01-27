@@ -13,19 +13,16 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.net.URI;
-import java.util.List;
 
 @Configuration
 @Data
 @Slf4j
 @Validated
-@ConfigurationProperties(prefix = "eid-integration.eid-provider")
-public class TestClientProperties implements InitializingBean {
+@ConfigurationProperties(prefix = "oidc-test-client.oidc-integration")
+public class OIDCIntegrationProperties implements InitializingBean {
 
     @NotNull
     private URI issuer;
-    @NotNull
-    private URI jwksEndpoint;
 
     @NotNull
     private URI redirectUri;
@@ -52,9 +49,6 @@ public class TestClientProperties implements InitializingBean {
     private int jwksCacheRefreshMinutes = 5;
     @Min(1)
     private int jwksCacheLifetimeMinutes = 60;
-
-    @NotEmpty
-    private List<String> cancelErrorCodes;
 
     @Override
     public void afterPropertiesSet() throws Exception {

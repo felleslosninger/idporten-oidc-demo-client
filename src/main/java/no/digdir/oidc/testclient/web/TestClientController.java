@@ -9,7 +9,7 @@ import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.digdir.oidc.testclient.config.TestClientProperties;
+import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
 import no.digdir.oidc.testclient.service.OIDCIntegrationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,7 +31,7 @@ public class TestClientController {
 
 
     private final OIDCIntegrationService eidIntegrationService;
-    private final TestClientProperties idPortenIntegrationConfiguration;
+    private final OIDCIntegrationProperties idPortenIntegrationConfiguration;
 
     @GetMapping("/")
     public String index(Model model) {

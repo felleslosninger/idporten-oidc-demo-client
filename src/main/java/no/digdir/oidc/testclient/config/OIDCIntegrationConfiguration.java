@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 public class OIDCIntegrationConfiguration {
 
     @Bean
-    public OIDCProviderMetadata oidcProviderMetadata(TestClientProperties properties) throws Exception {
+    public OIDCProviderMetadata oidcProviderMetadata(OIDCIntegrationProperties properties) throws Exception {
         Issuer issuer = new Issuer(properties.getIssuer());
         OIDCProviderMetadata oidcProviderMetadata = OIDCProviderMetadata.resolve(
                 issuer,
@@ -35,7 +35,7 @@ public class OIDCIntegrationConfiguration {
     }
 
     @Bean
-    public RemoteJWKSet remoteJWKSet(TestClientProperties properties, OIDCProviderMetadata oidcProviderMetadata) throws Exception {
+    public RemoteJWKSet remoteJWKSet(OIDCIntegrationProperties properties, OIDCProviderMetadata oidcProviderMetadata) throws Exception {
         ResourceRetriever resourceRetriever = new LoggingResourceRetriever(
                 properties.getConnectTimeOutMillis(),
                 properties.getReadTimeOutMillis());
@@ -47,7 +47,7 @@ public class OIDCIntegrationConfiguration {
     }
 
     @Bean
-    public IDTokenValidator idTokenValidator(TestClientProperties properties, OIDCProviderMetadata oidcProviderMetadata, RemoteJWKSet remoteJWKSet) {
+    public IDTokenValidator idTokenValidator(OIDCIntegrationProperties properties, OIDCProviderMetadata oidcProviderMetadata, RemoteJWKSet remoteJWKSet) {
         JWSKeySelector<JWKSecurityContext> keySelector = new JWSVerificationKeySelector(
                 new HashSet<>(oidcProviderMetadata.getIDTokenJWSAlgs()),
                 remoteJWKSet);
