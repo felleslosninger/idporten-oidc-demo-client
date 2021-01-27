@@ -16,8 +16,9 @@
 
     <properties>
         <infinispan-spring-boot-version>2.3.3.Final</infinispan-spring-boot-version>
-        <nimbus.oauth2-oidc-sdk.version>8.34.2</nimbus.oauth2-oidc-sdk.version>
+        <nimbus.oauth2-oidc-sdk.version>8.28.3</nimbus.oauth2-oidc-sdk.version>
         <bouncecastle-version>1.68</bouncecastle-version>
+        <nimbus-jose-jwt.version>8.20.1</nimbus-jose-jwt.version>
         <lombok-version>1.18.12</lombok-version>
     </properties>
 
@@ -26,11 +27,23 @@
             <groupId>com.nimbusds</groupId>
             <artifactId>oauth2-oidc-sdk</artifactId>
             <version>${nimbus.oauth2-oidc-sdk.version}</version>
+            <!-- some random issues if a 9.x version happens to be included-->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.nimbusds</groupId>
+                    <artifactId>nimbus-jose-jwt</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>${bouncecastle-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>${nimbus-jose-jwt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
