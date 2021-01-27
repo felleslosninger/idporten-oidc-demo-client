@@ -1,6 +1,5 @@
 package no.digdir.oidc.testclient.config;
 
-import com.nimbusds.jose.JWSAlgorithm;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -9,29 +8,22 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.net.URI;
-import java.util.*;
+import java.util.List;
 
 @Configuration
 @Data
 @Slf4j
 @Validated
 @ConfigurationProperties(prefix = "eid-integration.eid-provider")
-public class IDPortenIntegrationConfiguration implements InitializingBean {
-
-    private Features features = new Features();
+public class TestClientProperties implements InitializingBean {
 
     @NotNull
     private URI issuer;
-    @NotNull
-    private URI authorizationEndpoint;
-    @NotNull
-    private URI tokenEndpoint;
     @NotNull
     private URI jwksEndpoint;
 
@@ -45,18 +37,12 @@ public class IDPortenIntegrationConfiguration implements InitializingBean {
     @NotEmpty
     private String clientId;
 
-
     private String clientSecret;
     private String clientKeystoreType;
     private String clientKeystoreLocation;
     private String clientKeystorePassword;
     private String clientKeystoreKeyAlias;
     private String clientKeystoreKeyPassword;
-
-    @NotEmpty
-    private List<String> scopes;
-
-    private Map<String, String> customParameters = new HashMap<>();
 
     @Min(1)
     private int connectTimeOutMillis;
@@ -69,29 +55,6 @@ public class IDPortenIntegrationConfiguration implements InitializingBean {
 
     @NotEmpty
     private List<String> cancelErrorCodes;
-
-    @Valid
-    private IDPortenIntegrationConfiguration.IDTokenConfig idTokenConfig = new IDTokenConfig();
-
-    @Data
-    public class IDTokenConfig {
-
-        @NotEmpty
-        private Set<JWSAlgorithm> jwsAlgorithms = new HashSet<>();
-
-        @NotEmpty
-        private String personIdentifierClaim;
-
-        private Map<String, String> requiredClaims = new HashMap<>();
-
-    }
-
-    @Data
-    public class Features {
-
-        private boolean readMetadataOnStartup = true;
-
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {

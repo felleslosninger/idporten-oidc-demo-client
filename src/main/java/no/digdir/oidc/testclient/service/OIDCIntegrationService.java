@@ -23,10 +23,11 @@ import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponseParser;
 import com.nimbusds.openid.connect.sdk.claims.ACR;
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.digdir.oidc.testclient.config.IDPortenIntegrationConfiguration;
+import no.digdir.oidc.testclient.config.TestClientProperties;
 import no.digdir.oidc.testclient.crypto.KeyProvider;
 import no.digdir.oidc.testclient.web.AuthorizationRequest;
 import org.springframework.stereotype.Service;
@@ -43,11 +44,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class IDPortenIntegrationService {
+public class OIDCIntegrationService {
 
-    private final IDPortenIntegrationConfiguration idPortenIntegrationConfiguration;
+    private final TestClientProperties idPortenIntegrationConfiguration;
     private final Optional<KeyProvider> keyProvider;
     private final IDTokenValidator idTokenValidator;
+    private final OIDCProviderMetadata oidcProviderMetadata;
 
     public AuthenticationRequest process(AuthorizationRequest authorizationRequest) {
         try {
@@ -57,7 +59,7 @@ public class IDPortenIntegrationService {
                     new ClientID(idPortenIntegrationConfiguration.getClientId()),
                     idPortenIntegrationConfiguration.getRedirectUri());
             requestBuilder
-                    .endpointURI(idPortenIntegrationConfiguration.getAuthorizationEndpoint());
+                    .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
             if (StringUtils.hasText(authorizationRequest.getState())) {
                 requestBuilder.state(new State(authorizationRequest.getState()));
             }
@@ -102,7 +104,7 @@ public class IDPortenIntegrationService {
             if (authorizationResponse.indicatesSuccess()) {
                 AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), idPortenIntegrationConfiguration.getRedirectUri(), codeVerifier);
                 final ClientAuthentication clientAuth = clientAuthentication(idPortenIntegrationConfiguration);
-                com.nimbusds.oauth2.sdk.TokenRequest tokenRequest = new com.nimbusds.oauth2.sdk.TokenRequest(idPortenIntegrationConfiguration.getTokenEndpoint(), clientAuth, codeGrant);
+                com.nimbusds.oauth2.sdk.TokenRequest tokenRequest = new com.nimbusds.oauth2.sdk.TokenRequest(oidcProviderMetadata.getTokenEndpointURI(), clientAuth, codeGrant);
                 com.nimbusds.oauth2.sdk.TokenResponse tokenResponse = process(tokenRequest);
                 if (tokenResponse.indicatesSuccess()) {
                     OIDCTokenResponse successResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
@@ -110,27 +112,27 @@ public class IDPortenIntegrationService {
                     return successResponse;
                 } else {
                     TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
-                    log.warn("Error response from {}: {}", idPortenIntegrationConfiguration.getTokenEndpoint(), errorResponse.toJSONObject().toJSONString());
+                    log.warn("Error response from {}: {}", oidcProviderMetadata.getTokenEndpointURI(), errorResponse.toJSONObject().toJSONString());
                     throw new RuntimeException();
                 }
             } else {
                 AuthorizationErrorResponse errorResponse = authorizationResponse.toErrorResponse();
                 String error = errorResponse.getErrorObject().getCode();
                 if (idPortenIntegrationConfiguration.getCancelErrorCodes().contains(error)) {
-                    log.info("User cancel response from {}: {}", idPortenIntegrationConfiguration.getAuthorizationEndpoint(), errorResponse.getErrorObject().toJSONObject().toJSONString());
+                    log.info("User cancel response from {}: {}", oidcProviderMetadata.getAuthorizationEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
                     throw new RuntimeException();
                 }
-                log.warn("Error response from {}: {}", idPortenIntegrationConfiguration.getAuthorizationEndpoint(), errorResponse.getErrorObject().toJSONObject().toJSONString());
+                log.warn("Error response from {}: {}", oidcProviderMetadata.getAuthorizationEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
                 throw new RuntimeException();
 
             }
         } catch (Exception e) {
-            log.error("Failed to retrieve tokens from {}", idPortenIntegrationConfiguration.getTokenEndpoint(), e);
+            log.error("Failed to retrieve tokens from {}", oidcProviderMetadata.getTokenEndpointURI(), e);
             throw new RuntimeException();
         }
     }
 
-    protected ClientAuthentication clientAuthentication(IDPortenIntegrationConfiguration eidIntegrationConfiguration) {
+    protected ClientAuthentication clientAuthentication(TestClientProperties eidIntegrationConfiguration) {
         ClientAuthenticationMethod clientAuthenticationMethod = ClientAuthenticationMethod.parse(eidIntegrationConfiguration.getClientAuthMethod());
         if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC == clientAuthenticationMethod) {
             return new ClientSecretBasic(new ClientID(eidIntegrationConfiguration.getClientId()), new Secret(eidIntegrationConfiguration.getClientSecret()));
@@ -144,7 +146,7 @@ public class IDPortenIntegrationService {
         throw new IllegalStateException(String.format("Unknown client authentication method %s", clientAuthenticationMethod));
     }
 
-    protected ClientAuthentication clientAssertion(IDPortenIntegrationConfiguration eidIntegrationConfiguration, KeyProvider keyProvider) {
+    protected ClientAuthentication clientAssertion(TestClientProperties eidIntegrationConfiguration, KeyProvider keyProvider) {
         try {
             List<Base64> encodedCertificates = new ArrayList<>();
             for (Certificate c : keyProvider.certificateChain()) {
@@ -180,5 +182,6 @@ public class IDPortenIntegrationService {
         HTTPResponse httpResponse = httpRequest.send();
         return OIDCTokenResponseParser.parse(httpResponse);
     }
+
 
 }

@@ -9,8 +9,8 @@ import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.digdir.oidc.testclient.config.IDPortenIntegrationConfiguration;
-import no.digdir.oidc.testclient.service.IDPortenIntegrationService;
+import no.digdir.oidc.testclient.config.TestClientProperties;
+import no.digdir.oidc.testclient.service.OIDCIntegrationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,11 +27,11 @@ import java.net.URI;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping(path = "")
-public class IDPortenIntegrationController {
+public class TestClientController {
 
 
-    private final IDPortenIntegrationService eidIntegrationService;
-    private final IDPortenIntegrationConfiguration idPortenIntegrationConfiguration;
+    private final OIDCIntegrationService eidIntegrationService;
+    private final TestClientProperties idPortenIntegrationConfiguration;
 
     @GetMapping("/")
     public String index(Model model) {
