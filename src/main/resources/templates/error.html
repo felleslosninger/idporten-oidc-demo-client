@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head lang="nn">
+    <meta charset="UTF-8"/>
+    <title>Integrasjon mot eID</title>
+    <link rel="stylesheet" href="main.css"/>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+          crossorigin="anonymous"/>
+</head>
+<body>
+<div class="container">
+    <h1>Innlogging med eID</h1>
+    <p>Det har oppstått en feil i integrasjon mot eID og autentiseringsforespørselen kan ikke håndteres.</p>
+    <p th:if="${redirect_uri}"><a type="button" class="btn btn-primary" th:href="${redirect_uri}">Tilbake til ID-porten</a></p>
+</div>
+</body>
+</html>

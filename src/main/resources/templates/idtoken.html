@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head lang="nn">
+    <meta charset="UTF-8"/>
+    <title>Integrasjon mot eID</title>
+    <link rel="stylesheet" href="main.css"/>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+          crossorigin="anonymous"/>
+</head>
+<body>
+<div class="container">
+    <h1>Innlogging med ID-porten</h1>
+
+    <h2>Claims fra id_token</h2>
+
+    <div class="container mt-5 border">
+        <table class="table table-hover" id="id_token_claims">
+            <thead class="thead-light">
+            <tr>
+                <th scope="col">Claim</th>
+                <th scope="col">Verdi</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr th:each="claim : ${idTokenClaims}">
+                <td scope="row" th:text="${claim.key}"></td>
+                <td th:text="${claim.value}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <a class="btn btn-primary" th:href="@{/}" role="button">Tilbake</a>
+
+</div>
+</body>
+</html>

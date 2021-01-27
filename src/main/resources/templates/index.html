@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head lang="nn">
+    <meta charset="UTF-8"/>
+    <title>Integrasjon mot eID</title>
+    <link rel="stylesheet" href="main.css"/>
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+          crossorigin="anonymous"/>
+</head>
+<body>
+<div class="container">
+    <h1>Innlogging med ID-porten</h1>
+
+    <div class="container">
+        <form action="#" th:action="@{/authorize}" th:object="${authorizationRequest}" method="post">
+            <div class="form-group">
+                <label th:for="scopes" th:text="Scope"/>
+                <input type="text" th:field="*{scopes}" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label th:for="acrValues" th:text="Acr"/>
+                <input type="text" th:field="*{acrValues}" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label th:for="uiLocales" th:text="Språk"/>
+                <input type="text" th:field="*{uiLocales}" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label th:for="state" th:text="State"/>
+                <input type="text" th:field="*{state}" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label th:for="nonce" th:text="Nonce"/>
+                <input type="text" th:field="*{nonce}" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label th:for="codeVerifier" th:text="CodeVerifier"/>
+                <input type="text" th:field="*{codeVerifier}" class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label th:for="codeChallengeMethod" th:text="CodeChallengeMethod"/>
+                <input type="text" th:field="*{codeChallengeMethod}" class="form-control"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Logg inn</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
