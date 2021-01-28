@@ -30,28 +30,18 @@ management:
       path-mapping:
         info: /version
 
-eid-integration:
-  eid-provider:
+oidc-test-client:
+  oidc-integration:
     connect-timeout-millis: 5000
     read-timeout-millis: 5000
     jwks-cache-lifetime-minutes: 60
     jwks-cache-refresh-minutes: 5
-    issuer: http://127.0.0.1:7071/testid/
-    authorization-endpoint: http://localhost:7071/testid/authorize
-    token-endpoint: http://localhost:7071/testid/token
-    jwks-endpoint: http://localhost:7071/testid/jwks
-    client-id: idporten
+    issuer: https://c2id-demo.westeurope.cloudapp.azure.com/c2id
+    client-id: idporten-test-client
     client-auth-method: client_secret_basic
-    client-secret: password
-    redirect-uri: http://localhost:7074/idporten-oidc-test-client/callback
-    scopes:
-      - openid
-    id-token-config:
-      jws-algorithms:
-        - RS256
-      person-identifier-claim: sub
-    cancel-error-codes:
-      - access_denied
+    client-secret: erTXmyi_hSy1Z1O-gJm9kto3-aNiczlJPveAoesuNg
+    redirect-uri: https://c2id-demo.westeurope.cloudapp.azure.com/idporten-test-client/callback
+    post-logout-redirect-uri: https://c2id-demo.westeurope.cloudapp.azure.com/idporten-test-client/logout/callback
 
 ---
 spring:
