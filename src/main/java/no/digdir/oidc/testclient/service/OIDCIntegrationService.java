@@ -128,21 +128,21 @@ public class OIDCIntegrationService {
         }
     }
 
-    protected ClientAuthentication clientAuthentication(OIDCIntegrationProperties eidIntegrationConfiguration) {
-        ClientAuthenticationMethod clientAuthenticationMethod = ClientAuthenticationMethod.parse(eidIntegrationConfiguration.getClientAuthMethod());
+    protected ClientAuthentication clientAuthentication(OIDCIntegrationProperties oidcIntegrationProperties) {
+        ClientAuthenticationMethod clientAuthenticationMethod = ClientAuthenticationMethod.parse(oidcIntegrationProperties.getClientAuthMethod());
         if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC == clientAuthenticationMethod) {
-            return new ClientSecretBasic(new ClientID(eidIntegrationConfiguration.getClientId()), new Secret(eidIntegrationConfiguration.getClientSecret()));
+            return new ClientSecretBasic(new ClientID(oidcIntegrationProperties.getClientId()), new Secret(oidcIntegrationProperties.getClientSecret()));
         }
         if (ClientAuthenticationMethod.CLIENT_SECRET_POST == clientAuthenticationMethod) {
-            return new ClientSecretPost(new ClientID(eidIntegrationConfiguration.getClientId()), new Secret(eidIntegrationConfiguration.getClientSecret()));
+            return new ClientSecretPost(new ClientID(oidcIntegrationProperties.getClientId()), new Secret(oidcIntegrationProperties.getClientSecret()));
         }
         if (ClientAuthenticationMethod.PRIVATE_KEY_JWT == clientAuthenticationMethod) {
-            return clientAssertion(eidIntegrationConfiguration, keyProvider.get());
+            return clientAssertion(oidcIntegrationProperties, keyProvider.get());
         }
         throw new IllegalStateException(String.format("Unknown client authentication method %s", clientAuthenticationMethod));
     }
 
-    protected ClientAuthentication clientAssertion(OIDCIntegrationProperties eidIntegrationConfiguration, KeyProvider keyProvider) {
+    protected ClientAuthentication clientAssertion(OIDCIntegrationProperties oidcIntegrationProperties, KeyProvider keyProvider) {
         try {
             List<Base64> encodedCertificates = new ArrayList<>();
             for (Certificate c : keyProvider.certificateChain()) {
@@ -155,9 +155,9 @@ public class OIDCIntegrationService {
             long created = Clock.systemUTC().millis();
             long expires = created + (120 * 1000L);
             JWTClaimsSet claims = new JWTClaimsSet.Builder()
-                    .issuer(eidIntegrationConfiguration.getClientId())
-                    .subject(eidIntegrationConfiguration.getClientId())
-                    .audience(eidIntegrationConfiguration.getIssuer().toString())
+                    .issuer(oidcIntegrationProperties.getClientId())
+                    .subject(oidcIntegrationProperties.getClientId())
+                    .audience(oidcIntegrationProperties.getIssuer().toString())
                     .jwtID(UUID.randomUUID().toString())
                     .issueTime(new Date(created))
                     .expirationTime(new Date(expires))
