@@ -13,6 +13,7 @@ import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
 import no.digdir.oidc.testclient.service.OIDCIntegrationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +31,7 @@ import java.net.URI;
 public class TestClientController {
 
 
-    private final OIDCIntegrationService eidIntegrationService;
+    private final OIDCIntegrationService oidcIntegrationService;
     private final OIDCIntegrationProperties idPortenIntegrationConfiguration;
 
     @GetMapping("/")
@@ -49,8 +50,10 @@ public class TestClientController {
 
     @PostMapping("/authorize")
     public String authorize(@ModelAttribute AuthorizationRequest authorizationRequest,  HttpServletRequest request) {
-        request.getSession().setAttribute("codeVerifier", new CodeVerifier(authorizationRequest.getCodeVerifier()));
-        AuthenticationRequest authenticationRequest = eidIntegrationService.process(authorizationRequest);
+        if (StringUtils.hasText(authorizationRequest.getCodeVerifier())) {
+            request.getSession().setAttribute("code_verifier", new CodeVerifier(authorizationRequest.getCodeVerifier()));
+        }
+        AuthenticationRequest authenticationRequest = oidcIntegrationService.process(authorizationRequest);
         request.getSession().setAttribute("state", authenticationRequest.getState());
         request.getSession().setAttribute("nonce", authenticationRequest.getNonce());
         return "redirect:" + authenticationRequest.toURI().toString();
@@ -63,7 +66,7 @@ public class TestClientController {
         final State state = (State) request.getSession().getAttribute("state");
         final Nonce nonce = (Nonce) request.getSession().getAttribute("nonce");
         final CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
-        OIDCTokenResponse oidcTokenResponse = eidIntegrationService.process(authorizationResponse, state, nonce, codeVerifier);
+        OIDCTokenResponse oidcTokenResponse = oidcIntegrationService.process(authorizationResponse, state, nonce, codeVerifier);
         model.addAttribute("idTokenClaims", oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getClaims());
         return "idtoken";
     }

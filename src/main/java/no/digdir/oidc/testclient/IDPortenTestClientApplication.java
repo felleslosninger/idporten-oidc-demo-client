@@ -27,7 +27,7 @@ public class IDPortenTestClientApplication {
 		try {
 			loadJwks();
 		} catch (Exception e) {
-			log.error("Failed to read metadata from eID OpenID Connect provider", e);
+			log.error("Failed to read metadata from OpenID Connect provider", e);
 			event.getApplicationContext().close();
 		}
 	}
