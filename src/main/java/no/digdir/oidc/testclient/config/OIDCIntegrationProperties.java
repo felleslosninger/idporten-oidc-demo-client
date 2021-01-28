@@ -27,6 +27,9 @@ public class OIDCIntegrationProperties implements InitializingBean {
     @NotNull
     private URI redirectUri;
 
+    @NotNull
+    private URI postLogoutRedirectUri;
+
     @NotEmpty
     @Pattern(regexp = "^client_secret_basic|client_secret_post|private_key_jwt$")
     private String clientAuthMethod;

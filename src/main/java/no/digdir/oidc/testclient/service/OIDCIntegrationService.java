@@ -6,6 +6,7 @@ import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.util.Base64;
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.langtag.LangTag;
@@ -18,10 +19,7 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
-import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
-import com.nimbusds.openid.connect.sdk.Nonce;
-import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
-import com.nimbusds.openid.connect.sdk.OIDCTokenResponseParser;
+import com.nimbusds.openid.connect.sdk.*;
 import com.nimbusds.openid.connect.sdk.claims.ACR;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
@@ -46,36 +44,39 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OIDCIntegrationService {
 
-    private final OIDCIntegrationProperties idPortenIntegrationConfiguration;
+    private final OIDCIntegrationProperties oidcIntegrationProperties;
     private final Optional<KeyProvider> keyProvider;
     private final IDTokenValidator idTokenValidator;
     private final OIDCProviderMetadata oidcProviderMetadata;
 
-    public AuthenticationRequest process(AuthorizationRequest authorizationRequest) {
+    public AuthenticationRequest authorzationRequest(AuthorizationRequest authorizationRequest) {
         try {
             AuthenticationRequest.Builder requestBuilder = new AuthenticationRequest.Builder(
                     new ResponseType(ResponseType.Value.CODE),
                     new Scope(authorizationRequest.getScopes().stream().toArray(String[]::new)),
-                    new ClientID(idPortenIntegrationConfiguration.getClientId()),
-                    idPortenIntegrationConfiguration.getRedirectUri());
+                    new ClientID(oidcIntegrationProperties.getClientId()),
+                    oidcIntegrationProperties.getRedirectUri());
             requestBuilder
                     .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
-            if (StringUtils.hasText(authorizationRequest.getState())) {
-                requestBuilder.state(new State(authorizationRequest.getState()));
+            if (!CollectionUtils.isEmpty(authorizationRequest.getPrompt())) {
+                requestBuilder.prompt(new Prompt(authorizationRequest.getPrompt().stream().toArray(String[]::new)));
             }
-            if (StringUtils.hasText(authorizationRequest.getNonce())) {
-                requestBuilder.nonce(new Nonce(authorizationRequest.getNonce()));
-            }
-            if (! CollectionUtils.isEmpty(authorizationRequest.getUiLocales())) {
+            if (!CollectionUtils.isEmpty(authorizationRequest.getUiLocales())) {
                 requestBuilder.uiLocales(authorizationRequest.getUiLocales().stream()
                         .map(this::langTag)
                         .filter(langTag -> langTag != null)
                         .collect(Collectors.toList()));
             }
-            if (! CollectionUtils.isEmpty(authorizationRequest.getAcrValues())) {
+            if (!CollectionUtils.isEmpty(authorizationRequest.getAcrValues())) {
                 requestBuilder.acrValues(authorizationRequest.getAcrValues().stream()
                         .map(acr -> new ACR(acr))
                         .collect(Collectors.toList()));
+            }
+            if (StringUtils.hasText(authorizationRequest.getState())) {
+                requestBuilder.state(new State(authorizationRequest.getState()));
+            }
+            if (StringUtils.hasText(authorizationRequest.getNonce())) {
+                requestBuilder.nonce(new Nonce(authorizationRequest.getNonce()));
             }
             if (StringUtils.hasText(authorizationRequest.getCodeVerifier())) {
                 requestBuilder.codeChallenge(
@@ -96,14 +97,14 @@ public class OIDCIntegrationService {
         }
     }
 
-    public OIDCTokenResponse process(AuthorizationResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
+    public OIDCTokenResponse token(AuthorizationResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
         if (!Objects.equals(state, authorizationResponse.getState())) {
             throw new RuntimeException("Invalid state. State does not match state from original request."); // TODO
         }
         try {
             if (authorizationResponse.indicatesSuccess()) {
-                AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), idPortenIntegrationConfiguration.getRedirectUri(), codeVerifier);
-                final ClientAuthentication clientAuth = clientAuthentication(idPortenIntegrationConfiguration);
+                AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), oidcIntegrationProperties.getRedirectUri(), codeVerifier);
+                final ClientAuthentication clientAuth = clientAuthentication(oidcIntegrationProperties);
                 com.nimbusds.oauth2.sdk.TokenRequest tokenRequest = new com.nimbusds.oauth2.sdk.TokenRequest(oidcProviderMetadata.getTokenEndpointURI(), clientAuth, codeGrant);
                 com.nimbusds.oauth2.sdk.TokenResponse tokenResponse = process(tokenRequest);
                 if (tokenResponse.indicatesSuccess()) {
@@ -126,6 +127,14 @@ public class OIDCIntegrationService {
             log.error("Failed to retrieve tokens from {}", oidcProviderMetadata.getTokenEndpointURI(), e);
             throw new RuntimeException();
         }
+    }
+
+    public LogoutRequest logoutRequest(JWT idToken) {
+        return new LogoutRequest(
+                oidcProviderMetadata.getEndSessionEndpointURI(),
+                idToken,
+                oidcIntegrationProperties.getPostLogoutRedirectUri(),
+                new State());
     }
 
     protected ClientAuthentication clientAuthentication(OIDCIntegrationProperties oidcIntegrationProperties) {
@@ -173,8 +182,8 @@ public class OIDCIntegrationService {
 
     protected TokenResponse process(com.nimbusds.oauth2.sdk.TokenRequest tokenRequest) throws IOException, ParseException {
         HTTPRequest httpRequest = tokenRequest.toHTTPRequest();
-        httpRequest.setConnectTimeout(idPortenIntegrationConfiguration.getConnectTimeOutMillis());
-        httpRequest.setReadTimeout(idPortenIntegrationConfiguration.getReadTimeOutMillis());
+        httpRequest.setConnectTimeout(oidcIntegrationProperties.getConnectTimeOutMillis());
+        httpRequest.setReadTimeout(oidcIntegrationProperties.getReadTimeOutMillis());
         HTTPResponse httpResponse = httpRequest.send();
         return OIDCTokenResponseParser.parse(httpResponse);
     }

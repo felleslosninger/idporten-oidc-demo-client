@@ -1,10 +1,12 @@
 package no.digdir.oidc.testclient.web;
 
 
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,15 +16,13 @@ import no.digdir.oidc.testclient.service.OIDCIntegrationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -53,7 +53,7 @@ public class TestClientController {
         if (StringUtils.hasText(authorizationRequest.getCodeVerifier())) {
             request.getSession().setAttribute("code_verifier", new CodeVerifier(authorizationRequest.getCodeVerifier()));
         }
-        AuthenticationRequest authenticationRequest = oidcIntegrationService.process(authorizationRequest);
+        AuthenticationRequest authenticationRequest = oidcIntegrationService.authorzationRequest(authorizationRequest);
         request.getSession().setAttribute("state", authenticationRequest.getState());
         request.getSession().setAttribute("nonce", authenticationRequest.getNonce());
         return "redirect:" + authenticationRequest.toURI().toString();
@@ -66,9 +66,38 @@ public class TestClientController {
         final State state = (State) request.getSession().getAttribute("state");
         final Nonce nonce = (Nonce) request.getSession().getAttribute("nonce");
         final CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
-        OIDCTokenResponse oidcTokenResponse = oidcIntegrationService.process(authorizationResponse, state, nonce, codeVerifier);
+        OIDCTokenResponse oidcTokenResponse = oidcIntegrationService.token(authorizationResponse, state, nonce, codeVerifier);
+        request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
         model.addAttribute("idTokenClaims", oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getClaims());
         return "idtoken";
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        JWT idToken = (JWT) request.getSession().getAttribute("id_token");
+        request.getSession().invalidate();
+        LogoutRequest logoutRequest =  oidcIntegrationService.logoutRequest(idToken);
+        request.getSession(true);
+        request.getSession().setAttribute("state", logoutRequest.getState());
+        return "redirect:" + logoutRequest.toURI().toString();
+    }
+
+    @GetMapping("/logout/callback")
+    public String logoutCallback(HttpServletRequest request, @RequestParam(name = "state", required = false) State state) {
+        try {
+            if (!Objects.equals(state, request.getSession().getAttribute("state"))) {
+                throw new RuntimeException("Invalid state. State does not match state from logout request.");
+            }
+            return "logout";
+        } finally {
+            request.getSession().invalidate();
+        }
+    }
+
+    @ExceptionHandler
+    public String handleExcepion(Exception e) {
+        log.error("Request handling failed", e);
+        return "error";
     }
 
 }
