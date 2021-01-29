@@ -85,7 +85,7 @@ public class OIDCIntegrationService {
             }
             return requestBuilder.build();
         } catch (Exception e) {
-            throw new RuntimeException();
+            throw new RuntimeException(e);
         }
     }
 
