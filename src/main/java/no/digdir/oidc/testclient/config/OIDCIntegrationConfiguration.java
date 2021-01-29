@@ -15,12 +15,14 @@ import lombok.extern.slf4j.Slf4j;
 import no.digdir.oidc.testclient.service.LoggingResourceRetriever;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Configuration
+@Profile("!test")
 public class OIDCIntegrationConfiguration {
 
     @Bean
