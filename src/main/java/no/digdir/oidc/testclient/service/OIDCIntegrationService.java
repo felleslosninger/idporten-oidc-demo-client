@@ -28,10 +28,14 @@ import lombok.extern.slf4j.Slf4j;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
 import no.digdir.oidc.testclient.crypto.KeyProvider;
 import no.digdir.oidc.testclient.web.AuthorizationRequest;
+import no.digdir.oidc.testclient.web.OIDCProtocolTracker;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.cert.Certificate;
 import java.time.Clock;
@@ -182,11 +186,13 @@ public class OIDCIntegrationService {
 
     protected TokenResponse process(com.nimbusds.oauth2.sdk.TokenRequest tokenRequest) throws IOException, ParseException {
         HTTPRequest httpRequest = tokenRequest.toHTTPRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        OIDCProtocolTracker.trackTokenRequest(request.getSession(), httpRequest);
         httpRequest.setConnectTimeout(oidcIntegrationProperties.getConnectTimeOutMillis());
         httpRequest.setReadTimeout(oidcIntegrationProperties.getReadTimeOutMillis());
         HTTPResponse httpResponse = httpRequest.send();
+        OIDCProtocolTracker.trackTokenResponse(request.getSession(), httpResponse);
         return OIDCTokenResponseParser.parse(httpResponse);
     }
-
 
 }

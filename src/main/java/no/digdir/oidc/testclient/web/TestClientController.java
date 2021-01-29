@@ -56,12 +56,14 @@ public class TestClientController {
         AuthenticationRequest authenticationRequest = oidcIntegrationService.authorzationRequest(authorizationRequest);
         request.getSession().setAttribute("state", authenticationRequest.getState());
         request.getSession().setAttribute("nonce", authenticationRequest.getNonce());
+        OIDCProtocolTracker.trackAuthorizationRequest(request.getSession(), authenticationRequest.toURI());
         return "redirect:" + authenticationRequest.toURI().toString();
     }
 
     @GetMapping("/callback")
     public String callback(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
         URI authorizationResponseUri = UriComponentsBuilder.fromUri(idPortenIntegrationConfiguration.getRedirectUri()).query(request.getQueryString()).build().toUri();
+        OIDCProtocolTracker.trackAuthorizationResponse(request.getSession(), authorizationResponseUri);
         com.nimbusds.oauth2.sdk.AuthorizationResponse authorizationResponse = com.nimbusds.oauth2.sdk.AuthorizationResponse.parse(authorizationResponseUri);
         final State state = (State) request.getSession().getAttribute("state");
         final Nonce nonce = (Nonce) request.getSession().getAttribute("nonce");
@@ -79,11 +81,14 @@ public class TestClientController {
         LogoutRequest logoutRequest =  oidcIntegrationService.logoutRequest(idToken);
         request.getSession(true);
         request.getSession().setAttribute("state", logoutRequest.getState());
+        OIDCProtocolTracker.trackLogoutRequest(request.getSession(), logoutRequest.toURI());
         return "redirect:" + logoutRequest.toURI().toString();
     }
 
     @GetMapping("/logout/callback")
     public String logoutCallback(HttpServletRequest request, @RequestParam(name = "state", required = false) State state) {
+        URI logoutResponse = UriComponentsBuilder.fromUri(idPortenIntegrationConfiguration.getPostLogoutRedirectUri()).query(request.getQueryString()).build().toUri();
+        OIDCProtocolTracker protocolTracker = OIDCProtocolTracker.trackLogoutResponse(request.getSession(), logoutResponse);
         try {
             if (!Objects.equals(state, request.getSession().getAttribute("state"))) {
                 throw new RuntimeException("Invalid state. State does not match state from logout request.");
@@ -91,6 +96,8 @@ public class TestClientController {
             return "logout";
         } finally {
             request.getSession().invalidate();
+            request.getSession(true);
+            OIDCProtocolTracker.set(request.getSession(), protocolTracker);
         }
     }
 
