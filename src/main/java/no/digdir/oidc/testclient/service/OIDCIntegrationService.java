@@ -28,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
 import no.digdir.oidc.testclient.crypto.KeyProvider;
 import no.digdir.oidc.testclient.web.AuthorizationRequest;
-import no.digdir.oidc.testclient.web.OIDCProtocolTracker;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -52,6 +51,7 @@ public class OIDCIntegrationService {
     private final Optional<KeyProvider> keyProvider;
     private final IDTokenValidator idTokenValidator;
     private final OIDCProviderMetadata oidcProviderMetadata;
+    private final ProtocolTracerService oidcProtocolTracerService;
 
     public AuthenticationRequest authorzationRequest(AuthorizationRequest authorizationRequest) {
         try {
@@ -122,10 +122,8 @@ public class OIDCIntegrationService {
                 }
             } else {
                 AuthorizationErrorResponse errorResponse = authorizationResponse.toErrorResponse();
-                String error = errorResponse.getErrorObject().getCode();
                 log.warn("Error response from {}: {}", oidcProviderMetadata.getAuthorizationEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
                 throw new RuntimeException();
-
             }
         } catch (Exception e) {
             log.error("Failed to retrieve tokens from {}", oidcProviderMetadata.getTokenEndpointURI(), e);
@@ -187,11 +185,11 @@ public class OIDCIntegrationService {
     protected TokenResponse process(com.nimbusds.oauth2.sdk.TokenRequest tokenRequest) throws IOException, ParseException {
         HTTPRequest httpRequest = tokenRequest.toHTTPRequest();
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        OIDCProtocolTracker.trackTokenRequest(request.getSession(), httpRequest);
+        oidcProtocolTracerService.traceTokenRequest(request.getSession(), httpRequest);
         httpRequest.setConnectTimeout(oidcIntegrationProperties.getConnectTimeOutMillis());
         httpRequest.setReadTimeout(oidcIntegrationProperties.getReadTimeOutMillis());
         HTTPResponse httpResponse = httpRequest.send();
-        OIDCProtocolTracker.trackTokenResponse(request.getSession(), httpResponse);
+        oidcProtocolTracerService.traceTokenResponse(request.getSession(), httpResponse);
         return OIDCTokenResponseParser.parse(httpResponse);
     }
 

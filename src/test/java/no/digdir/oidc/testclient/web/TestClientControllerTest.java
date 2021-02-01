@@ -8,6 +8,8 @@ import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
+import no.digdir.oidc.testclient.service.ProtocolTrace;
+import no.digdir.oidc.testclient.service.ProtocolTracerService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
 
 import javax.servlet.http.HttpSession;
+import java.net.URI;
 import java.nio.charset.Charset;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,6 +47,9 @@ public class TestClientControllerTest {
 
     @Autowired
     private OIDCProviderMetadata oidcProviderMetadata;
+
+    @Autowired
+    private ProtocolTracerService protocolTracerService;
 
     @Nested
     @DisplayName("When starting to log in")
@@ -92,6 +98,7 @@ public class TestClientControllerTest {
             UriComponents authorizationRequest = UriComponentsBuilder
                     .fromHttpUrl(mvcResult.getResponse().getRedirectedUrl())
                     .build();
+            ProtocolTrace protocolTrace = ProtocolTracerService.get(mvcResult.getRequest().getSession());
             assertAll(
                     () -> assertEquals(oidcProviderMetadata.getAuthorizationEndpointURI().getHost(), authorizationRequest.getHost()),
                     () -> assertEquals(oidcProviderMetadata.getAuthorizationEndpointURI().getPath(), authorizationRequest.getPath()),
@@ -107,7 +114,9 @@ public class TestClientControllerTest {
                     () -> assertEquals(new Nonce(nonce), session.getAttribute("nonce")),
                     () -> assertTrue(StringUtils.hasText(authorizationRequest.getQueryParams().getFirst("code_challenge"))),
                     () -> assertEquals(new CodeVerifier(codeVerifier), session.getAttribute("code_verifier")),
-                    () -> assertEquals("S256", authorizationRequest.getQueryParams().getFirst("code_challenge_method"))
+                    () -> assertEquals("S256", authorizationRequest.getQueryParams().getFirst("code_challenge_method")),
+                    () -> assertNotNull(protocolTrace),
+                    () -> assertNotNull(protocolTrace.getAuthorizationRequest())
             );
         }
 
@@ -122,14 +131,16 @@ public class TestClientControllerTest {
         public void testStateValuesMustMatch() throws Exception {
             MockHttpSession mockSession = new MockHttpSession();
             mockSession.setAttribute("state", new State("idaho"));
-            mockMvc.perform(
+            MvcResult mvcResult = mockMvc.perform(
                     get("/callback")
                             .session(mockSession)
                             .queryParam("state", "texas")
                             .queryParam("code", "abc123"))
                     .andExpect(status().is2xxSuccessful())
-                    .andExpect(view().name("error"));
+                    .andExpect(view().name("error"))
+                    .andReturn();
         }
+
     }
 
     @Nested
@@ -148,6 +159,11 @@ public class TestClientControllerTest {
                             .queryParam("error", "invalid_request"))
                     .andExpect(status().is2xxSuccessful())
                     .andExpect(view().name("error"));
+            ProtocolTrace protocolTrace = ProtocolTracerService.get(mockSession);
+            assertAll(
+                    () -> assertNotNull(protocolTrace),
+                    () -> assertNotNull(protocolTrace.getAuthorizationResponse())
+            );
         }
 
         @Test
@@ -165,8 +181,6 @@ public class TestClientControllerTest {
         }
 
     }
-
-
 
 
     @Nested
@@ -188,6 +202,7 @@ public class TestClientControllerTest {
             UriComponents logoutRequest = UriComponentsBuilder
                     .fromHttpUrl(mvcResult.getResponse().getRedirectedUrl())
                     .build();
+
             assertAll(
                     () -> assertEquals(
                             idToken.serialize(),
@@ -215,7 +230,7 @@ public class TestClientControllerTest {
         }
 
         @Test
-        @DisplayName("then valid logout response gives the logout view")
+        @DisplayName("then valid logout response invalidates session and gives the logout view")
         public void testValidLogoutResponse() throws Exception {
             MockHttpSession mockSession = new MockHttpSession();
             mockSession.setAttribute("state", new State("alaska"));
@@ -225,6 +240,26 @@ public class TestClientControllerTest {
                             .session(mockSession))
                     .andExpect(view().name("logout"));
             assertTrue(mockSession.isInvalid());
+        }
+
+        @Test
+        @DisplayName("then logout request and response are traced across sessions")
+        public void testTraceLogout() throws Exception {
+            MockHttpSession mockSession = new MockHttpSession();
+            mockSession.setAttribute("state", new State("alaska"));
+            ProtocolTrace protocolTrace = ProtocolTracerService.create(mockSession);
+            protocolTracerService.traceLogoutRequest(mockSession, URI.create("https://idporten.junit.no/logout"));
+            MvcResult mvcResult = mockMvc.perform(
+                    get("/logout/callback/")
+                            .queryParam("state", "alaska")
+                            .session(mockSession))
+                    .andExpect(view().name("logout"))
+                    .andReturn();
+            assertAll(
+                    () -> assertTrue(mockSession.isInvalid()),
+                    () -> assertNotNull(protocolTrace.getLogoutRequest()),
+                    () -> assertNotNull(protocolTrace.getLogoutResponse())
+            );
         }
 
     }
