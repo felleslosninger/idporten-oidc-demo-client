@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
 import no.digdir.oidc.testclient.service.OIDCIntegrationService;
+import no.digdir.oidc.testclient.service.ProtocolTracerService;
+import no.digdir.oidc.testclient.service.ProtocolTrace;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -33,6 +35,7 @@ public class TestClientController {
 
     private final OIDCIntegrationService oidcIntegrationService;
     private final OIDCIntegrationProperties idPortenIntegrationConfiguration;
+    private final ProtocolTracerService protocolTracerService;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -56,19 +59,22 @@ public class TestClientController {
         AuthenticationRequest authenticationRequest = oidcIntegrationService.authorzationRequest(authorizationRequest);
         request.getSession().setAttribute("state", authenticationRequest.getState());
         request.getSession().setAttribute("nonce", authenticationRequest.getNonce());
+        protocolTracerService.traceAuthorizationRequest(request.getSession(), authenticationRequest.toURI());
         return "redirect:" + authenticationRequest.toURI().toString();
     }
 
     @GetMapping("/callback")
     public String callback(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
         URI authorizationResponseUri = UriComponentsBuilder.fromUri(idPortenIntegrationConfiguration.getRedirectUri()).query(request.getQueryString()).build().toUri();
+        protocolTracerService.traceAuthorizationResponse(request.getSession(), authorizationResponseUri);
         com.nimbusds.oauth2.sdk.AuthorizationResponse authorizationResponse = com.nimbusds.oauth2.sdk.AuthorizationResponse.parse(authorizationResponseUri);
         final State state = (State) request.getSession().getAttribute("state");
         final Nonce nonce = (Nonce) request.getSession().getAttribute("nonce");
         final CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
         OIDCTokenResponse oidcTokenResponse = oidcIntegrationService.token(authorizationResponse, state, nonce, codeVerifier);
+        protocolTracerService.trackValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet());
         request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
-        model.addAttribute("idTokenClaims", oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getClaims());
+        model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getSubject());
         return "idtoken";
     }
 
@@ -79,11 +85,14 @@ public class TestClientController {
         LogoutRequest logoutRequest =  oidcIntegrationService.logoutRequest(idToken);
         request.getSession(true);
         request.getSession().setAttribute("state", logoutRequest.getState());
+        protocolTracerService.traceLogoutRequest(request.getSession(), logoutRequest.toURI());
         return "redirect:" + logoutRequest.toURI().toString();
     }
 
     @GetMapping("/logout/callback")
     public String logoutCallback(HttpServletRequest request, @RequestParam(name = "state", required = false) State state) {
+        URI logoutResponse = UriComponentsBuilder.fromUri(idPortenIntegrationConfiguration.getPostLogoutRedirectUri()).query(request.getQueryString()).build().toUri();
+        ProtocolTrace protocolTrace = protocolTracerService.traceLogoutResponse(request.getSession(), logoutResponse);
         try {
             if (!Objects.equals(state, request.getSession().getAttribute("state"))) {
                 throw new RuntimeException("Invalid state. State does not match state from logout request.");
@@ -91,6 +100,8 @@ public class TestClientController {
             return "logout";
         } finally {
             request.getSession().invalidate();
+            request.getSession(true);
+            ProtocolTracerService.set(request.getSession(), protocolTrace);
         }
     }
 
