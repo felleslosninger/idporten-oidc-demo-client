@@ -72,7 +72,10 @@ public class TestClientController {
         final Nonce nonce = (Nonce) request.getSession().getAttribute("nonce");
         final CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
         OIDCTokenResponse oidcTokenResponse = oidcIntegrationService.token(authorizationResponse, state, nonce, codeVerifier);
-        protocolTracerService.trackValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet());
+        protocolTracerService.traceValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet());
+        if (oidcTokenResponse.getOIDCTokens().getAccessToken() != null) {
+            protocolTracerService.traceBearerAccessToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getAccessToken().getValue());
+        }
         request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
         model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getSubject());
         return "idtoken";

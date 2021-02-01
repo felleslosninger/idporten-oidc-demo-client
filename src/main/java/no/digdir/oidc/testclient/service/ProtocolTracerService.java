@@ -109,12 +109,22 @@ public class ProtocolTracerService {
         return protocolTrace;
     }
 
-    public ProtocolTrace trackValidatedIdToken(HttpSession session, JWTClaimsSet claimsSet) {
+    public ProtocolTrace traceValidatedIdToken(HttpSession session, JWTClaimsSet claimsSet) {
         ProtocolTrace protocolTrace = getOrCreate(session);
         protocolTrace.setValidatedIdToken(ProtocolInteraction.builder()
                 .id("idToken")
                 .text("Validated id_token")
                 .interaction(formatJson(claimsSet.toJSONObject().toJSONString()))
+                .build());
+        return protocolTrace;
+    }
+
+    public ProtocolTrace traceBearerAccessToken(HttpSession session, String accessToken) {
+        ProtocolTrace protocolTrace = getOrCreate(session);
+        protocolTrace.setBearerAccessToken(ProtocolInteraction.builder()
+                .id("accessToken")
+                .text("Bearer access_token")
+                .interaction(accessToken)
                 .build());
         return protocolTrace;
     }
