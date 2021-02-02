@@ -8,7 +8,9 @@
 <div class="container">
     <h1>Innlogging med ID-porten</h1>
 
-    <p th:if="${personIdentifier}">Logget inn som <span th:text="${personIdentifier}" th:remove="tag">personidentifier</span></p>
+    <div th:if="${personIdentifier}" class="alert alert-success" role="alert">
+        Du er logget inn som <span th:text="${personIdentifier}" th:remove="tag">personidentifier</span>.
+    </div>
 
     <div th:include="fragments/protocoltrace::protocoltrace" />
 
