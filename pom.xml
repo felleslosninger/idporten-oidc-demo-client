@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.0</version>
+        <version>2.4.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>no.digdir.oidc</groupId>
@@ -15,11 +15,10 @@
     <description>OpenID Connect test client for ID-porten</description>
 
     <properties>
-        <infinispan-spring-boot-version>2.3.3.Final</infinispan-spring-boot-version>
-        <nimbus.oauth2-oidc-sdk.version>8.28.3</nimbus.oauth2-oidc-sdk.version>
+        <nimbus.oauth2-oidc-sdk.version>9.0</nimbus.oauth2-oidc-sdk.version>
         <bouncecastle-version>1.68</bouncecastle-version>
-        <nimbus-jose-jwt.version>8.20.1</nimbus-jose-jwt.version>
-        <lombok-version>1.18.12</lombok-version>
+<!--        <nimbus-jose-jwt.version>8.20.1</nimbus-jose-jwt.version>-->
+        <lombok-version>1.18.18</lombok-version>
     </properties>
 
     <dependencies>
@@ -27,13 +26,6 @@
             <groupId>com.nimbusds</groupId>
             <artifactId>oauth2-oidc-sdk</artifactId>
             <version>${nimbus.oauth2-oidc-sdk.version}</version>
-            <!-- some random issues if a 9.x version happens to be included-->
-            <exclusions>
-                <exclusion>
-                    <groupId>com.nimbusds</groupId>
-                    <artifactId>nimbus-jose-jwt</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -41,17 +33,8 @@
             <version>${bouncecastle-version}</version>
         </dependency>
         <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-            <version>${nimbus-jose-jwt.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -74,11 +57,6 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-spring-boot-starter-embedded</artifactId>
-            <version>${infinispan-spring-boot-version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
