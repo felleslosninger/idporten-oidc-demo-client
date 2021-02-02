@@ -4,14 +4,8 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <body>
-
-<div th:fragment="copy">
-    &copy; 2011 The Good Thymes Virtual Grocery
-</div>
-
 <div th:fragment="protocoltrace">
     <div th:if="${session.protocolTrace}" class="accordion" id="protocolTrace">
-
         <script>
             function copyToClipboard(element) {
                 const temp = document.createElement('textarea');
@@ -43,7 +37,5 @@
         </div>
     </div>
 </div>
-
 </body>
-
 </html>
