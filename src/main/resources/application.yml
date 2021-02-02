@@ -11,7 +11,8 @@ server:
       enabled: true
       rotate: false
       pattern: "%h\u0009%l\u0009%u\u0009%t\u0009\u0022%r\u0022\u0009%s\u0009%b\u0009%D\u0009%{no.difi.correlationId}i"
-
+  error:
+    include-message: always
 info:
   version: @project.version@
 
