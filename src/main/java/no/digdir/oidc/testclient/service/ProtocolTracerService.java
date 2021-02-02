@@ -114,7 +114,7 @@ public class ProtocolTracerService {
         protocolTrace.setValidatedIdToken(ProtocolInteraction.builder()
                 .id("idToken")
                 .text("Validated id_token")
-                .interaction(formatJson(claimsSet.toJSONObject().toJSONString()))
+                .interaction(formatJson(claimsSet.toString()))
                 .build());
         return protocolTrace;
     }
