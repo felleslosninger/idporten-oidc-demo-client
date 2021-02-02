@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
 import no.digdir.oidc.testclient.service.OIDCIntegrationService;
-import no.digdir.oidc.testclient.service.ProtocolTracerService;
 import no.digdir.oidc.testclient.service.ProtocolTrace;
+import no.digdir.oidc.testclient.service.ProtocolTracerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -38,7 +38,8 @@ public class TestClientController {
     private final ProtocolTracerService protocolTracerService;
 
     @GetMapping("/")
-    public String index(Model model) {
+    public String index(HttpServletRequest request, Model model) {
+        ProtocolTracerService.create(request.getSession());
         model.addAttribute("authorizationRequest", AuthorizationRequest.builder()
                 .scope("openid")
                 .acrValue("Level3")
