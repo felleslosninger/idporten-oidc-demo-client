@@ -13,27 +13,10 @@
 </head>
 <body>
 <div class="container">
-    <h1>Du er nå logget ut av ID-porten</h1>
+    <h1>Innlogging med ID-porten</h1>
+    <p>Du er nå logget ut av ID-porten</p>
 
-    <div class="accordion" id="protocolTrace">
-        <div class="accordion-item" th:each="interaction: ${session.protocolTrace.logoutInteraction}">
-            <h2 class="accordion-header" th:id="'header' + ${interaction.id}">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                        th:data-bs-target="'#' + ${interaction.id}" aria-expanded="false"
-                        th:aria-controls="${interaction.id}">
-                    <p th:text="${interaction.text}"/>
-                </button>
-            </h2>
-            <div th:id="${interaction.id}" class="accordion-collapse collapse"
-                 th:aria-labelledby="'header' + ${interaction.id}"
-                 data-bs-parent="#protocolTrace">
-                <div class="accordion-body">
-                    <pre th:text="${interaction.interaction}"/>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <div th:include="fragments/protocoltrace::protocoltrace" />
 
     <a class="btn btn-primary" th:href="@{/}" role="button">Tilbake</a>
 </div>

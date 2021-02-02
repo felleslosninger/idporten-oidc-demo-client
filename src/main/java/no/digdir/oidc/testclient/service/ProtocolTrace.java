@@ -16,6 +16,7 @@ public class ProtocolTrace implements Serializable {
     private ProtocolInteraction tokenRequest;
     private ProtocolInteraction tokenResponse;
     private ProtocolInteraction validatedIdToken;
+    private ProtocolInteraction bearerAccessToken;
     private ProtocolInteraction logoutRequest;
     private ProtocolInteraction logoutResponse;
 
@@ -26,7 +27,7 @@ public class ProtocolTrace implements Serializable {
     }
 
     public List<ProtocolInteraction> getLoginInteraction() {
-        return Stream.of(authorizationRequest, authorizationResponse, tokenRequest, tokenResponse, validatedIdToken)
+        return Stream.of(authorizationRequest, authorizationResponse, tokenRequest, tokenResponse, validatedIdToken, bearerAccessToken)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
