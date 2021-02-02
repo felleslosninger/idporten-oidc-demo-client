@@ -102,9 +102,9 @@ public class OIDCIntegrationService {
     }
 
     public OIDCTokenResponse token(AuthorizationResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
-//        if (!Objects.equals(state, authorizationResponse.getState())) {
-//            throw new RuntimeException("Invalid state. State does not match state from original request."); // TODO
-//        }
+        if (!Objects.equals(state, authorizationResponse.getState())) {
+            throw new RuntimeException("Invalid state. State does not match state from original request."); // TODO
+        }
         try {
             if (authorizationResponse.indicatesSuccess()) {
                 AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), oidcIntegrationProperties.getRedirectUri(), codeVerifier);
