@@ -38,9 +38,9 @@ oidc-test-client:
     jwks-cache-lifetime-minutes: 60
     jwks-cache-refresh-minutes: 5
     issuer: https://c2id-demo.westeurope.cloudapp.azure.com/c2id
-    client-id: idporten-test-client
+    client-id:
     client-auth-method: client_secret_basic
-    client-secret: erTXmyi_hSy1Z1O-gJm9kto3-aNiczlJPveAoesuNg
+    client-secret:
     redirect-uri: https://c2id-demo.westeurope.cloudapp.azure.com/idporten-test-client/callback
     post-logout-redirect-uri: https://c2id-demo.westeurope.cloudapp.azure.com/idporten-test-client/logout/callback
 
