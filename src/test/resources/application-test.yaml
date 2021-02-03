@@ -1,0 +1,12 @@
+oidc-test-client:
+  oidc-integration:
+    connect-timeout-millis: 5000
+    read-timeout-millis: 5000
+    jwks-cache-lifetime-minutes: 60
+    jwks-cache-refresh-minutes: 5
+    issuer: https://junit.idporten.no/
+    client-id: junit
+    client-auth-method: client_secret_basic
+    client-secret: tinuj
+    redirect-uri: https://client.junit.idporten.no/callback
+    post-logout-redirect-uri: https://client.junit.idporten.no/logout/callback
