@@ -103,7 +103,7 @@ public class OIDCIntegrationService {
 
     public OIDCTokenResponse token(AuthorizationResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
         if (!Objects.equals(state, authorizationResponse.getState())) {
-            throw new RuntimeException("Invalid state. State does not match state from original request."); // TODO
+            throw new OIDCIntegrationException("Invalid state. Authorization response state does not match state from authorization request.");
         }
         try {
             if (authorizationResponse.indicatesSuccess()) {
@@ -118,16 +118,18 @@ public class OIDCIntegrationService {
                 } else {
                     TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
                     log.warn("Error response from {}: {}", oidcProviderMetadata.getTokenEndpointURI(), errorResponse.toJSONObject().toJSONString());
-                    throw new RuntimeException();
+                    throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());
                 }
             } else {
                 AuthorizationErrorResponse errorResponse = authorizationResponse.toErrorResponse();
                 log.warn("Error response from {}: {}", oidcProviderMetadata.getAuthorizationEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
-                throw new RuntimeException();
+                throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());
             }
+        } catch (OIDCIntegrationException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Failed to retrieve tokens from {}", oidcProviderMetadata.getTokenEndpointURI(), e);
-            throw new RuntimeException();
+            throw new OIDCIntegrationException("Failed to retrieve tokens.");
         }
     }
 
@@ -182,7 +184,7 @@ public class OIDCIntegrationService {
         }
     }
 
-    protected TokenResponse process(com.nimbusds.oauth2.sdk.TokenRequest tokenRequest) throws IOException, ParseException {
+    public TokenResponse process(com.nimbusds.oauth2.sdk.TokenRequest tokenRequest) throws IOException, ParseException {
         HTTPRequest httpRequest = tokenRequest.toHTTPRequest();
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         oidcProtocolTracerService.traceTokenRequest(request.getSession(), httpRequest);

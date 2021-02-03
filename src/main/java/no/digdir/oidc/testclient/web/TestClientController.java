@@ -12,6 +12,7 @@ import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
+import no.digdir.oidc.testclient.service.OIDCIntegrationException;
 import no.digdir.oidc.testclient.service.OIDCIntegrationService;
 import no.digdir.oidc.testclient.service.ProtocolTrace;
 import no.digdir.oidc.testclient.service.ProtocolTracerService;
@@ -99,7 +100,7 @@ public class TestClientController {
         ProtocolTrace protocolTrace = protocolTracerService.traceLogoutResponse(request.getSession(), logoutResponse);
         try {
             if (!Objects.equals(state, request.getSession().getAttribute("state"))) {
-                throw new RuntimeException("Invalid state. State does not match state from logout request.");
+                throw new OIDCIntegrationException("Invalid state. Logout response state does not match state from logout request.");
             }
             return "logout";
         } finally {
@@ -112,6 +113,12 @@ public class TestClientController {
     @ExceptionHandler
     public String handleExcepion(Exception e) {
         log.error("Request handling failed", e);
+        return "error";
+    }
+
+    @ExceptionHandler
+    public String handleExcepion(OIDCIntegrationException e, Model model) {
+        model.addAttribute("message", e.getMessage());
         return "error";
     }
 

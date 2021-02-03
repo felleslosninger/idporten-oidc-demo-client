@@ -3,11 +3,17 @@ package no.digdir.oidc.testclient.web;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
+import com.nimbusds.oauth2.sdk.AuthorizationResponse;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
+import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.Nonce;
+import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
+import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
+import no.digdir.oidc.testclient.TestDataUtils;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
+import no.digdir.oidc.testclient.service.OIDCIntegrationService;
 import no.digdir.oidc.testclient.service.ProtocolTrace;
 import no.digdir.oidc.testclient.service.ProtocolTracerService;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,6 +37,9 @@ import java.net.URI;
 import java.nio.charset.Charset;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -50,6 +60,9 @@ public class TestClientControllerTest {
 
     @Autowired
     private ProtocolTracerService protocolTracerService;
+
+    @SpyBean
+    private OIDCIntegrationService oidcIntegrationService;
 
     @Nested
     @DisplayName("When starting to log in")
@@ -79,11 +92,14 @@ public class TestClientControllerTest {
         @Test
         @DisplayName("then redirected authorization request contains parameters with values from user input")
         public void testRedirectedAuthorizationRequest() throws Exception {
+            MockHttpSession mockSession = new MockHttpSession();
+            ProtocolTracerService.create(mockSession);
             final String state = new State().getValue();
             final String nonce = new Nonce().getValue();
             final String codeVerifier = new CodeVerifier().getValue();
             MvcResult mvcResult = mockMvc.perform(
                     post("/authorize")
+                            .session(mockSession)
                             .param("scopes", "openid")
                             .param("acrValues", "Level3")
                             .param("uiLocales", "nb")
@@ -130,6 +146,7 @@ public class TestClientControllerTest {
         @DisplayName("then state values must match")
         public void testStateValuesMustMatch() throws Exception {
             MockHttpSession mockSession = new MockHttpSession();
+            ProtocolTracerService.create(mockSession);
             mockSession.setAttribute("state", new State("idaho"));
             MvcResult mvcResult = mockMvc.perform(
                     get("/callback")
@@ -139,6 +156,42 @@ public class TestClientControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andExpect(view().name("error"))
                     .andReturn();
+            ProtocolTrace protocolTrace = ProtocolTracerService.get(mvcResult.getRequest().getSession());
+            assertAll(
+                    () -> assertNotNull(protocolTrace),
+                    () -> assertNotNull(protocolTrace.getAuthorizationResponse())
+            );
+        }
+
+        @Test
+        @DisplayName("then tokens are retrieved and displayed in the idtoken view")
+        public void testRetrieveTokens() throws Exception {
+            State state = new State("maryland");
+            Nonce nonce = new Nonce();
+            CodeVerifier codeVerifier = new CodeVerifier();
+            JWT idToken = new PlainJWT(TestDataUtils.idTokenClaimsSet(TestDataUtils.testUserPersonIdentifier()));
+            OIDCTokenResponse tokenResponse = new OIDCTokenResponse(new OIDCTokens(idToken, new BearerAccessToken("at"), null));
+            doReturn(tokenResponse).when(oidcIntegrationService).token(any(AuthorizationResponse.class), eq(state), eq(nonce), eq(codeVerifier));
+            MockHttpSession mockSession = new MockHttpSession();
+            ProtocolTracerService.create(mockSession);
+            mockSession.setAttribute("state", state);
+            mockSession.setAttribute("nonce", nonce);
+            mockSession.setAttribute("code_verifier", codeVerifier);
+            MvcResult mvcResult = mockMvc.perform(
+                    get("/callback")
+                            .session(mockSession)
+                            .queryParam("state", state.getValue())
+                            .queryParam("code", "abc123"))
+                    .andExpect(status().is2xxSuccessful())
+                    .andExpect(view().name("idtoken"))
+                    .andReturn();
+            ProtocolTrace protocolTrace = ProtocolTracerService.get(mvcResult.getRequest().getSession());
+            assertAll(
+                    () -> assertNotNull(protocolTrace),
+                    () -> assertEquals(TestDataUtils.testUserPersonIdentifier(), mvcResult.getModelAndView().getModel().get("personIdentifier")),
+                    () -> assertNotNull(protocolTrace.getValidatedIdToken()),
+                    () -> assertNotNull(protocolTrace.getBearerAccessToken())
+            );
         }
 
     }
