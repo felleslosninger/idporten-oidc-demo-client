@@ -1,17 +1,18 @@
 # This workflow will build a Java project with Maven
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
 
-name: Ci for build and push Docker image with Maven and Spring boot
+name: Java CI with Maven
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  build-image:
+  build:
 
     runs-on: ubuntu-latest
-
+    env:
+      APPLICATION: oidc-test-client
     steps:
       - name: Set imagetag as env variable
         run: echo "IMAGETAG=$(date +'%Y-%m-%d-%H%M')-${GITHUB_SHA::8}" >> $GITHUB_ENV
@@ -27,12 +28,12 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
-        run: mvn -B spring-boot:build-image --file pom.xml -Dspring-boot.build-image.imageName=${{ secrets.REGISTRY_URL }}/oidc-test-client:$IMAGETAG
+        run: mvn -B spring-boot:build-image --file pom.xml -Dspring-boot.build-image.imageName=${{ secrets.REGISTRY_URL }}/${{env.APPLICATION}}:$IMAGETAG
       - name: Container image scan
         uses: Azure/container-scan@v0
         with:
           # Docker image to scan
-          image-name: ${{ secrets.REGISTRY_URL }}/oidc-test-client:${{env.IMAGETAG}}
+          image-name: ${{ secrets.REGISTRY_URL }}/${{env.APPLICATION}}:${{env.IMAGETAG}}
           # Minimum severities of vulnerabilities to be displayed (UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL)
           token: ${{ github.token }}
           severity-threshold: HIGH
@@ -43,4 +44,11 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run:
-          docker push ${{ secrets.REGISTRY_URL }}/oidc-test-client:${{env.IMAGETAG}}
+          docker push ${{ secrets.REGISTRY_URL }}/${{env.APPLICATION}}:${{env.IMAGETAG}}
+      - name: 'update cd'
+        uses: peter-evans/repository-dispatch@ce5485de42c9b2622d2ed064be479e8ed65e76f4 # pin@v1.1.3
+        with:
+          token: ${{ secrets.EID_BUILD_PAT }}
+          event-type: update-idporten-version
+          repository: 'felleslosninger/idporten-cd'
+          client-payload: '{"application": "${{env.APPLICATION}}", "image": "${{secrets.REGISTRY_URL}}/${{env.APPLICATION}}:${{env.IMAGETAG}}","version":"${{env.IMAGETAG}}"}'
