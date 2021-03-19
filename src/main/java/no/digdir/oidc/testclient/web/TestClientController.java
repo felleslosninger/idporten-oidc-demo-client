@@ -71,16 +71,24 @@ public class TestClientController {
         protocolTracerService.traceAuthorizationResponse(request.getSession(), authorizationResponseUri);
         com.nimbusds.oauth2.sdk.AuthorizationResponse authorizationResponse = com.nimbusds.oauth2.sdk.AuthorizationResponse.parse(authorizationResponseUri);
         final State state = (State) request.getSession().getAttribute("state");
-        final Nonce nonce = (Nonce) request.getSession().getAttribute("nonce");
-        final CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
-        OIDCTokenResponse oidcTokenResponse = oidcIntegrationService.token(authorizationResponse, state, nonce, codeVerifier);
-        protocolTracerService.traceValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet());
-        if (oidcTokenResponse.getOIDCTokens().getAccessToken() != null) {
-            protocolTracerService.traceBearerAccessToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getAccessToken().getValue());
+        if (!Objects.equals(state, authorizationResponse.getState())) {
+            throw new OIDCIntegrationException("Invalid state. Authorization response state does not match state from authorization request.");
         }
-        request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
-        model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getSubject());
-        return "idtoken";
+        if (authorizationResponse.indicatesSuccess()) {
+            final Nonce nonce = (Nonce) request.getSession().getAttribute("nonce");
+            final CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
+            OIDCTokenResponse oidcTokenResponse = oidcIntegrationService.token(authorizationResponse.toSuccessResponse(), state, nonce, codeVerifier);
+            protocolTracerService.traceValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet());
+            if (oidcTokenResponse.getOIDCTokens().getAccessToken() != null) {
+                protocolTracerService.traceBearerAccessToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getAccessToken().getValue());
+            }
+            request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
+            model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getSubject());
+            return "idtoken";
+        } else {
+            log.warn("Error authorization response: {}", authorizationResponse.toErrorResponse().getErrorObject().toJSONObject().toJSONString());
+            return "error";
+        }
     }
 
     @GetMapping("/logout")

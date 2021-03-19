@@ -101,12 +101,8 @@ public class OIDCIntegrationService {
         }
     }
 
-    public OIDCTokenResponse token(AuthorizationResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
-        if (!Objects.equals(state, authorizationResponse.getState())) {
-            throw new OIDCIntegrationException("Invalid state. Authorization response state does not match state from authorization request.");
-        }
+    public OIDCTokenResponse token(AuthorizationSuccessResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
         try {
-            if (authorizationResponse.indicatesSuccess()) {
                 AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), oidcIntegrationProperties.getRedirectUri(), codeVerifier);
                 final ClientAuthentication clientAuth = clientAuthentication(oidcIntegrationProperties);
                 com.nimbusds.oauth2.sdk.TokenRequest tokenRequest = new com.nimbusds.oauth2.sdk.TokenRequest(oidcProviderMetadata.getTokenEndpointURI(), clientAuth, codeGrant);
@@ -120,11 +116,6 @@ public class OIDCIntegrationService {
                     log.warn("Error response from {}: {}", oidcProviderMetadata.getTokenEndpointURI(), errorResponse.toJSONObject().toJSONString());
                     throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());
                 }
-            } else {
-                AuthorizationErrorResponse errorResponse = authorizationResponse.toErrorResponse();
-                log.warn("Error response from {}: {}", oidcProviderMetadata.getAuthorizationEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
-                throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());
-            }
         } catch (OIDCIntegrationException e) {
             throw e;
         } catch (Exception e) {
