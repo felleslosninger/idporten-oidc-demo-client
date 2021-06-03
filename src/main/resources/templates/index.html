@@ -6,7 +6,7 @@
 <head th:replace="fragments/header::head"/>
 <body>
 <div class="container">
-    <h1>Innlogging med ID-porten</h1>
+    <h1>Login with ID-porten</h1>
 
     <div class="container">
         <form action="#" th:action="@{/authorize}" th:object="${authorizationRequest}" method="post">
@@ -19,7 +19,7 @@
                 <input type="text" th:field="*{acrValues}" class="form-control"/>
             </div>
             <div class="form-group">
-                <label th:for="uiLocales" th:text="Språk"/>
+                <label th:for="uiLocales" th:text="Locale"/>
                 <input type="text" th:field="*{uiLocales}" class="form-control"/>
             </div>
             <div class="form-group">
@@ -43,7 +43,7 @@
                 <input type="text" th:field="*{codeChallengeMethod}" class="form-control"/>
             </div>
             <br/>
-            <button type="submit" class="btn btn-primary">Logg inn</button>
+            <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>
 </div>
