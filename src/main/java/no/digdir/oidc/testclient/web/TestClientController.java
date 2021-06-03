@@ -43,8 +43,8 @@ public class TestClientController {
         ProtocolTracerService.create(request.getSession());
         model.addAttribute("authorizationRequest", AuthorizationRequest.builder()
                 .scope("openid")
-                .acrValue("Level3")
-                .uiLocale("nb")
+                .acrValue("low")
+                .uiLocale("en")
                 .state(new State().getValue())
                 .nonce(new Nonce().getValue())
                 .codeVerifier(new CodeVerifier().getValue())

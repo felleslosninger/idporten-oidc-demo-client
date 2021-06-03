@@ -6,16 +6,16 @@
 <head th:replace="fragments/header::head"/>
 <body>
 <div class="container">
-    <h1>Innlogging med ID-porten</h1>
+    <h1>Login with ID-porten</h1>
 
     <div th:if="${personIdentifier}" class="alert alert-success" role="alert">
-        Du er logget inn som <span th:text="${personIdentifier}" th:remove="tag">personidentifier</span>.
+        You are logged in as <span th:text="${personIdentifier}" th:remove="tag">personidentifier</span>.
     </div>
 
     <div th:include="fragments/protocoltrace::protocoltrace" />
 
     <br/>
-    <a class="btn btn-primary" th:href="@{/}" role="button">Tilbake</a>
+    <a class="btn btn-primary" th:href="@{/}" role="button">Back</a>
     <a class="btn btn-primary" th:href="@{/logout}" role="button">Logout</a>
 </div>
 

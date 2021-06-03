@@ -6,15 +6,15 @@
 <head th:replace="fragments/header::head"/>
 <body>
 <div class="container">
-    <h1>Innlogging med ID-porten</h1>
+    <h1>Login with ID-porten</h1>
 
     <div class="alert alert-success" role="alert">
-        Du er nå logget ut av ID-porten.
+        You are logged out of ID-porten.
     </div>
 
     <div th:include="fragments/protocoltrace::protocoltrace" />
     <br/>
-    <a class="btn btn-primary" th:href="@{/}" role="button">Tilbake</a>
+    <a class="btn btn-primary" th:href="@{/}" role="button">Back</a>
 </div>
 
 <div th:replace="fragments/footer::scripts"/>
