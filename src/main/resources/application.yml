@@ -49,7 +49,9 @@ spring:
   config:
     activate:
       on-cloud-platform: 'kubernetes'
-    import: 'file:/etc/config/config.yaml'
+    import:
+      - 'file:/etc/config/config.yaml'
+      - 'optional:file:/etc/secret/secret.yaml'
 server:
   port: 8080
 
