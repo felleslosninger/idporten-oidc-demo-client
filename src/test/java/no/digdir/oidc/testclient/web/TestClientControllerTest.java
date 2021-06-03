@@ -83,8 +83,8 @@ public class TestClientControllerTest {
                     () -> assertTrue(StringUtils.hasText(authorizationRequest.getNonce())),
                     () -> assertTrue(StringUtils.hasText(authorizationRequest.getCodeVerifier())),
                     () -> assertEquals("openid", authorizationRequest.getScopes().get(0)),
-                    () -> assertEquals("Level3", authorizationRequest.getAcrValues().get(0)),
-                    () -> assertEquals("nb", authorizationRequest.getUiLocales().get(0)),
+                    () -> assertEquals("low", authorizationRequest.getAcrValues().get(0)),
+                    () -> assertEquals("en", authorizationRequest.getUiLocales().get(0)),
                     () -> assertEquals("S256", authorizationRequest.getCodeChallengeMethod())
             );
         }
