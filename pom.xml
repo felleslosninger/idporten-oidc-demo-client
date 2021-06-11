@@ -16,7 +16,7 @@
 
     <properties>
         <nimbus.oauth2-oidc-sdk.version>9.9</nimbus.oauth2-oidc-sdk.version>
-        <bouncecastle-version>1.68</bouncecastle-version>
+        <bouncecastle-version>1.69</bouncecastle-version>
 <!--        <nimbus-jose-jwt.version>8.20.1</nimbus-jose-jwt.version>-->
         <lombok-version>1.18.20</lombok-version>
     </properties>
