@@ -15,7 +15,7 @@
     <description>OpenID Connect test client for ID-porten</description>
 
     <properties>
-        <nimbus.oauth2-oidc-sdk.version>9.11</nimbus.oauth2-oidc-sdk.version>
+        <nimbus.oauth2-oidc-sdk.version>9.12</nimbus.oauth2-oidc-sdk.version>
         <bouncecastle-version>1.69</bouncecastle-version>
 <!--        <nimbus-jose-jwt.version>8.20.1</nimbus-jose-jwt.version>-->
         <lombok-version>1.18.20</lombok-version>
