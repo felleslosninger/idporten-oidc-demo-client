@@ -37,7 +37,7 @@ oidc-test-client:
     read-timeout-millis: 5000
     jwks-cache-lifetime-minutes: 60
     jwks-cache-refresh-minutes: 5
-    issuer: https://c2id-demo.westeurope.cloudapp.azure.com/c2id
+    issuer: https://issuer.idporten-utland.dev.digdir.no
     client-id: b7198ea6-14f0-488f-bb9a-206993ad28bc
     client-auth-method: client_secret_basic
     client-secret: 845c39db-4810-44d1-935c-81bd44bf6d98
