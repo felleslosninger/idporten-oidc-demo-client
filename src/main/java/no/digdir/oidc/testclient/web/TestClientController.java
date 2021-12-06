@@ -40,9 +40,9 @@ public class TestClientController {
     private final ThemeProperties themeProperties;
     private final ProtocolTracerService protocolTracerService;
 
-    @ModelAttribute("theme")
-    public ThemeProperties getThemeProperties() {
-        return themeProperties;
+    @ModelAttribute
+    public void addCommonModelAttributes(Model model) {
+        model.addAttribute("theme", themeProperties);
     }
 
     @GetMapping("/")
@@ -126,13 +126,15 @@ public class TestClientController {
     }
 
     @ExceptionHandler
-    public String handleExcepion(Exception e) {
+    public String handleException(Exception e, Model model) {
+        addCommonModelAttributes(model);
         log.error("Request handling failed", e);
         return "error";
     }
 
     @ExceptionHandler
     public String handleExcepion(OIDCIntegrationException e, Model model) {
+        addCommonModelAttributes(model);
         model.addAttribute("message", e.getMessage());
         return "error";
     }

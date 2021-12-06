@@ -13,6 +13,7 @@ import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import no.digdir.oidc.testclient.TestDataUtils;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
+import no.digdir.oidc.testclient.config.ThemeProperties;
 import no.digdir.oidc.testclient.service.OIDCIntegrationService;
 import no.digdir.oidc.testclient.service.ProtocolTrace;
 import no.digdir.oidc.testclient.service.ProtocolTracerService;
@@ -56,6 +57,9 @@ public class TestClientControllerTest {
     private OIDCIntegrationProperties oidcIntegrationProperties;
 
     @Autowired
+    private ThemeProperties themeProperties;
+
+    @Autowired
     private OIDCProviderMetadata oidcProviderMetadata;
 
     @Autowired
@@ -76,6 +80,7 @@ public class TestClientControllerTest {
                     .andExpect(status().is2xxSuccessful())
                     .andExpect(view().name("index"))
                     .andExpect(model().attributeExists("authorizationRequest"))
+                    .andExpect(model().attributeExists("theme"))
                     .andReturn();
             AuthorizationRequest authorizationRequest = (AuthorizationRequest) mvcResult.getModelAndView().getModel().get("authorizationRequest");
             assertAll(
