@@ -84,6 +84,7 @@ public class TestClientControllerTest {
                     .andReturn();
             AuthorizationRequest authorizationRequest = (AuthorizationRequest) mvcResult.getModelAndView().getModel().get("authorizationRequest");
             assertAll(
+                    () -> assertTrue(mvcResult.getResponse().getContentAsString().contains(themeProperties.getHeading())),
                     () -> assertTrue(StringUtils.hasText(authorizationRequest.getState())),
                     () -> assertTrue(StringUtils.hasText(authorizationRequest.getNonce())),
                     () -> assertTrue(StringUtils.hasText(authorizationRequest.getCodeVerifier())),
