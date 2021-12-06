@@ -12,6 +12,7 @@ import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
+import no.digdir.oidc.testclient.config.ThemeProperties;
 import no.digdir.oidc.testclient.service.OIDCIntegrationException;
 import no.digdir.oidc.testclient.service.OIDCIntegrationService;
 import no.digdir.oidc.testclient.service.ProtocolTrace;
@@ -36,7 +37,13 @@ public class TestClientController {
 
     private final OIDCIntegrationService oidcIntegrationService;
     private final OIDCIntegrationProperties idPortenIntegrationConfiguration;
+    private final ThemeProperties themeProperties;
     private final ProtocolTracerService protocolTracerService;
+
+    @ModelAttribute("theme")
+    public ThemeProperties getThemeProperties() {
+        return themeProperties;
+    }
 
     @GetMapping("/")
     public String index(HttpServletRequest request, Model model) {
@@ -83,7 +90,7 @@ public class TestClientController {
                 protocolTracerService.traceBearerAccessToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getAccessToken().getValue());
             }
             request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
-            model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getSubject());
+            model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getClaim(themeProperties.getUserIdClaim()));
             return "idtoken";
         } else {
             log.warn("Error authorization response: {}", authorizationResponse.toErrorResponse().getErrorObject().toJSONObject().toJSONString());

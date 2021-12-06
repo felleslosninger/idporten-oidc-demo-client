@@ -6,16 +6,16 @@
 <head th:replace="fragments/header::head"/>
 <body>
 <div class="container">
-    <h1>Login with ID-porten</h1>
+    <h1><span th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
     <div  class="alert alert-warning" role="alert">
-        An error occurred in the integration with ID-porten<br/>
+        An error occurred during login.<br/>
         <p th:if="${message}" th:text="${message}" th:remove="tag"/>
     </div>
 
     <div th:include="fragments/protocoltrace::protocoltrace" />
 
     <br/>
-    <a class="btn btn-primary" th:href="@{/}" role="button">Tilbake</a>
+    <a class="btn btn-primary" th:href="@{/}" role="button">Back</a>
 </div>
 
 <div th:replace="fragments/footer::scripts"/>
