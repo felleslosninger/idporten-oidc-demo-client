@@ -19,6 +19,13 @@
         <nimbus.oauth2-oidc-sdk.version>9.20</nimbus.oauth2-oidc-sdk.version>
         <bouncecastle-version>1.70</bouncecastle-version>
         <lombok-version>1.18.22</lombok-version>
+        <surefire.plugin.version>2.22.2</surefire.plugin.version>
+        <allure.cmd.download.url>
+            https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline
+        </allure.cmd.download.url>
+        <allure.version>2.17.1</allure.version>
+        <allure.report.version>2.4.1</allure.report.version>
+        <allure.maven.version>2.10.0</allure.maven.version>
         <!-- not needed, but just in case-->
         <log4j2.version>2.17.0</log4j2.version>
     </properties>
@@ -87,6 +94,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit5</artifactId>
+            <version>${allure.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -94,8 +107,65 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
-            
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>${git-commit-id-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failOnNoGitDirectory>true</failOnNoGitDirectory>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <includeOnlyProperties>
+                        <includeOnlyProperty>^git.commit.id.abbrev$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.commit.id.describe$</includeOnlyProperty>
+                        <includeOnlyProperty>^git.branch$</includeOnlyProperty>
+                    </includeOnlyProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.plugin.version}</version>
+                <configuration>
+                    <testFailureIgnore>false</testFailureIgnore>
+                    <systemProperties>
+                        <property>
+                            <name>junit.jupiter.extensions.autodetection.enabled</name>
+                            <value>true</value>
+                        </property>
+                        <allure.results.directory>${project.build.directory}/allure-results</allure.results.directory>
+                    </systemProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.qameta.allure</groupId>
+                <artifactId>allure-maven</artifactId>
+                <version>${allure.maven.version}</version>
+                <configuration>
+                    <reportVersion>${allure.report.version}</reportVersion>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <repositories>
