@@ -1,0 +1,15 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Testing maven build by calling reusable workflow
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  call-workflow-maven-build:
+    uses: felleslosninger/eid-github-workflows/.github/workflows/eid-maven-build.yml@main
+    secrets:
+      maven-user: ${{ secrets.MAVEN_USER }}
+      maven-password: ${{ secrets.MAVEN_PASSWORD }}
