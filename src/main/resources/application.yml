@@ -5,7 +5,7 @@ server:
     context-path: /idporten-oidc-test-client
     session:
       tracking-modes:
-        - cookie  #to block session via url
+        - cookie  # to block session via url
   tomcat:
     accesslog:
       directory: /var/log/idporten-oidc-test-client
