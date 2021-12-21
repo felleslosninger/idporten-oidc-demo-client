@@ -15,7 +15,6 @@ server:
     include-message: always
 info:
   version: '@project.version@'
-
 management:
   health:
     diskspace:
@@ -30,7 +29,6 @@ management:
       basePath: /
       path-mapping:
         info: /version
-
 oidc-test-client:
   oidc-integration:
     connect-timeout-millis: 5000
@@ -43,7 +41,6 @@ oidc-test-client:
     client-secret: 845c39db-4810-44d1-935c-81bd44bf6d98
     redirect-uri: http://127.0.0.1:7074/idporten-oidc-test-client/callback
     post-logout-redirect-uri: http://127.0.0.1:7074/idporten-oidc-test-client/logout/callback
-
 ---
 spring:
   config:
@@ -54,5 +51,3 @@ spring:
       - 'optional:file:/etc/secret/secret.yaml'
 server:
   port: 8080
-
-
