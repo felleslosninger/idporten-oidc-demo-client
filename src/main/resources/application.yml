@@ -14,7 +14,7 @@ server:
   error:
     include-message: always
 info:
-  version: @project.version@
+  version: '@project.version@'
 
 management:
   health:
