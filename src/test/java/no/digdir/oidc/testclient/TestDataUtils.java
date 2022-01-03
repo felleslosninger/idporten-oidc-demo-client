@@ -14,7 +14,7 @@ public class TestDataUtils {
     public static JWTClaimsSet idTokenClaimsSet(String personIDentifier) {
         try {
             return JWTClaimsSet.parse(String.format("{\n" +
-                    "  \"sub\" : \"11223312345\",\n" +
+                    "  \"sub\" : \"sub-11223312345\",\n" +
                     "  \"aud\" : \"idporten-test-client\",\n" +
                     "  \"acr\" : \"Level4\",\n" +
                     "  \"amr\" : [ \"testid2\" ],\n" +
