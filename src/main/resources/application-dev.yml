@@ -8,8 +8,8 @@ oidc-test-client:
     jwks-cache-lifetime-minutes: 60
     jwks-cache-refresh-minutes: 5
     issuer: https://issuer.idporten-utland.dev.digdir.no
-    client-id: b7198ea6-14f0-488f-bb9a-206993ad28bc
+    client-id: connect2norway_test_client_dev
     client-auth-method: client_secret_basic
-    client-secret: 845c39db-4810-44d1-935c-81bd44bf6d98
-    redirect-uri: http://127.0.0.1:7074/idporten-oidc-test-client/callback
-    post-logout-redirect-uri: http://127.0.0.1:7074/idporten-oidc-test-client/logout/callback
+    client-secret: 5acce044-ca8d-4729-9729-637f940ef779
+    redirect-uri: http://localhost:7074/idporten-oidc-test-client/callback
+    post-logout-redirect-uri: http:/localhost:7074/idporten-oidc-test-client/logout/callback

@@ -22,35 +22,39 @@
                      aria-labelledby="authorizationRequestHeading" data-bs-parent="#authorizationRequestAccordion">
                     <div class="accordion-body">
                         <div class="form-group">
-                            <label th:for="scopes" th:text="Scope"/>
+                            <label th:for="scopes">Scope (scope)</label>
                             <input type="text" th:field="*{scopes}" class="form-control"/>
                         </div>
                         <div class="form-group">
-                            <label th:for="acrValues" th:text="Acr"/>
+                            <label th:for="authorizationDetails">Authorization details (authorization_details)</label>
+                            <input type="text" th:field="*{authorizationDetails}" class="form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label th:for="acrValues">Acr (acr_values)</label>
                             <input type="text" th:field="*{acrValues}" class="form-control"/>
                         </div>
                         <div class="form-group">
-                            <label th:for="uiLocales" th:text="Locale"/>
+                            <label th:for="uiLocales">Locale (ui_locales)</label>
                             <input type="text" th:field="*{uiLocales}" class="form-control"/>
                         </div>
                         <div class="form-group">
-                            <label th:for="prompt" th:text="Prompt"/>
+                            <label th:for="prompt">Prompt (prompt)</label>
                             <input type="text" th:field="*{prompt}" class="form-control"/>
                         </div>
                         <div class="form-group">
-                            <label th:for="state" th:text="State"/>
+                            <label th:for="state">State (state)</label>
                             <input type="text" th:field="*{state}" class="form-control"/>
                         </div>
                         <div class="form-group">
-                            <label th:for="nonce" th:text="Nonce"/>
+                            <label th:for="nonce">Nonce (nonce)</label>
                             <input type="text" th:field="*{nonce}" class="form-control"/>
                         </div>
                         <div class="form-group">
-                            <label th:for="codeVerifier" th:text="CodeVerifier"/>
+                            <label th:for="codeVerifier">PKCE Code verifier used to compute Code challenge (code_challenge)</label>
                             <input type="text" th:field="*{codeVerifier}" class="form-control"/>
                         </div>
                         <div class="form-group">
-                            <label th:for="codeChallengeMethod" th:text="CodeChallengeMethod"/>
+                            <label th:for="codeChallengeMethod">PKCE Code challenge method (code_challenge_method)</
                             <input type="text" th:field="*{codeChallengeMethod}" class="form-control"/>
                         </div>
                     </div>

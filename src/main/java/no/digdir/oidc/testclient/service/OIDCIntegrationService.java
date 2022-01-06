@@ -62,6 +62,9 @@ public class OIDCIntegrationService {
                     oidcIntegrationProperties.getRedirectUri());
             requestBuilder
                     .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
+            if (StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
+                requestBuilder.customParameter("authorization_details", authorizationRequest.getAuthorizationDetails());
+            }
             if (!CollectionUtils.isEmpty(authorizationRequest.getPrompt())) {
                 requestBuilder.prompt(new Prompt(authorizationRequest.getPrompt().stream().toArray(String[]::new)));
             }
