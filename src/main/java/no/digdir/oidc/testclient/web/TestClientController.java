@@ -11,6 +11,7 @@ import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.digdir.oidc.testclient.config.FeatureSwichProperties;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
 import no.digdir.oidc.testclient.config.ThemeProperties;
 import no.digdir.oidc.testclient.service.OIDCIntegrationException;
@@ -38,11 +39,13 @@ public class TestClientController {
     private final OIDCIntegrationService oidcIntegrationService;
     private final OIDCIntegrationProperties idPortenIntegrationConfiguration;
     private final ThemeProperties themeProperties;
+    private final FeatureSwichProperties featureSwichProperties;
     private final ProtocolTracerService protocolTracerService;
 
     @ModelAttribute
     public void addCommonModelAttributes(Model model) {
         model.addAttribute("theme", themeProperties);
+        model.addAttribute("features", featureSwichProperties);
     }
 
     @GetMapping("/")

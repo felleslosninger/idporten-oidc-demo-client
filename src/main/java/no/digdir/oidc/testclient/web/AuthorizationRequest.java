@@ -13,6 +13,7 @@ public class AuthorizationRequest {
 
     @Singular("scope")
     private List<String> scopes = new ArrayList<>();
+    private String authorizationDetails;
     @Singular("acrValue")
     private List<String> acrValues = new ArrayList<>();
     @Singular("uiLocale")

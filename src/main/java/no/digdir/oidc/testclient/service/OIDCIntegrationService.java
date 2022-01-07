@@ -25,6 +25,7 @@ import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.digdir.oidc.testclient.config.FeatureSwichProperties;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
 import no.digdir.oidc.testclient.crypto.KeyProvider;
 import no.digdir.oidc.testclient.web.AuthorizationRequest;
@@ -52,6 +53,7 @@ public class OIDCIntegrationService {
     private final IDTokenValidator idTokenValidator;
     private final OIDCProviderMetadata oidcProviderMetadata;
     private final ProtocolTracerService oidcProtocolTracerService;
+    private final FeatureSwichProperties featureSwichProperties;
 
     public AuthenticationRequest authorzationRequest(AuthorizationRequest authorizationRequest) {
         try {
@@ -62,6 +64,9 @@ public class OIDCIntegrationService {
                     oidcIntegrationProperties.getRedirectUri());
             requestBuilder
                     .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
+            if (featureSwichProperties.isAuthorizationDetailsEnabled() && StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
+                requestBuilder.customParameter("authorization_details", authorizationRequest.getAuthorizationDetails());
+            }
             if (!CollectionUtils.isEmpty(authorizationRequest.getPrompt())) {
                 requestBuilder.prompt(new Prompt(authorizationRequest.getPrompt().stream().toArray(String[]::new)));
             }
