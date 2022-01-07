@@ -25,7 +25,7 @@
                             <label th:for="scopes">Scope (scope)</label>
                             <input type="text" th:field="*{scopes}" class="form-control"/>
                         </div>
-                        <div class="form-group">
+                        <div th:if="${features.isAuthorizationDetailsEnabled()}" class="form-group">
                             <label th:for="authorizationDetails">Authorization details (authorization_details)</label>
                             <input type="text" th:field="*{authorizationDetails}" class="form-control"/>
                         </div>
@@ -54,7 +54,7 @@
                             <input type="text" th:field="*{codeVerifier}" class="form-control"/>
                         </div>
                         <div class="form-group">
-                            <label th:for="codeChallengeMethod">PKCE Code challenge method (code_challenge_method)</
+                            <label th:for="codeChallengeMethod">PKCE Code challenge method (code_challenge_method)</label>
                             <input type="text" th:field="*{codeChallengeMethod}" class="form-control"/>
                         </div>
                     </div>

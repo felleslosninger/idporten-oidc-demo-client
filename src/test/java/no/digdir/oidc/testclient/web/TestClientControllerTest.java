@@ -12,6 +12,7 @@ import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import no.digdir.oidc.testclient.TestDataUtils;
+import no.digdir.oidc.testclient.config.FeatureSwichProperties;
 import no.digdir.oidc.testclient.config.OIDCIntegrationProperties;
 import no.digdir.oidc.testclient.config.ThemeProperties;
 import no.digdir.oidc.testclient.service.OIDCIntegrationService;
@@ -60,6 +61,9 @@ public class TestClientControllerTest {
     private ThemeProperties themeProperties;
 
     @Autowired
+    private FeatureSwichProperties featureSwichProperties;
+
+    @Autowired
     private OIDCProviderMetadata oidcProviderMetadata;
 
     @Autowired
@@ -81,6 +85,7 @@ public class TestClientControllerTest {
                     .andExpect(view().name("index"))
                     .andExpect(model().attributeExists("authorizationRequest"))
                     .andExpect(model().attributeExists("theme"))
+                    .andExpect(model().attributeExists("features"))
                     .andReturn();
             AuthorizationRequest authorizationRequest = (AuthorizationRequest) mvcResult.getModelAndView().getModel().get("authorizationRequest");
             assertAll(
@@ -107,6 +112,7 @@ public class TestClientControllerTest {
                     post("/authorize")
                             .session(mockSession)
                             .param("scopes", "openid")
+                            .param("authorizationDetails", "[{\"type\":\"ansattporten:altinnressurs\",\"ressurs\":\"urn:altinn:role:rolletypekode\"}]")
                             .param("acrValues", "Level3")
                             .param("uiLocales", "nb")
                             .param("prompt", "login")
@@ -127,6 +133,7 @@ public class TestClientControllerTest {
                     () -> assertEquals(oidcIntegrationProperties.getClientId(), authorizationRequest.getQueryParams().getFirst("client_id")),
                     () -> assertEquals(UriUtils.encode(oidcIntegrationProperties.getRedirectUri().toString(), Charset.defaultCharset()), authorizationRequest.getQueryParams().getFirst("redirect_uri")),
                     () -> assertEquals("openid", authorizationRequest.getQueryParams().getFirst("scope")),
+                    () -> assertEquals("%5B%7B%22type%22%3A%22ansattporten%3Aaltinnressurs%22%2C%22ressurs%22%3A%22urn%3Aaltinn%3Arole%3Arolletypekode%22%7D%5D", authorizationRequest.getQueryParams().getFirst("authorization_details")),
                     () -> assertEquals("Level3", authorizationRequest.getQueryParams().getFirst("acr_values")),
                     () -> assertEquals("nb", authorizationRequest.getQueryParams().getFirst("ui_locales")),
                     () -> assertEquals("login", authorizationRequest.getQueryParams().getFirst("prompt")),
