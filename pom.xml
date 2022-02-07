@@ -25,7 +25,7 @@
         </allure.cmd.download.url>
         <allure.version>2.17.2</allure.version>
         <allure.report.version>2.4.1</allure.report.version>
-        <allure.maven.version>2.10.0</allure.maven.version>
+        <allure.maven.version>2.11.2</allure.maven.version>
         <!-- not needed, but just in case-->
         <log4j2.version>2.17.0</log4j2.version>
     </properties>
