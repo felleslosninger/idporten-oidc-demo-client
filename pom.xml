@@ -6,13 +6,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.6.3</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
-    <groupId>no.digdir.oidc</groupId>
-    <artifactId>idporten-oidc-test-client</artifactId>
+    <groupId>no.idporten.tools</groupId>
+    <artifactId>idporten-oidc-demo-client</artifactId>
     <version>DEV-SNAPSHOT</version>
-    <name>idporten-oidc-test-client</name>
-    <description>OpenID Connect test client for ID-porten</description>
+    <name>idporten-oidc-demo-client</name>
+    <description>OpenID Connect demo client for ID-porten</description>
 
     <properties>
         <java.version>11</java.version>

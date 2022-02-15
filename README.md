@@ -1,4 +1,4 @@
-# idporten-oidc-test-client
+# idporten-oidc-demo-client
 
 ## Innlogging med ID-porten
 ID-porten testklient demonstrerer innlogging med ID-portens OpenID Connect-grensesnitt.  Brukeren kan justere enkelte parametere på autorisasjonsforespørselen, autentisere seg i ID-porten og se resultatet.  Interaksjonene med ID-porten samles opp på resultatsider og feilsider.  

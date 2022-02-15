@@ -11,7 +11,7 @@ jobs:
   call-workflow-image-build-publish:
     uses: felleslosninger/eid-github-workflows/.github/workflows/eid-spring-boot-build-publish-image.yml@main
     with:
-      image-name: oidc-test-client
+      image-name: idporten-oidc-demo-client
     secrets:
       eid-build-token: ${{ secrets.EID_BUILD_PAT }}
       maven-user: ${{ secrets.MAVEN_USER }}
