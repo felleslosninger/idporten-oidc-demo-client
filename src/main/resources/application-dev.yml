@@ -1,4 +1,4 @@
-oidc-test-client:
+oidc-demo-client:
   features:
     authorization-details-enabled: true
   theme:
@@ -13,5 +13,5 @@ oidc-test-client:
     client-id: connect2norway_test_client_dev
     client-auth-method: client_secret_basic
     client-secret: 5acce044-ca8d-4729-9729-637f940ef779
-    redirect-uri: http://localhost:7074/idporten-oidc-test-client/callback
-    post-logout-redirect-uri: http:/localhost:7074/idporten-oidc-test-client/logout/callback
+    redirect-uri: http://localhost:7074/idporten-oidc-demo-client/callback
+    post-logout-redirect-uri: http:/localhost:7074/idporten-oidc-demo-client/logout/callback

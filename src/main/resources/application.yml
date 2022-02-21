@@ -2,13 +2,13 @@
 server:
   port: 7074
   servlet:
-    context-path: /idporten-oidc-test-client
+    context-path: /idporten-oidc-demo-client
     session:
       tracking-modes:
         - cookie  # to block session via url
   tomcat:
     accesslog:
-      directory: /var/log/idporten-oidc-test-client
+      directory: /var/log/idporten-oidc-demo-client
       enabled: true
       rotate: false
       pattern: "%h\u0009%l\u0009%u\u0009%t\u0009\u0022%r\u0022\u0009%s\u0009%b\u0009%D\u0009%{no.difi.correlationId}i"
@@ -22,7 +22,7 @@ management:
       enabled: false
   metrics:
     tags:
-      application: "ID-porten OIDC test client"
+      application: "ID-porten OIDC demo client"
   endpoints:
     web:
       exposure:
@@ -30,7 +30,7 @@ management:
       basePath: /
       path-mapping:
         info: /version
-oidc-test-client:
+oidc-demo-client:
   oidc-integration:
     connect-timeout-millis: 5000
     read-timeout-millis: 5000
@@ -40,8 +40,8 @@ oidc-test-client:
     client-id: b7198ea6-14f0-488f-bb9a-206993ad28bc
     client-auth-method: client_secret_basic
     client-secret: 845c39db-4810-44d1-935c-81bd44bf6d98
-    redirect-uri: http://127.0.0.1:7074/idporten-oidc-test-client/callback
-    post-logout-redirect-uri: http://127.0.0.1:7074/idporten-oidc-test-client/logout/callback
+    redirect-uri: http://127.0.0.1:7074/idporten-oidc-demo-client/callback
+    post-logout-redirect-uri: http://127.0.0.1:7074/idporten-oidc-demo-client/logout/callback
 ---
 spring:
   config:

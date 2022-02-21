@@ -1,4 +1,4 @@
-oidc-test-client:
+oidc-demo-client:
   features:
     authorization-details-enabled: true
   theme:
