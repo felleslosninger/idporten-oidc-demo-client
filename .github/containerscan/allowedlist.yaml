@@ -1,7 +1,4 @@
 general:
   vulnerabilities:
-    - CVE-2020-36518
-#    - CVE-2021-43466
+    - CVE-2020-36518 # Jackson databind
   bestPracticeViolations:
-#    - CIS-DI-0005
-#    - CIS-DI-0008
