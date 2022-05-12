@@ -4,6 +4,11 @@ oidc-demo-client:
   theme:
     user-id-claim: pid
     heading: Login with JUnit
+    form-defaults:
+      scope: openid profile
+      acr-value: substantial
+      ui-locale: nb
+
   oidc-integration:
     connect-timeout-millis: 5000
     read-timeout-millis: 5000

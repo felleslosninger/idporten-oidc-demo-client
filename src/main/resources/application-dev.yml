@@ -4,6 +4,10 @@ oidc-demo-client:
   theme:
     user-id-claim: pid
     heading: Login with Ansattporten
+    form-defaults:
+      scope: openid
+      acr-value: low
+      ui-locale: en
   oidc-integration:
     connect-timeout-millis: 5000
     read-timeout-millis: 5000
