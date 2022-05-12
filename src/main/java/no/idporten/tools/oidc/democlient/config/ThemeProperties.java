@@ -15,5 +15,17 @@ public class ThemeProperties {
 
     private String heading = "Login with ID-porten";
     private String userIdClaim = "sub";
+    private FormDefaults formDefaults = new FormDefaults();
+
+    @Data
+    public static class FormDefaults {
+
+        private String scope = "openid";
+        private String uiLocale = "en";
+        private String acrValue = "low";
+
+    }
+
+
 
 }

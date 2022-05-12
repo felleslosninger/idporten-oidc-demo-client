@@ -52,9 +52,9 @@ public class TestClientController {
     public String index(HttpServletRequest request, Model model) {
         ProtocolTracerService.create(request.getSession());
         model.addAttribute("authorizationRequest", AuthorizationRequest.builder()
-                .scope("openid")
-                .acrValue("low")
-                .uiLocale("en")
+                .scope(themeProperties.getFormDefaults().getScope())
+                .acrValue(themeProperties.getFormDefaults().getAcrValue())
+                .uiLocale(themeProperties.getFormDefaults().getUiLocale())
                 .state(new State().getValue())
                 .nonce(new Nonce().getValue())
                 .codeVerifier(new CodeVerifier().getValue())
