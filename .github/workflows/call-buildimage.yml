@@ -9,7 +9,7 @@ on:
 
 jobs:
   call-workflow-image-build-publish:
-    uses: felleslosninger/eid-github-workflows/.github/workflows/eid-spring-boot-build-publish-image.yml@main
+    uses: felleslosninger/eid-github-workflows/.github/workflows/spring-boot-build-publish-image-config.yml@main
     with:
       image-name: idporten-oidc-demo-client
     secrets:

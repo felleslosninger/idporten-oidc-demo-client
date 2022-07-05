@@ -9,12 +9,12 @@ on:
 
 jobs:
   call-workflow-maven-build:
-    uses: felleslosninger/eid-github-workflows/.github/workflows/eid-maven-build.yml@main
+    uses: felleslosninger/eid-github-workflows/.github/workflows/maven-build.yml@main
     secrets:
       maven-user: ${{ secrets.MAVEN_USER }}
       maven-password: ${{ secrets.MAVEN_PASSWORD }}
   call-container-scan:
-    uses: felleslosninger/eid-github-workflows/.github/workflows/eid-spring-boot-container-scan.yml@main
+    uses: felleslosninger/eid-github-workflows/.github/workflows/spring-boot-container-scan.yml@main
     with:
       image-name: idporten-oidc-demo-client
     secrets:
