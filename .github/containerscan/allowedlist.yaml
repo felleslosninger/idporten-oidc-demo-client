@@ -1,4 +1,4 @@
 general:
   vulnerabilities:
-    - CVE-2020-36518 # Jackson databind
+    - CVE-2022-25857 # snake-yaml
   bestPracticeViolations:
