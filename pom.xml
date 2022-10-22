@@ -26,8 +26,9 @@
         <allure.version>2.19.0</allure.version>
         <allure.report.version>2.4.1</allure.report.version>
         <allure.maven.version>2.11.2</allure.maven.version>
-        <!-- not needed, but just in case-->
-        <log4j2.version>2.17.0</log4j2.version>
+        <logstash.logback.version>7.2</logstash.logback.version>
+        <idporten-access-log-spring-boot-starter.version>0.1.7</idporten-access-log-spring-boot-starter.version>
+
     </properties>
 
     <dependencies>
@@ -93,6 +94,20 @@
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>${logstash.logback.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-access</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>no.idporten.logging</groupId>
+            <artifactId>idporten-access-log-spring-boot-starter</artifactId>
+            <version>${idporten-access-log-spring-boot-starter.version}</version>
         </dependency>
         <dependency>
             <groupId>io.qameta.allure</groupId>
@@ -173,17 +188,11 @@
             <id>central</id>
             <url>https://repo1.maven.org/maven2</url>
             <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
         </repository>
         <repository>
-            <id>github-oidc-sdk</id>
+            <id>github</id>
             <name>GitHub felleslosninger Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/felleslosninger/idporten-oidc-sdk</url>
-        </repository>
-        <repository>
-            <id>difi-artifactory</id>
-            <name>libs-release</name>
-            <url>http://eid-artifactory.dmz.local:8080/artifactory/libs-release</url>
+            <url>https://maven.pkg.github.com/felleslosninger/.github</url>
         </repository>
     </repositories>
 

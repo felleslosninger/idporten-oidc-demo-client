@@ -1,6 +1,8 @@
 # maven
 target
 
+# Allure tests
+/allure-results
 ### IntelliJ IDEA ###
 .idea
 *.iml
