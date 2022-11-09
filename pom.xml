@@ -23,7 +23,7 @@
         <allure.cmd.download.url>
             https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline
         </allure.cmd.download.url>
-        <allure.version>2.20.0</allure.version>
+        <allure.version>2.20.1</allure.version>
         <allure.report.version>2.4.1</allure.report.version>
         <allure.maven.version>2.11.2</allure.maven.version>
         <logstash.logback.version>7.2</logstash.logback.version>
