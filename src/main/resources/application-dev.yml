@@ -1,3 +1,4 @@
+---
 oidc-demo-client:
   features:
     authorization-details-enabled: true
