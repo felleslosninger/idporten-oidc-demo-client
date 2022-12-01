@@ -1,9 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
-    <root level="INFO">
-        <appender-ref ref="CONSOLE"/>
-    </root>
+
+    <springProperty name="APP-NAME" source="accesslog-application-name"/>
+    <springProfile name="dev">
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <appender name="APPLICATION" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+            <customFields>{"application":"${APP-NAME}","logtype":"application"}</customFields>
+        </encoder>
+    </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+            <customFields>{"application":"${APP-NAME}","logtype":"application"}</customFields>
+        </encoder>
+    </appender>
+    <springProfile name="!dev">
+        <logger name="no.idporten" level="INFO" additivity="false">
+            <appender-ref ref="APPLICATION"/>
+        </logger>
+
+        <root level="WARN">
+            <appender-ref ref="STDOUT"/>
+        </root>
+    </springProfile>
+
 </configuration>
