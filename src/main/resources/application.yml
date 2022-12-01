@@ -17,6 +17,8 @@ server:
 info:
   version: '@project.version@'
 management:
+  server:
+    port: 8090
   health:
     diskspace:
       enabled: false

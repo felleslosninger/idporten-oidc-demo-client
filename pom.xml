@@ -26,6 +26,7 @@
         <allure.version>2.19.0</allure.version>
         <allure.report.version>2.4.1</allure.report.version>
         <allure.maven.version>2.11.2</allure.maven.version>
+        <idporten.actuator.version>0.3.1</idporten.actuator.version>
         <!-- not needed, but just in case-->
         <log4j2.version>2.17.0</log4j2.version>
     </properties>
@@ -50,10 +51,6 @@
                     <artifactId>log4j-to-slf4j</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
@@ -99,6 +96,12 @@
             <artifactId>allure-junit5</artifactId>
             <version>${allure.version}</version>
             <scope>test</scope>
+        </dependency>
+        <!-- our own -->
+        <dependency>
+            <groupId>no.idporten.actuator</groupId>
+            <artifactId>idporten-actuator-starter</artifactId>
+            <version>${idporten.actuator.version}</version>
         </dependency>
     </dependencies>
 
