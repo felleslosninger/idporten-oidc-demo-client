@@ -2,9 +2,11 @@
 target
 
 # Allure tests
-/allure-results
+allure-results/
+
 ### IntelliJ IDEA ###
 .idea
 *.iml
 
-allure-results/
+### VSCode
+.vscode/
