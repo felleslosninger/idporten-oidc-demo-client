@@ -10,6 +10,8 @@ on:
 jobs:
   call-workflow-maven-build:
     uses: felleslosninger/eid-github-workflows/.github/workflows/maven-build.yml@main
+    with:
+      java-version: 17
     secrets:
       maven-user: ${{ secrets.MAVEN_USER }}
       maven-password: ${{ secrets.MAVEN_PASSWORD }}
@@ -17,6 +19,7 @@ jobs:
     uses: felleslosninger/eid-github-workflows/.github/workflows/spring-boot-container-scan.yml@main
     with:
       image-name: idporten-oidc-demo-client
+      java-version: 17
     secrets:
       eid-build-token: ${{ secrets.EID_BUILD_PAT }}
       maven-user: ${{ secrets.MAVEN_USER }}
