@@ -10,3 +10,6 @@ allure-results/
 
 ### VSCode
 .vscode/
+
+### Jenv
+.java-version
