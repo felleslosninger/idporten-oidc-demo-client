@@ -27,7 +27,7 @@
         <allure.report.version>2.4.1</allure.report.version>
         <allure.maven.version>2.12.0</allure.maven.version>
         <logstash.logback.version>7.2</logstash.logback.version>
-        <idporten.actuator.version>0.4.0</idporten.actuator.version>
+        <idporten.actuator.version>0.4.1</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>0.1.7</idporten-access-log-spring-boot-starter.version>
     </properties>
 
