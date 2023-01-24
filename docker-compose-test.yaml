@@ -12,11 +12,16 @@ services:
         GIT_PACKAGE_TOKEN: ${GIT_PACKAGE_TOKEN}
         GIT_PACKAGE_USERNAME: ${GIT_PACKAGE_USERNAME}
     environment:
-      spring_profiles_active: docker
+      spring_profiles_active: docker-test
     ports:
       - "7074:7074"
     networks:
       - idporten
+    extra_hosts:
+      - "test.ansattporten.no:139.105.36.133"
+      - "login.ansattporten.no:139.105.36.133"
+      - "testid.ansattporten.no:139.105.36.133"
+      - "altinn-orgvelger.ansattporten.no:139.105.36.133"
     entrypoint: "/bin/bash -c"
     command:
       - |

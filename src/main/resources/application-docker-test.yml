@@ -1,0 +1,25 @@
+oidc-demo-client:
+  features:
+    authorization-details-enabled: true
+  theme:
+    user-id-claim: pid
+    heading: Login with Ansattporten
+    form-defaults:
+      scope: openid
+      acr-value: low
+      ui-locale: en
+  oidc-integration:
+    connect-timeout-millis: 5000
+    read-timeout-millis: 5000
+    jwks-cache-lifetime-minutes: 60
+    jwks-cache-refresh-minutes: 5
+    issuer: https://test.ansattporten.no
+    client-id: f312e273-9e32-43e8-8f64-7db112b13ab6
+    client-auth-method: client_secret_basic
+    client-secret: 198fddc1-f773-46a9-9ece-920424fd6aaa
+    redirect-uri: http://democlient:7074/idporten-oidc-demo-client/callback
+    post-logout-redirect-uri: http:/democlient:7074/idporten-oidc-demo-client/logout/callback
+
+management:
+  server:
+    port:
