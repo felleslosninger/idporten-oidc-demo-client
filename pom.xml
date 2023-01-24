@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <nimbus.oauth2-oidc-sdk.version>10.5</nimbus.oauth2-oidc-sdk.version>
+        <nimbus.oauth2-oidc-sdk.version>10.5.1</nimbus.oauth2-oidc-sdk.version>
         <bouncecastle-version>1.70</bouncecastle-version>
         <lombok-version>1.18.24</lombok-version>
         <surefire.plugin.version>2.22.2</surefire.plugin.version>
