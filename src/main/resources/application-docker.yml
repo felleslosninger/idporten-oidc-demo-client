@@ -18,7 +18,7 @@ oidc-demo-client:
     client-auth-method: client_secret_basic
     client-secret: myvery1234long123secret123so123you123know
     redirect-uri: http://democlient:7074/idporten-oidc-demo-client/callback
-    post-logout-redirect-uri: http:/democlient:7074/idporten-oidc-demo-client/logout/callback
+    post-logout-redirect-uri: http://democlient:7074/idporten-oidc-demo-client/logout/callback
 
 management:
   server:
