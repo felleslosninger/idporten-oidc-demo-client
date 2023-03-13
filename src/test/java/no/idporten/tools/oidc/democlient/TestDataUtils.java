@@ -19,7 +19,7 @@ public class TestDataUtils {
                     "  \"acr\" : \"Level4\",\n" +
                     "  \"amr\" : [ \"testid2\" ],\n" +
                     "  \"auth_time\" : 1612351397,\n" +
-                    "  \"iss\" : \"https://c2id-demo.westeurope.cloudapp.azure.com/c2id\",\n" +
+                    "  \"iss\" : \"https://c2id-demo.westeurope.cloudapp.azure.com\",\n" +
                     "  \"pid\" : \"11223312345\",\n" +
                     "  \"exp\" : 1612351517,\n" +
                     "  \"locale\" : \"nb\",\n" +
