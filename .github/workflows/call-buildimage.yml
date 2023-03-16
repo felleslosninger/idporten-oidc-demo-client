@@ -20,5 +20,3 @@ jobs:
       registry-url: ${{ secrets.REGISTRY_URL }}
       registry-username: ${{ secrets.REGISTRY_USERNAME }}
       registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-      allure-user: ${{ secrets.ALLURE_USER }}
-      allure-password: ${{ secrets.ALLURE_PASSWORD }}
