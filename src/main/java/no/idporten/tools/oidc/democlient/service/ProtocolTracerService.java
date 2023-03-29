@@ -87,6 +87,17 @@ public class ProtocolTracerService {
         return protocolTrace;
     }
 
+    public ProtocolTrace traceFrontChannelLogoutRequest(HttpSession session, URI frontChannelLogoutRequest) {
+        ProtocolTrace protocolTrace = getOrCreate(session);
+        protocolTrace.setLogoutResponse(
+                ProtocolInteraction.builder()
+                        .id("frontChannelLogoutRequest")
+                        .text("Front channel logout request")
+                        .interaction(formatUri(frontChannelLogoutRequest))
+                        .build());
+        return protocolTrace;
+    }
+
     public ProtocolTrace traceTokenRequest(HttpSession session, HTTPRequest tokenRequest) {
         ProtocolTrace protocolTrace = getOrCreate(session);
         protocolTrace.setTokenRequest(
