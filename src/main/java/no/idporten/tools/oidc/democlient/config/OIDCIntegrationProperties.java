@@ -30,6 +30,8 @@ public class OIDCIntegrationProperties implements InitializingBean {
     @NotNull
     private URI postLogoutRedirectUri;
 
+    private URI frontChannelLogoutUri;
+
     @NotEmpty
     @Pattern(regexp = "^client_secret_basic|client_secret_post|private_key_jwt$")
     private String clientAuthMethod;
@@ -65,6 +67,7 @@ public class OIDCIntegrationProperties implements InitializingBean {
             notEmptyForClientAuth("client-keystore-key-alias", clientKeystoreKeyAlias, clientAuthMethod);
             notEmptyForClientAuth("client-keystore-key-password", clientKeystoreKeyPassword, clientAuthMethod);
         }
+        frontChannelLogoutUri = URI.create(postLogoutRedirectUri.toString().replaceAll("callback","frontchannel"));
     }
 
     protected void notEmptyForClientAuth(String property, String value, String clientAuthMethod) {

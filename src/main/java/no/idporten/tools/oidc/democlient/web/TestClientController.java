@@ -26,6 +26,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.net.URI;
 import java.util.Objects;
 
@@ -126,6 +127,27 @@ public class TestClientController {
             request.getSession(true);
             ProtocolTracerService.set(request.getSession(), protocolTrace);
         }
+    }
+
+    @GetMapping("/logout/frontchannel")
+    public String frontChannelLogout(HttpServletRequest request) {
+        URI frontChannelLogoutRequest = UriComponentsBuilder.fromUri(idPortenIntegrationConfiguration.getFrontChannelLogoutUri()).query(request.getQueryString()).build().toUri();
+        log.info("Front channel logout request: {}", frontChannelLogoutRequest);
+        request.getSession().invalidate();
+        ProtocolTrace protocolTrace = protocolTracerService.traceFrontChannelLogoutRequest(request.getSession(true), frontChannelLogoutRequest);
+        ProtocolTracerService.set(request.getSession(), protocolTrace);
+        return "logout";
+    }
+
+    @GetMapping("/trace")
+    public String currentProtocolTrace() {
+        return "trace";
+    }
+
+    @GetMapping("/trace/clear")
+    public String clearProtocolTrace(HttpSession session) {
+        ProtocolTracerService.create(session);
+        return "trace";
     }
 
     @ExceptionHandler
