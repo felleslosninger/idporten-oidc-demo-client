@@ -20,7 +20,7 @@
         <bouncecastle-version>1.70</bouncecastle-version>
         <lombok-version>1.18.26</lombok-version>
         <surefire.plugin.version>3.0.0</surefire.plugin.version>
-        <logstash.logback.version>7.2</logstash.logback.version>
+        <logstash.logback.version>7.3</logstash.logback.version>
         <idporten.actuator.version>0.4.2</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>0.1.7</idporten-access-log-spring-boot-starter.version>
     </properties>
