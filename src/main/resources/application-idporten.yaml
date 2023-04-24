@@ -3,9 +3,6 @@ spring:
   application:
     name: idporten-oidc-demo-client
 
-# must be root property
-accesslog-application-name: idporten-oidc-demo-client
-
 oidc-demo-client:
   features:
     authorization-details-enabled: false

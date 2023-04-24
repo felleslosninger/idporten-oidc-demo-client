@@ -6,15 +6,6 @@ server:
     session:
       tracking-modes:
         - cookie  # to block session via url
-  tomcat:
-    accesslog:
-      enabled: true
-      directory: /dev
-      prefix: stdout
-      buffered: false
-      suffix:
-      file-date-format:
-      pattern: '%{X-Forwarded-For}i %t "%r" %s %b "%{User-Agent}i" "%{Referer}i" %{traceparent}i'
 
 info:
   version: '@project.version@'
