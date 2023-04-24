@@ -13,7 +13,7 @@ accesslog-application-name: idporten-oidc-demo-client
 spring:
   application:
     name: idporten-oidc-demo-client
-    environment: systest
+    environment: default
 
 info:
   version: '@project.version@'
