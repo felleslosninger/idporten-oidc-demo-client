@@ -1,0 +1,14 @@
+spring:
+  application:
+    environment: prod
+
+oidc-demo-client:
+  theme:
+    heading: Login with Ansattporten (prod)
+  oidc-integration:
+    issuer: https://ansattporten.no
+    client-id: ansattporten_demo_client_prod
+    client-auth-method: client_secret_basic
+    client-secret: ${OIDC_CLIENT_SECRET}
+    redirect-uri: https://demo-client.ansattporten.no/callback
+    post-logout-redirect-uri: https://demo-client.ansattporten.no/logout/callback

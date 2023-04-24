@@ -1,0 +1,14 @@
+spring:
+  application:
+    environment: test
+
+oidc-demo-client:
+  theme:
+    heading: Login with ID-porten (test)
+  oidc-integration:
+    issuer: https://test.idporten.no
+    client-id: democlient_idporten_test
+    client-auth-method: client_secret_basic
+    client-secret: ${OIDC_DEMO_CLIENT_SECRET}
+    redirect-uri: https://demo-client.test.idporten.no/callback
+    post-logout-redirect-uri: https://demo-client.test.idporten.no/logout/callback

@@ -1,0 +1,14 @@
+spring:
+  application:
+    environment: systest
+
+oidc-demo-client:
+  theme:
+    heading: Login with Ansattporten (systest)
+  oidc-integration:
+    issuer: https://ansattporten-systest.dev.eid.digdirnfl.no
+    client-id: testclient_ansattporten_openshift_azure
+    client-auth-method: client_secret_basic
+    client-secret: ${OIDC-CLIENT-SECRET}
+    redirect-uri: https://demo-client-ansattporten-systest.dev.eid.digdirnfl.no/callback
+    post-logout-redirect-uri: https://demo-client-ansattporten-systest.dev.eid.digdirnfl.no/logout/callback
