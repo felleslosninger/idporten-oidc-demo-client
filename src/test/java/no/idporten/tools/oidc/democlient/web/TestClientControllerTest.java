@@ -287,11 +287,25 @@ public class TestClientControllerTest {
         @DisplayName("then logout response with invalid state is rejected and gives the error view")
         public void testInvalidLogoutResponse() throws Exception {
             MockHttpSession mockSession = new MockHttpSession();
+            mockSession.setAttribute("state", new State("washington"));
             mockMvc.perform(
                     get("/logout/callback/")
                             .queryParam("state", "canada")
                             .session(mockSession))
                     .andExpect(view().name("error"));
+            assertTrue(mockSession.isInvalid());
+        }
+
+        @Test
+        @DisplayName("then any state is accepted if front channel logout has already occurred (state is null on session)")
+        public void testAcceptAnyStateWhenDFrontChannelLogoutHasOccurred() throws Exception {
+            MockHttpSession mockSession = new MockHttpSession();
+            mockSession.setAttribute("state", null);
+            mockMvc.perform(
+                            get("/logout/callback/")
+                                    .queryParam("state", "canada")
+                                    .session(mockSession))
+                    .andExpect(view().name("logout"));
             assertTrue(mockSession.isInvalid());
         }
 

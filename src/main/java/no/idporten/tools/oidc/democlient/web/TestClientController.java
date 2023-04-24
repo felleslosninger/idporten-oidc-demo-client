@@ -118,7 +118,7 @@ public class TestClientController {
         URI logoutResponse = UriComponentsBuilder.fromUri(idPortenIntegrationConfiguration.getPostLogoutRedirectUri()).query(request.getQueryString()).build().toUri();
         ProtocolTrace protocolTrace = protocolTracerService.traceLogoutResponse(request.getSession(), logoutResponse);
         try {
-            if (!Objects.equals(state, request.getSession().getAttribute("state"))) {
+            if (request.getSession().getAttribute("state") != null && !Objects.equals(state, request.getSession().getAttribute("state"))) {
                 throw new OIDCIntegrationException("Invalid state. Logout response state does not match state from logout request.");
             }
             return "logout";
