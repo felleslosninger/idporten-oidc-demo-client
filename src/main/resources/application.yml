@@ -10,6 +10,11 @@ server:
 # must be root property
 accesslog-application-name: idporten-oidc-demo-client
 
+spring:
+  application:
+    name: idporten-oidc-demo-client
+    environment: default
+
 info:
   version: '@project.version@'
 management:
