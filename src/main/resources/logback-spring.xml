@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-
-    <springProperty name="APP-NAME" source="accesslog-application-name"/>
-    <springProfile name="dev">
+    <springProperty name="APP-NAME" source="spring.application.name" defaultValue="-"/>
+    <springProperty name="APP-ENV" source="spring.application.environment" defaultValue="-"/>
+    <springProfile name="docker-test | docker">
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
         <root level="INFO">
@@ -14,16 +14,16 @@
     <appender name="APPLICATION" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <includeMdc>true</includeMdc>
-            <customFields>{"application":"${APP-NAME}","logtype":"application"}</customFields>
+            <customFields>{"application":"${APP-NAME}", "environment":"${APP-ENV}", "logtype":"application"}</customFields>
         </encoder>
     </appender>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <includeMdc>true</includeMdc>
-            <customFields>{"application":"${APP-NAME}","logtype":"application"}</customFields>
+            <customFields>{"application":"${APP-NAME}", "environment":"${APP-ENV}", "logtype":"application"}</customFields>
         </encoder>
     </appender>
-    <springProfile name="!dev">
+    <springProfile name="!docker-test &amp; !docker">
         <logger name="no.idporten" level="INFO" additivity="false">
             <appender-ref ref="APPLICATION"/>
         </logger>
@@ -32,5 +32,4 @@
             <appender-ref ref="STDOUT"/>
         </root>
     </springProfile>
-
 </configuration>
