@@ -1,0 +1,15 @@
+---
+spring:
+  application:
+    name: ansattporten-oidc-demo-client
+
+oidc-demo-client:
+  features:
+    authorization-details-enabled: true
+  theme:
+    user-id-claim: pid
+    heading: Login with Ansattporten
+    form-defaults:
+      scope: openid profile
+      acr-value: substantial
+      ui-locale: nb

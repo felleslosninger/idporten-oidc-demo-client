@@ -1,0 +1,45 @@
+---
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    session:
+      tracking-modes:
+        - cookie  # to block session via url
+
+info:
+  version: '@project.version@'
+
+# Spring Boot Actuator
+management:
+  server:
+    port: 8090
+  health:
+    diskspace:
+      enabled: false
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.application.environment}
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+      basePath: /
+      path-mapping:
+        info: /version
+
+oidc-demo-client:
+  oidc-integration:
+    connect-timeout-millis: 5000
+    read-timeout-millis: 5000
+    jwks-cache-lifetime-minutes: 60
+    jwks-cache-refresh-minutes: 5
+
+---
+spring:
+  config:
+    activate:
+      on-cloud-platform: 'kubernetes'
+    import:
+      - 'optional:file:/etc/config/'

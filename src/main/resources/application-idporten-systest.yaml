@@ -1,0 +1,16 @@
+---
+spring:
+  application:
+    environment: systest
+
+oidc-demo-client:
+  theme:
+    heading: Login with ID-porten (systest)
+  oidc-integration:
+    issuer: https://idporten.dev
+    client-id: democlient_idporten_systest
+    client-auth-method: client_secret_basic
+    client-secret: ${OIDC_DEMO_CLIENT_SECRET}
+    redirect-uri: https://demo-client.idporten.dev/callback
+    post-logout-redirect-uri: https://demo-client.idporten.dev/logout/callback
+

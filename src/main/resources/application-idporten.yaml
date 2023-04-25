@@ -1,0 +1,15 @@
+---
+spring:
+  application:
+    name: idporten-oidc-demo-client
+
+oidc-demo-client:
+  features:
+    authorization-details-enabled: false
+  theme:
+    user-id-claim: pid
+    heading: Login with ID-porten
+    form-defaults:
+      scope: openid profile
+      acr-value: idporten-loa-substantial
+      ui-locale: nb

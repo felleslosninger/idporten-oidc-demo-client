@@ -1,3 +1,12 @@
+spring:
+  application:
+    environment: docker
+
+server:
+  port: 7074
+  servlet:
+    context-path: /idporten-oidc-demo-client
+
 oidc-demo-client:
   features:
     authorization-details-enabled: true
