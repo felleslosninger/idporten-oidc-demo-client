@@ -14,20 +14,19 @@ info:
 management:
   server:
     port: 8090
-  health:
-    diskspace:
-      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: info,version,prometheus,health
+      base-path: /
   metrics:
     tags:
       application: ${spring.application.name}
       environment: ${spring.application.environment}
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus
-      basePath: /
-      path-mapping:
-        info: /version
+  endpoint:
+    health:
+      probes:
+        enabled: true
 
 oidc-demo-client:
   oidc-integration:
