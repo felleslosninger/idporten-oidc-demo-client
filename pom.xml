@@ -23,7 +23,7 @@
         <logstash.logback.version>7.3</logstash.logback.version>
         <idporten.actuator.version>0.4.2</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>1.1.1</idporten-access-log-spring-boot-starter.version>
-        <open.telemetry.version>1.25.0</open.telemetry.version>
+        <open.telemetry.version>1.25.1</open.telemetry.version>
     </properties>
 
     <dependencies>
