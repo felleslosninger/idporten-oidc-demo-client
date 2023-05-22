@@ -24,6 +24,7 @@
         <idporten.actuator.version>1.0.0</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>1.1.1</idporten-access-log-spring-boot-starter.version>
         <open.telemetry.version>1.26.0</open.telemetry.version>
+        <snakeyaml.version>2.0</snakeyaml.version><!-- To avoid CVE-2022-1471  -->
     </properties>
 
     <dependencies>
