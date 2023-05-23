@@ -10,7 +10,7 @@
                     <url>https://repo1.maven.org/maven2</url>
                 </repository>
                 <repository>
-                    <id>github-oidc-sdk</id>
+                    <id>github</id>
                     <url>https://maven.pkg.github.com/felleslosninger/.github</url>
                     <snapshots>
                         <enabled>false</enabled>
@@ -28,11 +28,6 @@
         </mirror>
     </mirrors>
     <servers>
-        <server>
-            <id>github-oidc-sdk</id>
-            <username>${env.GIT_PACKAGE_USERNAME}</username>
-            <password>${env.GIT_PACKAGE_TOKEN}</password>
-        </server>
         <server>
             <id>github</id>
             <username>${env.GIT_PACKAGE_USERNAME}</username>
