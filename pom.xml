@@ -166,12 +166,12 @@
                 <version>${surefire.plugin.version}</version>
                 <configuration>
                     <testFailureIgnore>false</testFailureIgnore>
-                    <systemProperties>
+                    <systemPropertyVariables>
                         <property>
                             <name>junit.jupiter.extensions.autodetection.enabled</name>
                             <value>true</value>
                         </property>
-                    </systemProperties>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
