@@ -30,7 +30,7 @@ jobs:
     uses: felleslosninger/eid-github-workflows/.github/workflows/update-image-version.yml@main
     needs: build-publish-image
     with:
-      application-name: idporten-oidc-demo-client,ansattporten-oidc-demo-client,test-tools-oidc-test-client
+      application-name: idporten-oidc-demo-client,ansattporten-oidc-demo-client
       image-version: ${{ needs.build-publish-image.outputs.image-version }}
       image-digest: ${{ needs.build-publish-image.outputs.image-digest }}
     secrets:
