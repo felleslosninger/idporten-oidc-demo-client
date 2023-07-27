@@ -13,3 +13,4 @@ oidc-demo-client:
     client-secret: ${OIDC_DEMO_CLIENT_SECRET}
     redirect-uri: https://demo-client.idporten.no/callback
     post-logout-redirect-uri: https://demo-client.idporten.no/logout/callback
+  csp-header: "style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' login.idporten.no"
