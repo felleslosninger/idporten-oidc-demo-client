@@ -14,9 +14,9 @@ oidc-demo-client:
     user-id-claim: pid
     heading: Login with Ansattporten
     form-defaults:
-      scope: openid
-      acr-value: low
-      ui-locale: en
+      scope: openid profile
+      acr-value: idporten-loa-substantial
+      ui-locale: nb
   oidc-integration:
     connect-timeout-millis: 5000
     read-timeout-millis: 5000
