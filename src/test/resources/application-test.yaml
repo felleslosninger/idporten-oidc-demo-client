@@ -20,3 +20,4 @@ oidc-demo-client:
     client-secret: tinuj
     redirect-uri: https://client.junit.idporten.no/callback
     post-logout-redirect-uri: https://client.junit.idporten.no/logout/callback
+  csp-header: "style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' junit.idporten.no"
