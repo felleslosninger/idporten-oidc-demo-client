@@ -16,14 +16,14 @@
 
     <properties>
         <java.version>17</java.version>
-        <nimbus.oauth2-oidc-sdk.version>10.9.1</nimbus.oauth2-oidc-sdk.version>
+        <nimbus.oauth2-oidc-sdk.version>10.11</nimbus.oauth2-oidc-sdk.version>
         <bouncecastle-version>1.70</bouncecastle-version>
-        <lombok-version>1.18.26</lombok-version>
-        <surefire.plugin.version>3.1.0</surefire.plugin.version>
+        <lombok-version>1.18.28</lombok-version>
+        <surefire.plugin.version>3.1.2</surefire.plugin.version>
         <logstash.logback.version>7.3</logstash.logback.version>
-        <idporten.actuator.version>1.0.0</idporten.actuator.version>
+        <idporten.actuator.version>1.0.1</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>1.1.1</idporten-access-log-spring-boot-starter.version>
-        <open.telemetry.version>1.26.0</open.telemetry.version>
+        <open.telemetry.version>1.28.0</open.telemetry.version>
         <snakeyaml.version>2.0</snakeyaml.version><!-- To avoid CVE-2022-1471  -->
     </properties>
 
@@ -166,12 +166,12 @@
                 <version>${surefire.plugin.version}</version>
                 <configuration>
                     <testFailureIgnore>false</testFailureIgnore>
-                    <systemProperties>
+                    <systemPropertyVariables>
                         <property>
                             <name>junit.jupiter.extensions.autodetection.enabled</name>
                             <value>true</value>
                         </property>
-                    </systemProperties>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
         </plugins>
