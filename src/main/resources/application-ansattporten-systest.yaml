@@ -13,3 +13,4 @@ oidc-demo-client:
     client-secret: ${OIDC-CLIENT-SECRET}
     redirect-uri: https://demo-client-ansattporten-systest.dev.eid.digdirnfl.no/callback
     post-logout-redirect-uri: https://demo-client-ansattporten-systest.dev.eid.digdirnfl.no/logout/callback
+  csp-header: "style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' login.ansattporten.dev"

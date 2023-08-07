@@ -6,15 +6,7 @@
 <body>
 <div th:fragment="protocoltrace">
     <div th:if="${session.protocolTrace}" class="accordion" id="protocolTrace">
-        <script>
-            function copyToClipboard(element) {
-                const temp = document.createElement('textarea');
-                temp.value = element.getAttribute('copytext');
-                document.body.appendChild(temp);
-                temp.select();
-                document.execCommand('copy');
-                document.body.removeChild(temp);
-            }
+        <script th:src="@{/dcscript.js}" defer>
         </script>
         <div class="accordion-item" th:each="interaction: ${session.protocolTrace.allInteraction}">
             <h2 class="accordion-header" th:id="'header' + ${interaction.id}">
@@ -30,8 +22,7 @@
                 <div class="accordion-body">
                     <pre th:text="${interaction.interaction}"/>
                     <button type="button" class="btn btn-default bi bi-clipboard-plus" data-bs-toggle="tooltip"
-                            data-bs-placement="top" title="Kopier" th:copytext="${interaction.interaction}"
-                            onclick="copyToClipboard(this)"></button>
+                            data-bs-placement="top" title="Kopier" th:copytext="${interaction.interaction}"></button>
                 </div>
             </div>
         </div>
