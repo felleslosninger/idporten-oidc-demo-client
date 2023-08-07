@@ -45,6 +45,7 @@ import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -110,6 +111,7 @@ public class TestClientControllerTest {
             final String codeVerifier = new CodeVerifier().getValue();
             MvcResult mvcResult = mockMvc.perform(
                     post("/authorize")
+                            .with(csrf())
                             .session(mockSession)
                             .param("scopes", "openid")
                             .param("authorizationDetails", "[{\"type\":\"ansattporten:altinnressurs\",\"ressurs\":\"urn:altinn:role:rolletypekode\"}]")
