@@ -1,0 +1,24 @@
+name: idporten
+networks:
+  idporten:
+    name: idporten
+
+services:
+  democlient:
+    build:
+      context: .
+      dockerfile: docker/dev.Dockerfile
+      args:
+        GIT_PACKAGE_TOKEN: ${GIT_PACKAGE_TOKEN}
+        GIT_PACKAGE_USERNAME: ${GIT_PACKAGE_USERNAME}
+    environment:
+      spring_profiles_active: idporten,idporten-docker
+    ports:
+      - "7074:7074"
+    networks:
+      - idporten
+    entrypoint: "/bin/bash -c"
+    command:
+      - |
+        cd /usr/local/tomcat/webapps/
+        java -jar application.jar

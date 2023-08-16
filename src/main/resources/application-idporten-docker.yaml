@@ -1,0 +1,25 @@
+spring:
+  application:
+    environment: docker
+
+server:
+  port: 7074
+  servlet:
+    context-path: /idporten-oidc-demo-client
+
+oidc-demo-client:
+  oidc-integration:
+    connect-timeout-millis: 5000
+    read-timeout-millis: 5000
+    jwks-cache-lifetime-minutes: 60
+    jwks-cache-refresh-minutes: 5
+    issuer: http://c2id:8080
+    client-id: democlient2
+    client-auth-method: client_secret_basic
+    client-secret: myvery1234long123secret123so123you123know
+    redirect-uri: http://democlient:7074/idporten-oidc-demo-client/callback
+    post-logout-redirect-uri: http://democlient:7074/idporten-oidc-demo-client/logout/callback
+
+management:
+  server:
+    port:
