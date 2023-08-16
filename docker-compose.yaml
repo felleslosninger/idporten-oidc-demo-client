@@ -1,4 +1,4 @@
-name: ansattporten
+name: idporten
 networks:
   idporten:
     name: idporten
