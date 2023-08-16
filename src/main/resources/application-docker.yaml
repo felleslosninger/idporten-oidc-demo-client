@@ -8,15 +8,6 @@ server:
     context-path: /idporten-oidc-demo-client
 
 oidc-demo-client:
-  features:
-    authorization-details-enabled: true
-  theme:
-    user-id-claim: pid
-    heading: Login with Ansattporten
-    form-defaults:
-      scope: openid profile
-      acr-value: idporten-loa-substantial
-      ui-locale: nb
   oidc-integration:
     connect-timeout-millis: 5000
     read-timeout-millis: 5000
