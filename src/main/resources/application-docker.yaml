@@ -14,9 +14,9 @@ oidc-demo-client:
     user-id-claim: pid
     heading: Login with Ansattporten
     form-defaults:
-      scope: openid
-      acr-value: low
-      ui-locale: en
+      scope: openid profile
+      acr-value: idporten-loa-substantial
+      ui-locale: nb
   oidc-integration:
     connect-timeout-millis: 5000
     read-timeout-millis: 5000
@@ -28,7 +28,8 @@ oidc-demo-client:
     client-secret: myvery1234long123secret123so123you123know
     redirect-uri: http://democlient:7074/idporten-oidc-demo-client/callback
     post-logout-redirect-uri: http://democlient:7074/idporten-oidc-demo-client/logout/callback
+  csp-header: "style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' idporten:7070"
 
 management:
   server:
-    port:
+    port: ${server.port}

@@ -7,9 +7,10 @@ oidc-demo-client:
   theme:
     heading: Login with Ansattporten (systest)
   oidc-integration:
-    issuer: https://ansattporten-systest.dev.eid.digdirnfl.no
+    issuer: https://ansattporten.dev
     client-id: testclient_ansattporten_openshift_azure
     client-auth-method: client_secret_basic
     client-secret: ${OIDC-CLIENT-SECRET}
-    redirect-uri: https://demo-client-ansattporten-systest.dev.eid.digdirnfl.no/callback
-    post-logout-redirect-uri: https://demo-client-ansattporten-systest.dev.eid.digdirnfl.no/logout/callback
+    redirect-uri: https://demo-client.ansattporten.dev/callback
+    post-logout-redirect-uri: https://demo-client.ansattporten.dev/logout/callback
+  csp-header: "style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' login.ansattporten.dev"
