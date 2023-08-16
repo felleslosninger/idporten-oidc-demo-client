@@ -1,1 +1,2 @@
 CVE-2016-1000027 # spring web false positive
+CVE-2023-38286 # thymeleaf-spring5: Server Side Template Injection
