@@ -1,15 +1,18 @@
 
 function copyToClipboard(element) {
-    const temp = document.createElement('textarea');
-    temp.value = element.getAttribute('copytext');
-    document.body.appendChild(temp);
-    temp.select();
     if (!navigator.clipboard){
+        const temp = document.createElement('textarea');
+        temp.value = element.getAttribute('copytext');
+        document.body.appendChild(temp);
+        temp.select();
         document.execCommand('copy');
+        document.body.removeChild(temp);
     } else{
-        navigator.clipboard.writeText(text_to_copy);
+        navigator.clipboard.writeText(element.getAttribute('copytext')).then(
+            () => { /* success: do nothing */},
+            () => { alert("Could not copy to clipboard. You might not have necessary permissions.")}
+        );
     }    
-    document.body.removeChild(temp);
 }
 
 
