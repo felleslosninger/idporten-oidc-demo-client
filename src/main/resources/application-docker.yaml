@@ -19,7 +19,7 @@ oidc-demo-client:
     client-secret: myvery1234long123secret123so123you123know
     redirect-uri: http://democlient:7074/idporten-oidc-demo-client/callback
     post-logout-redirect-uri: http://democlient:7074/idporten-oidc-demo-client/logout/callback
-  csp-header: "default-src 'self'; img-src 'self' data:; font-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' idporten:7070 democlient:7074;"
+  csp-header: "default-src 'self'; img-src 'self' data:; font-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' idporten:7070 altinn-orgvelger:7080;"
 
 management:
   server:
