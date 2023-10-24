@@ -19,7 +19,7 @@
         <nimbus.oauth2-oidc-sdk.version>10.13</nimbus.oauth2-oidc-sdk.version>
         <bouncecastle-version>1.70</bouncecastle-version>
         <lombok-version>1.18.28</lombok-version>
-        <surefire.plugin.version>3.1.2</surefire.plugin.version>
+        <surefire.plugin.version>3.2.1</surefire.plugin.version>
         <logstash.logback.version>7.3</logstash.logback.version>
         <idporten.actuator.version>1.0.1</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>1.1.1</idporten-access-log-spring-boot-starter.version>
