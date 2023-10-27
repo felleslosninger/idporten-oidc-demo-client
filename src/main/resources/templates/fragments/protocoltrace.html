@@ -6,7 +6,7 @@
 <body>
 <div th:fragment="protocoltrace">
     <div th:if="${session.protocolTrace}" class="accordion" id="protocolTrace">
-        <script th:src="@{/dcscript.js}" defer>
+        <script th:src="@{/dcscript-0.2.js}" defer>
         </script>
         <div class="accordion-item" th:each="interaction: ${session.protocolTrace.allInteraction}">
             <h2 class="accordion-header" th:id="'header' + ${interaction.id}">

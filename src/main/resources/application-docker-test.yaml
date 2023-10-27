@@ -28,7 +28,7 @@ oidc-demo-client:
     client-secret: 198fddc1-f773-46a9-9ece-920424fd6aaa
     redirect-uri: http://democlient:7074/idporten-oidc-demo-client/callback
     post-logout-redirect-uri: http:/democlient:7074/idporten-oidc-demo-client/logout/callback
-  csp-header: "style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' idporten:7070"
+  csp-header: "default-src 'self'; img-src 'self' data:; font-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' login.test.ansattporten.no altinn-orgvelger.test.ansattporten.no;"
 
 management:
   server:
