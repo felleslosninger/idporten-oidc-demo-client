@@ -1,3 +1,6 @@
-CVE-2016-1000027 # spring web false positive
-CVE-2023-6378 # Logback serialization
-CVE-2023-6481 # Logback serialization
+#CVE-2016-1000027 # spring web false positive
+#CVE-2023-6378 # Logback serialization
+#CVE-2023-6481 # Logback serialization
+CVE-2024-22257 # spring-security: Broken Access Control
+CVE-2024-22243 # springframework: URL Parsing with Host Validation
+CVE-2024-22259 # springframework: URL Parsing with Host Validation
