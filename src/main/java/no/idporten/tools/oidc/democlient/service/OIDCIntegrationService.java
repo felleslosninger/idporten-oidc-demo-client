@@ -35,7 +35,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.cert.Certificate;
 import java.time.Clock;
@@ -59,7 +59,7 @@ public class OIDCIntegrationService {
         try {
             AuthenticationRequest.Builder requestBuilder = new AuthenticationRequest.Builder(
                     new ResponseType(ResponseType.Value.CODE),
-                    new Scope(authorizationRequest.getScopes().stream().toArray(String[]::new)),
+                    new Scope(authorizationRequest.getScopes().toArray(String[]::new)),
                     new ClientID(oidcIntegrationProperties.getClientId()),
                     oidcIntegrationProperties.getRedirectUri());
             requestBuilder
@@ -68,12 +68,12 @@ public class OIDCIntegrationService {
                 requestBuilder.customParameter("authorization_details", authorizationRequest.getAuthorizationDetails());
             }
             if (!CollectionUtils.isEmpty(authorizationRequest.getPrompt())) {
-                requestBuilder.prompt(new Prompt(authorizationRequest.getPrompt().stream().toArray(String[]::new)));
+                requestBuilder.prompt(new Prompt(authorizationRequest.getPrompt().toArray(String[]::new)));
             }
             if (!CollectionUtils.isEmpty(authorizationRequest.getUiLocales())) {
                 requestBuilder.uiLocales(authorizationRequest.getUiLocales().stream()
                         .map(this::langTag)
-                        .filter(langTag -> langTag != null)
+                        .filter(Objects::nonNull)
                         .collect(Collectors.toList()));
             }
             if (!CollectionUtils.isEmpty(authorizationRequest.getAcrValues())) {

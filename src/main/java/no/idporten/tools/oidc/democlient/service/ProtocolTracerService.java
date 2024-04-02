@@ -9,7 +9,7 @@ import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.net.URI;
 import java.util.stream.Collectors;
 
@@ -170,24 +170,22 @@ public class ProtocolTracerService {
         httpRequest.getHeaderMap().forEach(
                 (header, value) -> sb.append(header)
                         .append(": ")
-                        .append("Authorization".equals(header) && value.get(0).startsWith("Basic ")
+                        .append("Authorization".equals(header) && value.getFirst().startsWith("Basic ")
                                 ? "Basic ***"
                                 : String.join(" ", value))
                         .append('\n')
         );
         sb.append('\n');
         sb.append(
-                String.join("&\n",
-                        httpRequest.getQueryParameters().entrySet()
-                                .stream()
-                                .map(entry ->
-                                        new StringBuilder(entry.getKey())
-                                                .append('=')
-                                                .append("client_secret".equals(entry.getKey())
-                                                        ? "***"
-                                                        : String.join("+", entry.getValue())))
-                                .collect(Collectors.toList())
-                ));
+                httpRequest.getQueryParameters().entrySet()
+                        .stream()
+                        .map(entry ->
+                                new StringBuilder(entry.getKey())
+                                        .append('=')
+                                        .append("client_secret".equals(entry.getKey())
+                                                ? "***"
+                                                : String.join("+", entry.getValue())))
+                        .collect(Collectors.joining("&\n")));
         return sb.toString();
     }
 

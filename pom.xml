@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.18</version>
+        <version>3.2.4</version>
         <relativePath/>
     </parent>
     <groupId>no.idporten.tools</groupId>
@@ -15,14 +15,14 @@
     <description>OpenID Connect demo client for ID-porten</description>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <nimbus.oauth2-oidc-sdk.version>11.10.1</nimbus.oauth2-oidc-sdk.version>
         <bouncecastle-version>1.70</bouncecastle-version>
         <lombok-version>1.18.32</lombok-version>
         <surefire.plugin.version>3.2.3</surefire.plugin.version>
-        <logstash.logback.version>7.3</logstash.logback.version>
+        <logstash.logback.version>7.4</logstash.logback.version>
         <idporten.actuator.version>1.2.0</idporten.actuator.version>
-        <idporten-access-log-spring-boot-starter.version>1.1.1</idporten-access-log-spring-boot-starter.version>
+        <idporten-access-log-spring-boot-starter.version>2.3.3</idporten-access-log-spring-boot-starter.version>
         <open.telemetry.version>1.32.0</open.telemetry.version>
         <snakeyaml.version>2.0</snakeyaml.version><!-- To avoid CVE-2022-1471  -->
     </properties>
@@ -74,7 +74,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok-version}</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -110,21 +110,23 @@
             <artifactId>logback-classic</artifactId>
         </dependency>
         <dependency>
-            <groupId>no.idporten.logging</groupId>
-            <artifactId>idporten-access-log-spring-boot-starter</artifactId>
-            <version>${idporten-access-log-spring-boot-starter.version}</version>
-        </dependency>
-        <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
             <artifactId>opentelemetry-instrumentation-api</artifactId>
             <version>${open.telemetry.version}</version>
         </dependency>
+
         <!-- our own -->
+        <dependency>
+            <groupId>no.idporten.logging</groupId>
+            <artifactId>idporten-access-log-spring-boot-3-starter</artifactId>
+            <version>${idporten-access-log-spring-boot-starter.version}</version>
+        </dependency>
         <dependency>
             <groupId>no.idporten.actuator</groupId>
             <artifactId>idporten-actuator-starter</artifactId>
             <version>${idporten.actuator.version}</version>
         </dependency>
+
     </dependencies>
 
 
@@ -148,27 +150,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-                <version>${git-commit-id-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>revision</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <failOnNoGitDirectory>true</failOnNoGitDirectory>
-                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <includeOnlyProperties>
-                        <includeOnlyProperty>^git.commit.id.abbrev$</includeOnlyProperty>
-                        <includeOnlyProperty>^git.commit.id.describe$</includeOnlyProperty>
-                        <includeOnlyProperty>^git.branch$</includeOnlyProperty>
-                    </includeOnlyProperties>
-                </configuration>
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
