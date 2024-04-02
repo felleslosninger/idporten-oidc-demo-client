@@ -19,14 +19,7 @@
             </repositories>
         </profile>
     </profiles>
-    <mirrors>
-        <mirror>
-            <id>difi-artifactory-http-unblock</id>
-            <mirrorOf>difi-artifactory</mirrorOf>
-            <name>Dummy mirror to override default blocking mirror that blocks http</name>
-            <url>http://eid-artifactory.dmz.local:8080/artifactory/libs-release</url>
-        </mirror>
-    </mirrors>
+
     <servers>
         <server>
             <id>github</id>

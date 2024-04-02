@@ -34,7 +34,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
 
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import java.net.URI;
 import java.nio.charset.Charset;
 
@@ -291,7 +291,7 @@ public class TestClientControllerTest {
             MockHttpSession mockSession = new MockHttpSession();
             mockSession.setAttribute("state", new State("washington"));
             mockMvc.perform(
-                    get("/logout/callback/")
+                    get("/logout/callback")
                             .queryParam("state", "canada")
                             .session(mockSession))
                     .andExpect(view().name("error"));
@@ -304,7 +304,7 @@ public class TestClientControllerTest {
             MockHttpSession mockSession = new MockHttpSession();
             mockSession.setAttribute("state", null);
             mockMvc.perform(
-                            get("/logout/callback/")
+                            get("/logout/callback")
                                     .queryParam("state", "canada")
                                     .session(mockSession))
                     .andExpect(view().name("logout"));
@@ -317,7 +317,7 @@ public class TestClientControllerTest {
             MockHttpSession mockSession = new MockHttpSession();
             mockSession.setAttribute("state", new State("alaska"));
             mockMvc.perform(
-                    get("/logout/callback/")
+                    get("/logout/callback")
                             .queryParam("state", "alaska")
                             .session(mockSession))
                     .andExpect(view().name("logout"));
@@ -332,7 +332,7 @@ public class TestClientControllerTest {
             ProtocolTrace protocolTrace = ProtocolTracerService.create(mockSession);
             protocolTracerService.traceLogoutRequest(mockSession, URI.create("https://idporten.junit.no/logout"));
             MvcResult mvcResult = mockMvc.perform(
-                    get("/logout/callback/")
+                    get("/logout/callback")
                             .queryParam("state", "alaska")
                             .session(mockSession))
                     .andExpect(view().name("logout"))

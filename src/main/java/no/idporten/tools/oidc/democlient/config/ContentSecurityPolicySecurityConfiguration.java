@@ -18,14 +18,7 @@ public class ContentSecurityPolicySecurityConfiguration {
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.headers()
-            .xssProtection()
-            .and()
-            .contentSecurityPolicy(cspHeader)
-            .and()
-            .referrerPolicy()
-            .and()
-            .permissionsPolicy();
+        http.headers( headers -> headers.contentSecurityPolicy(c -> c.policyDirectives(cspHeader)));
         return http.build();
     }
 }
