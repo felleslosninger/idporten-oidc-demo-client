@@ -5,27 +5,39 @@ name: Build/publish Docker image & update image version in config
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths-ignore:
-    - 'src/test/**'
-    - 'docker/**'
-    - 'docker-compose.yaml'
-    - '*.md'
-    - 'LICENSE'
+      - "src/test/**"
+      - "docker/**"
+      - "docker-compose.yaml"
+      - "*.md"
+      - "LICENSE"
 
 jobs:
-  build-publish-image:
+  call-workflow-image-build-publish:
     uses: felleslosninger/github-workflows/.github/workflows/ci-spring-boot-build-publish-image.yml@main
     with:
       image-name: idporten-oidc-demo-client
       java-version: 21
     secrets: inherit
-  update-image-version:
-    uses: felleslosninger/github-workflows/.github/workflows/ci-update-image-version.yml@main
-    needs: build-publish-image
+
+  call-update-image:
+    uses: felleslosninger/github-workflows/.github/workflows/ci-call-update-image.yml@main
+    needs: call-workflow-image-build-publish
+    strategy:
+      matrix:
+        application-name: [idporten-oidc-demo-client, ansattporten-oidc-demo-client]
+        include:
+          - application-name: idporten-oidc-demo-client
+            product-name: idporten
+          - application-name: ansattporten-oidc-demo-client
+            product-name: ansattporten
     with:
       application-name: idporten-oidc-demo-client,ansattporten-oidc-demo-client
-      image-version: ${{ needs.build-publish-image.outputs.image-version }}
-      image-digest: ${{ needs.build-publish-image.outputs.image-digest }}
+      deployment-environment: systest
+      image-digest: ${{ needs.call-workflow-image-build-publish.outputs.image-digest }}
+      image-name: idporten-oidc-demo-client
+      image-version: ${{ needs.call-workflow-image-build-publish.outputs.image-version }}
+      kubernetes-repo: idporten-cd
+      product-name: ${{ matrix.product-name }}
     secrets: inherit
-
