@@ -33,7 +33,7 @@ jobs:
           - application-name: ansattporten-oidc-demo-client
             product-name: ansattporten
     with:
-      application-name: idporten-oidc-demo-client,ansattporten-oidc-demo-client
+      application-name: ${{ matrix.application-name }}
       deployment-environment: systest
       image-digest: ${{ needs.call-workflow-image-build-publish.outputs.image-digest }}
       image-name: idporten-oidc-demo-client
