@@ -129,6 +129,26 @@ public class OIDCIntegrationService {
         }
     }
 
+    public String userinfo(OIDCTokenResponse oidcTokenResponse) {
+        try {
+            UserInfoRequest userInfoRequest = new UserInfoRequest(oidcProviderMetadata.getUserInfoEndpointURI(), oidcTokenResponse.getOIDCTokens().getAccessToken());
+            UserInfoResponse userInfoResponse = process(userInfoRequest);
+            if (userInfoResponse.indicatesSuccess()) {
+                return userInfoResponse.toSuccessResponse().getUserInfo().toJSONObject().toJSONString();
+            } else {
+                ErrorResponse errorResponse = userInfoResponse.toErrorResponse();
+                log.warn("Error response from {}: {}", oidcProviderMetadata.getUserInfoEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
+                throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());
+            }
+        } catch (OIDCIntegrationException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Failed to retrieve userinfo from {}", oidcProviderMetadata.getUserInfoEndpointURI(), e);
+            throw new OIDCIntegrationException("Failed to retrieve userinfo.");
+        }
+    }
+
+
     public LogoutRequest logoutRequest(JWT idToken) {
         return new LogoutRequest(
                 oidcProviderMetadata.getEndSessionEndpointURI(),
@@ -189,6 +209,17 @@ public class OIDCIntegrationService {
         HTTPResponse httpResponse = httpRequest.send();
         oidcProtocolTracerService.traceTokenResponse(request.getSession(), httpResponse);
         return OIDCTokenResponseParser.parse(httpResponse);
+    }
+
+    public UserInfoResponse process(UserInfoRequest userInfoRequest) throws IOException, ParseException {
+        HTTPRequest httpRequest = userInfoRequest.toHTTPRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        oidcProtocolTracerService.traceUserInfoRequest(request.getSession(), httpRequest);
+        httpRequest.setConnectTimeout(oidcIntegrationProperties.getConnectTimeOutMillis());
+        httpRequest.setReadTimeout(oidcIntegrationProperties.getReadTimeOutMillis());
+        HTTPResponse httpResponse = httpRequest.send();
+        oidcProtocolTracerService.traceUserInfoResponse(request.getSession(), httpResponse);
+        return UserInfoResponse.parse(httpResponse);
     }
 
 }

@@ -110,6 +110,28 @@ public class ProtocolTracerService {
         return protocolTrace;
     }
 
+    public ProtocolTrace traceUserInfoRequest(HttpSession session, HTTPRequest userInfoRequest) {
+        ProtocolTrace protocolTrace = getOrCreate(session);
+        protocolTrace.setUserInfoRequest(
+                ProtocolInteraction.builder()
+                        .id("userInfoRequest")
+                        .text("UserInfo request")
+                        .interaction(formatHTTPRequest(userInfoRequest))
+                        .build());
+        return protocolTrace;
+    }
+
+    public ProtocolTrace traceUserInfoResponse(HttpSession session, HTTPResponse userInfoResponse) {
+        ProtocolTrace protocolTrace = getOrCreate(session);
+        protocolTrace.setUserInfoResponse(
+                ProtocolInteraction.builder()
+                        .id("userInfoResponse")
+                        .text("UserInfo response")
+                        .interaction(formatHTTPResponse(userInfoResponse))
+                        .build());
+        return protocolTrace;
+    }
+
     public ProtocolTrace traceTokenResponse(HttpSession session, HTTPResponse tokenResponse) {
         ProtocolTrace protocolTrace = getOrCreate(session);
         protocolTrace.setTokenResponse(ProtocolInteraction.builder()

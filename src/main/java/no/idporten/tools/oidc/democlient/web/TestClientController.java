@@ -5,6 +5,7 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import com.nimbusds.openid.connect.sdk.Nonce;
@@ -91,7 +92,11 @@ public class TestClientController {
             OIDCTokenResponse oidcTokenResponse = oidcIntegrationService.token(authorizationResponse.toSuccessResponse(), state, nonce, codeVerifier);
             protocolTracerService.traceValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet());
             if (oidcTokenResponse.getOIDCTokens().getAccessToken() != null) {
-                protocolTracerService.traceBearerAccessToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getAccessToken().getValue());
+                AccessToken accessToken = oidcTokenResponse.getOIDCTokens().getAccessToken();
+                protocolTracerService.traceBearerAccessToken(request.getSession(), accessToken.getValue());
+                if (accessToken.getScope() != null && accessToken.getScope().contains("profile")) {
+                    oidcIntegrationService.userinfo(oidcTokenResponse);
+                }
             }
             request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
             model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getClaim(themeProperties.getUserIdClaim()));
