@@ -256,32 +256,23 @@ public class TestClientControllerTest {
     class LogoutTests {
 
         @Test
-        @DisplayName("then redirected logout request contains parameters id_token_hint, state and post_logout_redirect_uri")
-        public void testSendLogoutRequest() throws Exception {
+        @DisplayName("then POST logout request contains parameters id_token_hint, state and post_logout_redirect_uri")
+        public void testPostLogoutRequest() throws Exception {
             JWT idToken = new PlainJWT(new JWTClaimsSet.Builder().build());
             MockHttpSession mockSession = new MockHttpSession();
             mockSession.setAttribute("id_token", idToken);
             MvcResult mvcResult = mockMvc.perform(
                     get("/logout")
                             .session(mockSession))
-                    .andExpect(status().is3xxRedirection())
+                    .andExpect(status().is2xxSuccessful())
                     .andReturn();
             HttpSession session = mvcResult.getRequest().getSession();
-            UriComponents logoutRequest = UriComponentsBuilder
-                    .fromHttpUrl(mvcResult.getResponse().getRedirectedUrl())
-                    .build();
+            String htmlPage = mvcResult.getResponse().getContentAsString();
 
             assertAll(
-                    () -> assertEquals(
-                            idToken.serialize(),
-                            logoutRequest.getQueryParams().getFirst("id_token_hint")),
-                    () -> assertEquals(
-                            UriUtils.encode(oidcIntegrationProperties.getPostLogoutRedirectUri().toString(), Charset.defaultCharset()),
-                            logoutRequest.getQueryParams().getFirst("post_logout_redirect_uri")),
-                    () -> assertEquals(String.valueOf(
-                            session.getAttribute("state")),
-                            logoutRequest.getQueryParams().getFirst("state")),
-                    () -> assertNotNull(session.getAttribute("state"))
+                    () -> assertTrue(htmlPage.contains("\"id_token_hint\" value=\"%s\"".formatted(idToken.serialize()))),
+                    () -> assertTrue(htmlPage.contains("\"post_logout_redirect_uri\" value=\"%s\"".formatted(oidcIntegrationProperties.getPostLogoutRedirectUri()))),
+                    () -> assertTrue(htmlPage.contains("\"state\" value=\"%s\"".formatted(session.getAttribute("state"))))
             );
         }
 
