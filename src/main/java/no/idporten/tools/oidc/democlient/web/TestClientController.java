@@ -10,24 +10,21 @@ import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.idporten.tools.oidc.democlient.config.FeatureSwichProperties;
 import no.idporten.tools.oidc.democlient.config.OIDCIntegrationProperties;
 import no.idporten.tools.oidc.democlient.config.ThemeProperties;
-import no.idporten.tools.oidc.democlient.service.OIDCIntegrationException;
-import no.idporten.tools.oidc.democlient.service.OIDCIntegrationService;
-import no.idporten.tools.oidc.democlient.service.ProtocolTrace;
-import no.idporten.tools.oidc.democlient.service.ProtocolTracerService;
+import no.idporten.tools.oidc.democlient.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import java.net.URI;
 import java.util.Objects;
 
@@ -40,6 +37,7 @@ public class TestClientController {
 
     private final OIDCIntegrationService oidcIntegrationService;
     private final OIDCIntegrationProperties idPortenIntegrationConfiguration;
+    private final HtmlFormService htmlFormService;
     private final ThemeProperties themeProperties;
     private final FeatureSwichProperties featureSwichProperties;
     private final ProtocolTracerService protocolTracerService;
@@ -108,14 +106,16 @@ public class TestClientController {
     }
 
     @GetMapping("/logout")
+    @ResponseBody
     public String logout(HttpServletRequest request) {
         JWT idToken = (JWT) request.getSession().getAttribute("id_token");
         request.getSession().invalidate();
         LogoutRequest logoutRequest =  oidcIntegrationService.logoutRequest(idToken);
         request.getSession(true);
         request.getSession().setAttribute("state", logoutRequest.getState());
-        protocolTracerService.traceLogoutRequest(request.getSession(), logoutRequest.toURI());
-        return "redirect:" + logoutRequest.toURI().toString();
+        String htmlFormPage = htmlFormService.createHtmlFormAutosubmitPage(logoutRequest.getEndpointURI(), logoutRequest.toParameters());
+        protocolTracerService.traceLogoutRequest(request.getSession(), htmlFormPage);
+        return htmlFormPage;
     }
 
     @GetMapping("/logout/callback")

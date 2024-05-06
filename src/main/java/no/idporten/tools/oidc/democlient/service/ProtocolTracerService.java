@@ -76,6 +76,18 @@ public class ProtocolTracerService {
         return protocolTrace;
     }
 
+    public ProtocolTrace traceLogoutRequest(HttpSession session, String logoutRequest) {
+        ProtocolTrace protocolTrace = getOrCreate(session);
+        protocolTrace.setLogoutRequest(
+                ProtocolInteraction.builder()
+                        .id("logoutRequest")
+                        .text("Logout request")
+                        .interaction(logoutRequest)
+                        .build());
+        return protocolTrace;
+    }
+
+
     public ProtocolTrace traceLogoutResponse(HttpSession session, URI logoutResponse) {
         ProtocolTrace protocolTrace = getOrCreate(session);
         protocolTrace.setLogoutResponse(
