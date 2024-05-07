@@ -138,7 +138,7 @@ public class OIDCIntegrationService {
             } else {
                 ErrorResponse errorResponse = userInfoResponse.toErrorResponse();
                 log.warn("Error response from {}: {}", oidcProviderMetadata.getUserInfoEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
-                throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());
+                return errorResponse.getErrorObject().toJSONObject().toJSONString();
             }
         } catch (OIDCIntegrationException e) {
             throw e;
