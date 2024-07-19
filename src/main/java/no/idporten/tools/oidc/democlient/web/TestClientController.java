@@ -2,6 +2,7 @@ package no.idporten.tools.oidc.democlient.web;
 
 
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
@@ -68,9 +69,11 @@ public class TestClientController {
         if (StringUtils.hasText(authorizationRequest.getCodeVerifier())) {
             request.getSession().setAttribute("code_verifier", new CodeVerifier(authorizationRequest.getCodeVerifier()));
         }
-        AuthenticationRequest authenticationRequest = oidcIntegrationService.authorzationRequest(authorizationRequest);
+        com.nimbusds.oauth2.sdk.AuthorizationRequest authenticationRequest = oidcIntegrationService.authorizationRequest(authorizationRequest);
         request.getSession().setAttribute("state", authenticationRequest.getState());
-        request.getSession().setAttribute("nonce", authenticationRequest.getNonce());
+        if (authenticationRequest instanceof AuthenticationRequest) {
+            request.getSession().setAttribute("nonce", ((AuthenticationRequest) authenticationRequest).getNonce());
+        }
         protocolTracerService.traceAuthorizationRequest(request.getSession(), authenticationRequest.toURI());
         return "redirect:" + authenticationRequest.toURI().toString();
     }
@@ -87,17 +90,20 @@ public class TestClientController {
         if (authorizationResponse.indicatesSuccess()) {
             final Nonce nonce = (Nonce) request.getSession().getAttribute("nonce");
             final CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
-            OIDCTokenResponse oidcTokenResponse = oidcIntegrationService.token(authorizationResponse.toSuccessResponse(), state, nonce, codeVerifier);
-            protocolTracerService.traceValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet());
-            if (oidcTokenResponse.getOIDCTokens().getAccessToken() != null) {
-                AccessToken accessToken = oidcTokenResponse.getOIDCTokens().getAccessToken();
+            AccessTokenResponse tokenResponse = oidcIntegrationService.token(authorizationResponse.toSuccessResponse(), state, nonce, codeVerifier);
+            AccessToken accessToken = tokenResponse.getTokens().getAccessToken();
+            if (accessToken != null && accessToken.getScope() != null && accessToken.getScope().contains("openid")) {
+                OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse;
+                protocolTracerService.traceValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet());
+                request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
+                model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getClaim(themeProperties.getUserIdClaim()));
+            }
+            if (tokenResponse.getTokens().getAccessToken() != null) {
                 protocolTracerService.traceBearerAccessToken(request.getSession(), accessToken.getValue());
                 if (accessToken.getScope() != null && accessToken.getScope().contains("profile")) {
-                    oidcIntegrationService.userinfo(oidcTokenResponse);
+                    oidcIntegrationService.userinfo(accessToken);
                 }
             }
-            request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
-            model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getClaim(themeProperties.getUserIdClaim()));
             return "idtoken";
         } else {
             log.warn("Error authorization response: {}", authorizationResponse.toErrorResponse().getErrorObject().toJSONObject().toJSONString());
