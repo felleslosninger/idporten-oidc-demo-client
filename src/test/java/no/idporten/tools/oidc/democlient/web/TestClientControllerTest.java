@@ -4,6 +4,7 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.oauth2.sdk.AuthorizationSuccessResponse;
+import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
@@ -185,7 +186,7 @@ public class TestClientControllerTest {
             Nonce nonce = new Nonce();
             CodeVerifier codeVerifier = new CodeVerifier();
             JWT idToken = new PlainJWT(TestDataUtils.idTokenClaimsSet(TestDataUtils.testUserPersonIdentifier()));
-            OIDCTokenResponse tokenResponse = new OIDCTokenResponse(new OIDCTokens(idToken, new BearerAccessToken("at"), null));
+            OIDCTokenResponse tokenResponse = new OIDCTokenResponse(new OIDCTokens(idToken, new BearerAccessToken("at", 120, new Scope("openid")), null));
             doReturn(tokenResponse).when(oidcIntegrationService).token(any(AuthorizationSuccessResponse.class), eq(state), eq(nonce), eq(codeVerifier));
             MockHttpSession mockSession = new MockHttpSession();
             ProtocolTracerService.create(mockSession);
