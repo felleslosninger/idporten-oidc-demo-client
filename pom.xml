@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version>
+        <version>3.3.2</version>
         <relativePath/>
     </parent>
     <groupId>no.idporten.tools</groupId>
@@ -21,6 +21,7 @@
         <lombok-version>1.18.34</lombok-version>
         <surefire.plugin.version>3.2.3</surefire.plugin.version>
         <logstash.logback.version>7.4</logstash.logback.version>
+        <ch.qos.logback-access.version>1.4.14</ch.qos.logback-access.version>
         <idporten.actuator.version>1.2.0</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>2.3.4</idporten-access-log-spring-boot-starter.version>
         <open.telemetry.version>1.32.0</open.telemetry.version>
@@ -104,10 +105,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-access</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
+            <version>${ch.qos.logback-access.version}</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
