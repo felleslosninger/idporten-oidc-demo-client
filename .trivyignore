@@ -1,1 +1,2 @@
 CVE-2024-22262 # springframework: URL Parsing with Host Validation
+CVE-2024-34750 # tomcat: Improper Handling of Exceptional Conditions

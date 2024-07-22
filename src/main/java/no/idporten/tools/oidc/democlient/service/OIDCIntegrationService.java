@@ -19,6 +19,7 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
+import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.openid.connect.sdk.*;
 import com.nimbusds.openid.connect.sdk.claims.ACR;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
@@ -36,6 +37,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import java.io.IOException;
 import java.security.cert.Certificate;
 import java.time.Clock;
@@ -55,47 +57,85 @@ public class OIDCIntegrationService {
     private final ProtocolTracerService oidcProtocolTracerService;
     private final FeatureSwichProperties featureSwichProperties;
 
-    public AuthenticationRequest authorzationRequest(AuthorizationRequest authorizationRequest) {
+    public com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest(AuthorizationRequest authorizationRequest) {
         try {
-            AuthenticationRequest.Builder requestBuilder = new AuthenticationRequest.Builder(
-                    new ResponseType(ResponseType.Value.CODE),
-                    new Scope(authorizationRequest.getScopes().toArray(String[]::new)),
-                    new ClientID(oidcIntegrationProperties.getClientId()),
-                    oidcIntegrationProperties.getRedirectUri());
-            requestBuilder
-                    .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
-            if (featureSwichProperties.isAuthorizationDetailsEnabled() && StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
-                requestBuilder.customParameter("authorization_details", authorizationRequest.getAuthorizationDetails());
+            if (authorizationRequest.getScopes().contains("openid")) {
+                return oidcAuthorizationRequest(authorizationRequest);
             }
-            if (!CollectionUtils.isEmpty(authorizationRequest.getPrompt())) {
-                requestBuilder.prompt(new Prompt(authorizationRequest.getPrompt().toArray(String[]::new)));
-            }
-            if (!CollectionUtils.isEmpty(authorizationRequest.getUiLocales())) {
-                requestBuilder.uiLocales(authorizationRequest.getUiLocales().stream()
-                        .map(this::langTag)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList()));
-            }
-            if (!CollectionUtils.isEmpty(authorizationRequest.getAcrValues())) {
-                requestBuilder.acrValues(authorizationRequest.getAcrValues().stream()
-                        .map(acr -> new ACR(acr))
-                        .collect(Collectors.toList()));
-            }
-            if (StringUtils.hasText(authorizationRequest.getState())) {
-                requestBuilder.state(new State(authorizationRequest.getState()));
-            }
-            if (StringUtils.hasText(authorizationRequest.getNonce())) {
-                requestBuilder.nonce(new Nonce(authorizationRequest.getNonce()));
-            }
-            if (StringUtils.hasText(authorizationRequest.getCodeVerifier())) {
-                requestBuilder.codeChallenge(
-                        new CodeVerifier(authorizationRequest.getCodeVerifier()),
-                        new CodeChallengeMethod(authorizationRequest.getCodeChallengeMethod()));
-            }
-            return requestBuilder.build();
+            return oauth2AuthorizationRequest(authorizationRequest);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected com.nimbusds.oauth2.sdk.AuthorizationRequest oauth2AuthorizationRequest(AuthorizationRequest authorizationRequest) {
+        com.nimbusds.oauth2.sdk.AuthorizationRequest.Builder requestBuilder = new com.nimbusds.oauth2.sdk.AuthorizationRequest.Builder(
+                new ResponseType(ResponseType.Value.CODE),
+                new ClientID(oidcIntegrationProperties.getClientId()));
+        requestBuilder.scope(new Scope(authorizationRequest.getScopes().toArray(String[]::new)))
+                .redirectionURI(oidcIntegrationProperties.getRedirectUri())
+                .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
+
+        if (featureSwichProperties.isAuthorizationDetailsEnabled() && StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
+            requestBuilder.customParameter("authorization_details", authorizationRequest.getAuthorizationDetails());
+        }
+        if (!CollectionUtils.isEmpty(authorizationRequest.getPrompt())) {
+            requestBuilder.prompt(new Prompt(authorizationRequest.getPrompt().toArray(String[]::new)));
+        }
+        if (!CollectionUtils.isEmpty(authorizationRequest.getUiLocales())) {
+            requestBuilder.customParameter("ui_locales", authorizationRequest.getUiLocales().toArray(String[]::new));
+        }
+        if (!CollectionUtils.isEmpty(authorizationRequest.getAcrValues())) {
+            requestBuilder.customParameter("acr_values", authorizationRequest.getAcrValues().toArray(String[]::new));
+        }
+        if (StringUtils.hasText(authorizationRequest.getState())) {
+            requestBuilder.state(new State(authorizationRequest.getState()));
+        }
+        if (StringUtils.hasText(authorizationRequest.getCodeVerifier())) {
+            requestBuilder.codeChallenge(
+                    new CodeVerifier(authorizationRequest.getCodeVerifier()),
+                    new CodeChallengeMethod(authorizationRequest.getCodeChallengeMethod()));
+        }
+        return requestBuilder.build();
+    }
+
+    protected AuthenticationRequest oidcAuthorizationRequest(AuthorizationRequest authorizationRequest) {
+        AuthenticationRequest.Builder requestBuilder = new AuthenticationRequest.Builder(
+                new ResponseType(ResponseType.Value.CODE),
+                new Scope(authorizationRequest.getScopes().toArray(String[]::new)),
+                new ClientID(oidcIntegrationProperties.getClientId()),
+                oidcIntegrationProperties.getRedirectUri());
+        requestBuilder
+                .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
+        if (featureSwichProperties.isAuthorizationDetailsEnabled() && StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
+            requestBuilder.customParameter("authorization_details", authorizationRequest.getAuthorizationDetails());
+        }
+        if (!CollectionUtils.isEmpty(authorizationRequest.getPrompt())) {
+            requestBuilder.prompt(new Prompt(authorizationRequest.getPrompt().toArray(String[]::new)));
+        }
+        if (!CollectionUtils.isEmpty(authorizationRequest.getUiLocales())) {
+            requestBuilder.uiLocales(authorizationRequest.getUiLocales().stream()
+                    .map(this::langTag)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList()));
+        }
+        if (!CollectionUtils.isEmpty(authorizationRequest.getAcrValues())) {
+            requestBuilder.acrValues(authorizationRequest.getAcrValues().stream()
+                    .map(ACR::new)
+                    .collect(Collectors.toList()));
+        }
+        if (StringUtils.hasText(authorizationRequest.getState())) {
+            requestBuilder.state(new State(authorizationRequest.getState()));
+        }
+        if (StringUtils.hasText(authorizationRequest.getNonce())) {
+            requestBuilder.nonce(new Nonce(authorizationRequest.getNonce()));
+        }
+        if (StringUtils.hasText(authorizationRequest.getCodeVerifier())) {
+            requestBuilder.codeChallenge(
+                    new CodeVerifier(authorizationRequest.getCodeVerifier()),
+                    new CodeChallengeMethod(authorizationRequest.getCodeChallengeMethod()));
+        }
+        return requestBuilder.build();
     }
 
     protected LangTag langTag(String locale) {
@@ -106,21 +146,26 @@ public class OIDCIntegrationService {
         }
     }
 
-    public OIDCTokenResponse token(AuthorizationSuccessResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
+    public AccessTokenResponse token(AuthorizationSuccessResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
         try {
-                AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), oidcIntegrationProperties.getRedirectUri(), codeVerifier);
-                final ClientAuthentication clientAuth = clientAuthentication(oidcIntegrationProperties);
-                com.nimbusds.oauth2.sdk.TokenRequest tokenRequest = new com.nimbusds.oauth2.sdk.TokenRequest(oidcProviderMetadata.getTokenEndpointURI(), clientAuth, codeGrant);
-                com.nimbusds.oauth2.sdk.TokenResponse tokenResponse = process(tokenRequest);
-                if (tokenResponse.indicatesSuccess()) {
-                    OIDCTokenResponse successResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
-                    idTokenValidator.validate(successResponse.getOIDCTokens().getIDToken(), nonce);
-                    return successResponse;
-                } else {
-                    TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
-                    log.warn("Error response from {}: {}", oidcProviderMetadata.getTokenEndpointURI(), errorResponse.toJSONObject().toJSONString());
-                    throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());
+            AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), oidcIntegrationProperties.getRedirectUri(), codeVerifier);
+            final ClientAuthentication clientAuth = clientAuthentication(oidcIntegrationProperties);
+            com.nimbusds.oauth2.sdk.TokenRequest tokenRequest = new com.nimbusds.oauth2.sdk.TokenRequest(oidcProviderMetadata.getTokenEndpointURI(), clientAuth, codeGrant);
+            com.nimbusds.oauth2.sdk.TokenResponse tokenResponse = process(tokenRequest);
+            if (tokenResponse.indicatesSuccess()) {
+                AccessTokenResponse accessTokenResponse = tokenResponse.toSuccessResponse();
+                if (accessTokenResponse instanceof OIDCTokenResponse) {
+                    OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
+                    if (oidcTokenResponse.getOIDCTokens().getIDToken() != null) {
+                        idTokenValidator.validate(oidcTokenResponse.getOIDCTokens().getIDToken(), nonce);
+                    }
                 }
+                return accessTokenResponse;
+           } else {
+                TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
+                log.warn("Error response from {}: {}", oidcProviderMetadata.getTokenEndpointURI(), errorResponse.toJSONObject().toJSONString());
+                throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());
+            }
         } catch (OIDCIntegrationException e) {
             throw e;
         } catch (Exception e) {
@@ -129,9 +174,9 @@ public class OIDCIntegrationService {
         }
     }
 
-    public String userinfo(OIDCTokenResponse oidcTokenResponse) {
+    public String userinfo(AccessToken accessToken) {
         try {
-            UserInfoRequest userInfoRequest = new UserInfoRequest(oidcProviderMetadata.getUserInfoEndpointURI(), oidcTokenResponse.getOIDCTokens().getAccessToken());
+            UserInfoRequest userInfoRequest = new UserInfoRequest(oidcProviderMetadata.getUserInfoEndpointURI(), accessToken);
             UserInfoResponse userInfoResponse = process(userInfoRequest);
             if (userInfoResponse.indicatesSuccess()) {
                 return userInfoResponse.toSuccessResponse().getUserInfo().toJSONObject().toJSONString();
