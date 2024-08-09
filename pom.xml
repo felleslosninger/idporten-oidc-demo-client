@@ -20,10 +20,8 @@
         <bouncecastle-version>1.70</bouncecastle-version>
         <lombok-version>1.18.34</lombok-version>
         <surefire.plugin.version>3.3.1</surefire.plugin.version>
-        <logstash.logback.version>8.0</logstash.logback.version>
-        <ch.qos.logback-access.version>1.4.14</ch.qos.logback-access.version>
         <idporten.actuator.version>1.2.0</idporten.actuator.version>
-        <idporten-access-log-spring-boot-starter.version>2.4.0</idporten-access-log-spring-boot-starter.version>
+        <idporten-access-log-spring-boot-starter.version>2.4.1</idporten-access-log-spring-boot-starter.version>
         <open.telemetry.version>2.6.0</open.telemetry.version>
         <snakeyaml.version>2.0</snakeyaml.version><!-- To avoid CVE-2022-1471  -->
     </properties>
@@ -96,16 +94,6 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
-            <version>${logstash.logback.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-access</artifactId>
-            <version>${ch.qos.logback-access.version}</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
