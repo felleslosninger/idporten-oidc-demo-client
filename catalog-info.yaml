@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: idporten-oidc-demo-client
+  description: idporten-oidc-demo-client
+  annotations:
+    github.com/project-slug: felleslosninger/idporten-oidc-demo-client
+spec:
+  type: application
+  lifecycle: production
+  owner: team-idporten
+  system: idporten
