@@ -12,6 +12,7 @@ on:
       - "docker-compose.yaml"
       - "*.md"
       - "LICENSE"
+      - "catalog-info.yaml"
 
 jobs:
   call-workflow-image-build-publish:
