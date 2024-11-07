@@ -5,7 +5,7 @@ spring:
 
 oidc-demo-client:
   features:
-    authorization-details-enabled: false
+    authorization-details-enabled: true
   theme:
     user-id-claim: pid
     heading: Login with ID-porten
