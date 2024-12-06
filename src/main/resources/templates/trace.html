@@ -3,7 +3,7 @@
       xmlns:th="http://www.thymeleaf.org"
       lang="nn">
 
-<head th:replace="fragments/header::head"/>
+<head th:replace="~{fragments/header::head}"/>
 <body>
 <div class="container">
     <h1><span th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
@@ -12,13 +12,13 @@
         Current protocol trace.
     </div>
 
-    <div th:include="fragments/protocoltrace::protocoltrace" />
+    <div th:include="~{fragments/protocoltrace::protocoltrace}" />
     <br/>
     <a class="btn btn-primary" th:href="@{/}" role="button">Back</a>
     <a class="btn btn-secondary" th:href="@{/trace/clear}" role="button">Clear trace</a>
 </div>
 
-<div th:replace="fragments/footer::scripts"/>
+<div th:replace="~{fragments/footer::scripts}"/>
 
 </body>
 </html>
