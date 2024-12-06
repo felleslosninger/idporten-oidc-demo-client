@@ -3,22 +3,22 @@
       xmlns:th="http://www.thymeleaf.org"
       lang="nn">
 
-<head th:replace="fragments/header::head"/>
+<head th:replace="~{fragments/header::head}"/>
 <body>
 <div class="container">
-    <h1><span th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
+    <h1><span th:if="${theme}" th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
     <div  class="alert alert-warning" role="alert">
         An error occurred during login.<br/>
         <p th:if="${message}" th:text="${message}" th:remove="tag"/>
     </div>
 
-    <div th:include="fragments/protocoltrace::protocoltrace" />
+    <div th:include="~{fragments/protocoltrace::protocoltrace}" />
 
     <br/>
     <a class="btn btn-primary" th:href="@{/}" role="button">Back</a>
 </div>
 
-<div th:replace="fragments/footer::scripts"/>
+<div th:replace="~{fragments/footer::scripts}"/>
 
 </body>
 </html>
