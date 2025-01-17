@@ -17,7 +17,7 @@ Applikasjonen støtter innlogging med ID-porten med:
 * OpenID Connect RP-Initiated Logout for utlogging - https://openid.net/specs/openid-connect-rpinitiated-1_0.html
 
 
-## Bregrensninger
+## Begrensninger
 ### Applikasjonen er ikke et startpunkt for å integrere med ID-porten
 Applikasjonen er ikke et eksempel på hvordan en Spring Boot-basert applikasjon kan integreres med ID-porten.  Applikasjonen samler opp interaksjonene og viser hva som skjer under en autentisering.  Integrasjon mot ID-porten fra en kundeapplikasjon, gjøres best med kjente biblioteker på den plattformen kunden selv foretrekker.  
 
