@@ -16,7 +16,7 @@ on:
 
 jobs:
   call-workflow-image-build-publish:
-    uses: felleslosninger/github-workflows/.github/workflows/ci-spring-boot-build-publish-image.yml@federated-credentials
+    uses: felleslosninger/github-workflows/.github/workflows/ci-spring-boot-build-publish-image.yml@main
     with:
       image-name: idporten-oidc-demo-client
       java-version: 21
