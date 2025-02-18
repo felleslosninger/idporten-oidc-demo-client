@@ -1,0 +1,15 @@
+---
+spring:
+  application:
+    name: eidas-oidc-demo-client
+
+oidc-demo-client:
+  features:
+    authorization-details-enabled: true
+  theme:
+    user-id-claim: pid
+    heading: Login with EIDAS
+    form-defaults:
+      scope: openid profile
+      acr-value: eidas-loa-substantial
+      ui-locale: nb

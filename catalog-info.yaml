@@ -23,3 +23,16 @@ spec:
   lifecycle: production
   owner: team-idporten
   system: idporten
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: eidas-oidc-demo-client
+  description: eidas-oidc-demo-client
+  annotations:
+    github.com/project-slug: felleslosninger/idporten-oidc-demo-client
+spec:
+  type: application
+  lifecycle: production
+  owner: team-idporten
+  system: eidas
