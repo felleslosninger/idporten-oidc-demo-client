@@ -11,6 +11,6 @@ oidc-demo-client:
     client-id: democlient_eidas_test
     client-auth-method: client_secret_basic
     client-secret: ${OIDC_DEMO_CLIENT_SECRET}
-    redirect-uri: https://demo-client.test.idporten.no/callback
-    post-logout-redirect-uri: https://demo-client.test.idporten.no/logout/callback
+    redirect-uri: https://demo-client.eidasnode.idporten.no/callback
+    post-logout-redirect-uri: https://demo-client.test.eidasnode.no/logout/callback
   csp-header: "default-src 'self'; img-src 'self' data:; font-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' login.test.idporten.no idporten-connector.test.eidasnode.no fullmakt.test.idporten.no;"
