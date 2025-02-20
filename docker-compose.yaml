@@ -12,7 +12,7 @@ services:
         GIT_PACKAGE_TOKEN: ${GIT_PACKAGE_TOKEN}
         GIT_PACKAGE_USERNAME: ${GIT_PACKAGE_USERNAME}
     environment:
-      spring_profiles_active: ansattporten,docker # replace ansattporten profile with idporten to test ID-porten
+      spring_profiles_active: ansattporten,docker # replace ansattporten profile with idporten to test ID-porten, or eidas to test eidas node
     ports:
       - "7074:7074"
     networks:

@@ -27,12 +27,14 @@ jobs:
     needs: call-workflow-image-build-publish
     strategy:
       matrix:
-        application-name: [idporten-oidc-demo-client, ansattporten-oidc-demo-client]
+        application-name: [idporten-oidc-demo-client, ansattporten-oidc-demo-client, eidas-oidc-demo-client]
         include:
           - application-name: idporten-oidc-demo-client
             product-name: idporten
           - application-name: ansattporten-oidc-demo-client
             product-name: ansattporten
+          - application-name: eidas-oidc-demo-client
+            product-name: eidas
     with:
       application-name: ${{ matrix.application-name }}
       deployment-environment: systest
