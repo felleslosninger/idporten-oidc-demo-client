@@ -8,7 +8,7 @@ oidc-demo-client:
     heading: Login with EIDAS (prod)
   oidc-integration:
     issuer: https://idporten.no
-    client-id: eidas_demo_client_prod
+    client-id: eidas-oidc-demo-client
     client-auth-method: client_secret_basic
     client-secret: ${OIDC_DEMO_CLIENT_SECRET}
     redirect-uri: https://demo-client.eidasnode.no/callback
