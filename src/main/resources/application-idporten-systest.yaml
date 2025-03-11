@@ -4,6 +4,8 @@ spring:
     environment: systest
 
 oidc-demo-client:
+  features:
+    use-pushed-authorization-requests: true
   theme:
     heading: Login with ID-porten (systest)
   oidc-integration:
