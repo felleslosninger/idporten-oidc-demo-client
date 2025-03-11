@@ -9,8 +9,9 @@ import org.springframework.validation.annotation.Validated;
 @Data
 @Validated
 @ConfigurationProperties(prefix = "oidc-demo-client.features")
-public class FeatureSwichProperties {
+public class FeatureSwitchProperties {
 
     private boolean authorizationDetailsEnabled = false;
+    private boolean usePushedAuthorizationRequests = false;
 
 }
