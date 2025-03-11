@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 @Data
 public class ProtocolTrace implements Serializable {
 
+    private ProtocolInteraction pushedAuthorizationRequest;
+    private ProtocolInteraction pushedAuthorizationResponse;
     private ProtocolInteraction authorizationRequest;
     private ProtocolInteraction authorizationResponse;
     private ProtocolInteraction tokenRequest;
@@ -29,7 +31,7 @@ public class ProtocolTrace implements Serializable {
     }
 
     public List<ProtocolInteraction> getLoginInteraction() {
-        return Stream.of(authorizationRequest, authorizationResponse, tokenRequest, tokenResponse, validatedIdToken, bearerAccessToken, userInfoRequest, userInfoResponse)
+        return Stream.of(pushedAuthorizationRequest, pushedAuthorizationResponse, authorizationRequest, authorizationResponse, tokenRequest, tokenResponse, validatedIdToken, bearerAccessToken, userInfoRequest, userInfoResponse)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }

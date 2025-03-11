@@ -44,7 +44,7 @@ public class ProtocolTracerService {
     }
 
     public ProtocolTrace traceAuthorizationRequest(HttpSession session, URI authorizationRequest) {
-        ProtocolTrace protocolTrace = create(session);
+        ProtocolTrace protocolTrace = getOrCreate(session);
         protocolTrace.setAuthorizationRequest(
                 ProtocolInteraction.builder()
                         .id("authorizationRequest")
@@ -61,6 +61,29 @@ public class ProtocolTracerService {
                         .id("authorizationResponse")
                         .text("Authorization response")
                         .interaction(formatUri(authorizationResponse))
+                        .build());
+        return protocolTrace;
+    }
+
+    public ProtocolTrace tracePushedAuthorizationRequest(HttpSession session, HTTPRequest pushedAuthorizationRequest) {
+        ProtocolTrace protocolTrace = getOrCreate(session);
+        protocolTrace.setPushedAuthorizationRequest(
+                ProtocolInteraction.builder()
+                        .id("pushedAuthorizationRequest")
+                        .text("Pushed authorization request")
+                        .interaction(formatHTTPRequest(pushedAuthorizationRequest))
+                        .build());
+
+        return protocolTrace;
+    }
+
+    public ProtocolTrace tracePushedAuthorizationResponse(HttpSession session, HTTPResponse pushedAuthorizationResponse) {
+        ProtocolTrace protocolTrace = getOrCreate(session);
+        protocolTrace.setPushedAuthorizationResponse(
+                ProtocolInteraction.builder()
+                        .id("pushedAuthorizationResponse")
+                        .text("Pushed authorization response")
+                        .interaction(formatHTTPResponse(pushedAuthorizationResponse))
                         .build());
         return protocolTrace;
     }
