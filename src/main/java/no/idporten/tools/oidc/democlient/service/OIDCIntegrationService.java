@@ -26,7 +26,7 @@ import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.idporten.tools.oidc.democlient.config.FeatureSwichProperties;
+import no.idporten.tools.oidc.democlient.config.FeatureSwitchProperties;
 import no.idporten.tools.oidc.democlient.config.OIDCIntegrationProperties;
 import no.idporten.tools.oidc.democlient.crypto.KeyProvider;
 import no.idporten.tools.oidc.democlient.web.AuthorizationRequest;
@@ -55,14 +55,22 @@ public class OIDCIntegrationService {
     private final IDTokenValidator idTokenValidator;
     private final OIDCProviderMetadata oidcProviderMetadata;
     private final ProtocolTracerService oidcProtocolTracerService;
-    private final FeatureSwichProperties featureSwichProperties;
+    private final FeatureSwitchProperties featureSwitchProperties;
 
     public com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest(AuthorizationRequest authorizationRequest) {
         try {
+            final com.nimbusds.oauth2.sdk.AuthorizationRequest request;
             if (authorizationRequest.getScopes().contains("openid")) {
-                return oidcAuthorizationRequest(authorizationRequest);
+                request = oidcAuthorizationRequest(authorizationRequest);
+            } else {
+                request = oauth2AuthorizationRequest(authorizationRequest);
             }
-            return oauth2AuthorizationRequest(authorizationRequest);
+            if (featureSwitchProperties.isUsePushedAuthorizationRequests()) {
+                return pushAuthorizationRequest(request);
+            }
+            return request;
+        } catch (OIDCIntegrationException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -76,7 +84,7 @@ public class OIDCIntegrationService {
                 .redirectionURI(oidcIntegrationProperties.getRedirectUri())
                 .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
 
-        if (featureSwichProperties.isAuthorizationDetailsEnabled() && StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
+        if (featureSwitchProperties.isAuthorizationDetailsEnabled() && StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
             requestBuilder.customParameter("authorization_details", authorizationRequest.getAuthorizationDetails());
         }
         if (!CollectionUtils.isEmpty(authorizationRequest.getPrompt())) {
@@ -107,7 +115,7 @@ public class OIDCIntegrationService {
                 oidcIntegrationProperties.getRedirectUri());
         requestBuilder
                 .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
-        if (featureSwichProperties.isAuthorizationDetailsEnabled() && StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
+        if (featureSwitchProperties.isAuthorizationDetailsEnabled() && StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
             requestBuilder.customParameter("authorization_details", authorizationRequest.getAuthorizationDetails());
         }
         if (!CollectionUtils.isEmpty(authorizationRequest.getPrompt())) {
@@ -143,6 +151,34 @@ public class OIDCIntegrationService {
             return new LangTag(locale);
         } catch (LangTagException e) {
             return null;
+        }
+    }
+
+
+    public com.nimbusds.oauth2.sdk.AuthorizationRequest pushAuthorizationRequest(com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest) {
+        try {
+            PushedAuthorizationRequest pushedAuthorizationRequest = new PushedAuthorizationRequest(
+                    oidcProviderMetadata.getPushedAuthorizationRequestEndpointURI(),
+                    clientAuthentication(oidcIntegrationProperties),
+                    authorizationRequest);
+            PushedAuthorizationResponse response = process(pushedAuthorizationRequest);
+            if (response.indicatesSuccess()) {
+                com.nimbusds.oauth2.sdk.AuthorizationRequest.Builder requestBuilder = new com.nimbusds.oauth2.sdk.AuthorizationRequest.Builder(
+                        response.toSuccessResponse().getRequestURI(),
+                        new ClientID(oidcIntegrationProperties.getClientId()));
+                requestBuilder.endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
+                return requestBuilder.build();
+
+
+            } else {
+                PushedAuthorizationErrorResponse errorResponse = response.toErrorResponse();
+                log.warn("Error response from {}: {}", pushedAuthorizationRequest.getEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
+                throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());
+            }
+        } catch (OIDCIntegrationException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -243,6 +279,17 @@ public class OIDCIntegrationService {
         } catch (Exception e) {
             throw new RuntimeException();
         }
+    }
+
+    public PushedAuthorizationResponse process(PushedAuthorizationRequest pushedAuthorizationRequest) throws IOException, ParseException {
+        HTTPRequest httpRequest = pushedAuthorizationRequest.toHTTPRequest();
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        oidcProtocolTracerService.tracePushedAuthorizationRequest(request.getSession(), httpRequest);
+        httpRequest.setConnectTimeout(oidcIntegrationProperties.getConnectTimeOutMillis());
+        httpRequest.setReadTimeout(oidcIntegrationProperties.getReadTimeOutMillis());
+        HTTPResponse httpResponse = httpRequest.send();
+        oidcProtocolTracerService.tracePushedAuthorizationResponse(request.getSession(), httpResponse);
+        return PushedAuthorizationResponse.parse(httpResponse);
     }
 
     public TokenResponse process(com.nimbusds.oauth2.sdk.TokenRequest tokenRequest) throws IOException, ParseException {

@@ -7,7 +7,6 @@ import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
-import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.LogoutRequest;
 import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
@@ -16,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.idporten.tools.oidc.democlient.config.FeatureSwichProperties;
+import no.idporten.tools.oidc.democlient.config.FeatureSwitchProperties;
 import no.idporten.tools.oidc.democlient.config.OIDCIntegrationProperties;
 import no.idporten.tools.oidc.democlient.config.ThemeProperties;
 import no.idporten.tools.oidc.democlient.service.*;
@@ -40,13 +39,13 @@ public class TestClientController {
     private final OIDCIntegrationProperties idPortenIntegrationConfiguration;
     private final HtmlFormService htmlFormService;
     private final ThemeProperties themeProperties;
-    private final FeatureSwichProperties featureSwichProperties;
+    private final FeatureSwitchProperties featureSwitchProperties;
     private final ProtocolTracerService protocolTracerService;
 
     @ModelAttribute
     public void addCommonModelAttributes(Model model) {
         model.addAttribute("theme", themeProperties);
-        model.addAttribute("features", featureSwichProperties);
+        model.addAttribute("features", featureSwitchProperties);
     }
 
     @GetMapping("/")
@@ -70,9 +69,9 @@ public class TestClientController {
             request.getSession().setAttribute("code_verifier", new CodeVerifier(authorizationRequest.getCodeVerifier()));
         }
         com.nimbusds.oauth2.sdk.AuthorizationRequest authenticationRequest = oidcIntegrationService.authorizationRequest(authorizationRequest);
-        request.getSession().setAttribute("state", authenticationRequest.getState());
-        if (authenticationRequest instanceof AuthenticationRequest) {
-            request.getSession().setAttribute("nonce", ((AuthenticationRequest) authenticationRequest).getNonce());
+        request.getSession().setAttribute("state", new State(authorizationRequest.getState()));
+        if (StringUtils.hasText(authorizationRequest.getNonce())) {
+            request.getSession().setAttribute("nonce", new Nonce(authorizationRequest.getNonce()));
         }
         protocolTracerService.traceAuthorizationRequest(request.getSession(), authenticationRequest.toURI());
         return "redirect:" + authenticationRequest.toURI().toString();

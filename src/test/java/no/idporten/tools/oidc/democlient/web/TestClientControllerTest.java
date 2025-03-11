@@ -13,7 +13,7 @@ import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import no.idporten.tools.oidc.democlient.TestDataUtils;
-import no.idporten.tools.oidc.democlient.config.FeatureSwichProperties;
+import no.idporten.tools.oidc.democlient.config.FeatureSwitchProperties;
 import no.idporten.tools.oidc.democlient.config.OIDCIntegrationProperties;
 import no.idporten.tools.oidc.democlient.config.ThemeProperties;
 import no.idporten.tools.oidc.democlient.service.OIDCIntegrationService;
@@ -63,7 +63,7 @@ public class TestClientControllerTest {
     private ThemeProperties themeProperties;
 
     @Autowired
-    private FeatureSwichProperties featureSwichProperties;
+    private FeatureSwitchProperties featureSwitchProperties;
 
     @Autowired
     private OIDCProviderMetadata oidcProviderMetadata;
