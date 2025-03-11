@@ -168,8 +168,6 @@ public class OIDCIntegrationService {
                         new ClientID(oidcIntegrationProperties.getClientId()));
                 requestBuilder.endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
                 return requestBuilder.build();
-
-
             } else {
                 PushedAuthorizationErrorResponse errorResponse = response.toErrorResponse();
                 log.warn("Error response from {}: {}", pushedAuthorizationRequest.getEndpointURI(), errorResponse.getErrorObject().toJSONObject().toJSONString());
