@@ -94,7 +94,7 @@ public class TestClientController {
             AccessToken accessToken = tokenResponse.getTokens().getAccessToken();
             if (accessToken != null && accessToken.getScope() != null && accessToken.getScope().contains("openid")) {
                 OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse;
-                protocolTracerService.traceValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet());
+                protocolTracerService.traceValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken());
                 request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
                 model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getClaim(themeProperties.getUserIdClaim()));
             }

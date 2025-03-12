@@ -39,6 +39,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
@@ -189,7 +190,10 @@ public class OIDCIntegrationService {
     public AuthorizationResponse parseAuthorizationResponse(URI authorizationResponseUri) {
         try {
             if (ResponseMode.QUERY_JWT.equals(oidcIntegrationProperties.getResponseMode())) {
-                return AuthorizationResponse.parse(authorizationResponseUri, jarmValidator);
+                AuthorizationResponse authorizationResponse = AuthorizationResponse.parse(authorizationResponseUri, jarmValidator);
+                HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+                oidcProtocolTracerService.traceAuthorizationResponseJWT(request.getSession(), SignedJWT.parse(UriComponentsBuilder.fromUri(authorizationResponseUri).build().getQueryParams().getFirst("response")));
+                return authorizationResponse;
             }
             return AuthorizationResponse.parse(authorizationResponseUri);
         } catch (Exception e) {
