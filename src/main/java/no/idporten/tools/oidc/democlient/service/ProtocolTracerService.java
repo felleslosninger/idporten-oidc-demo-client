@@ -239,11 +239,19 @@ public class ProtocolTracerService {
                         .map(entry ->
                                 new StringBuilder(entry.getKey())
                                         .append('=')
-                                        .append("client_secret".equals(entry.getKey())
-                                                ? "***"
-                                                : String.join("+", entry.getValue())))
+                                        .append(
+                                                switch (entry.getKey()) {
+                                                    case "client_secret" -> "***";
+                                                    case "client_assertion" -> maskJwt(entry.getValue().getFirst());
+                                                    default -> String.join("+", entry.getValue());
+                                                }))
                         .collect(Collectors.joining("&\n")));
         return sb.toString();
+    }
+
+    private static String maskJwt(String jwt) {
+        // remove signature from jwt to prevent replay
+        return jwt.replaceAll("(?<header>[^.]+)\\.(?<body>[^.]+)\\.[^.]+$", "${header}.${body}.***");
     }
 
     protected static String formatHTTPResponse(HTTPResponse httpResponse) {

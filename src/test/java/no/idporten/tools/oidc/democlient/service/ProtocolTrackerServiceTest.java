@@ -1,12 +1,10 @@
 package no.idporten.tools.oidc.democlient.service;
 
+import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
 import com.nimbusds.oauth2.sdk.TokenRequest;
-import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
-import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
-import com.nimbusds.oauth2.sdk.auth.ClientSecretPost;
-import com.nimbusds.oauth2.sdk.auth.Secret;
+import com.nimbusds.oauth2.sdk.auth.*;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import org.junit.jupiter.api.DisplayName;
@@ -112,9 +110,21 @@ public class ProtocolTrackerServiceTest {
                     () -> assertTrue(protocolTrace.getTokenRequest().getInteraction().contains("client_secret=***")),
                     () -> assertFalse(protocolTrace.getTokenRequest().getInteraction().contains("secretxxx"))
             );
-
         }
 
+        @Test
+        @DisplayName("then client assertion is masked in back channel endpoint request body")
+        public void testMaskClientAssertionSignature() throws Exception {
+            MockHttpSession session = new MockHttpSession();
+            ClientSecretJWT clientAuthentication = new ClientSecretJWT(new ClientID("c1"), URI.create("https://junit.idporten.no"), JWSAlgorithm.HS256, new Secret());
+            TokenRequest tokenRequest = tokenRequest(clientAuthentication);
+            ProtocolTrace protocolTrace = protocolTracerService.traceTokenRequest(session, tokenRequest.toHTTPRequest());
+            assertAll(
+                    () -> assertNotNull(protocolTrace.getTokenRequest()),
+                    () -> assertTrue(protocolTrace.getTokenRequest().getInteraction().contains("client_assertion=")),
+                    () -> assertFalse(protocolTrace.getTokenRequest().getInteraction().contains(clientAuthentication.getClientAssertion().serialize()))
+            );
+        }
     }
 
     @Nested
