@@ -3,7 +3,7 @@ package no.idporten.tools.oidc.democlient.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpSession;
 import java.net.URI;
+import java.text.ParseException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -62,6 +63,16 @@ public class ProtocolTracerService {
                         .text("Authorization response")
                         .interaction(formatUri(authorizationResponse))
                         .build());
+        return protocolTrace;
+    }
+
+    public ProtocolTrace traceAuthorizationResponseJWT(HttpSession session, JWT jwt) {
+        ProtocolTrace protocolTrace = getOrCreate(session);
+        protocolTrace.setAuthorizationResponseJWT(ProtocolInteraction.builder()
+                .id("authorizationResponseJWT")
+                .text("Validated authorization response")
+                .interaction(formatJWT(jwt))
+                .build());
         return protocolTrace;
     }
 
@@ -177,12 +188,12 @@ public class ProtocolTracerService {
         return protocolTrace;
     }
 
-    public ProtocolTrace traceValidatedIdToken(HttpSession session, JWTClaimsSet claimsSet) {
+    public ProtocolTrace traceValidatedIdToken(HttpSession session, JWT jwt) {
         ProtocolTrace protocolTrace = getOrCreate(session);
         protocolTrace.setValidatedIdToken(ProtocolInteraction.builder()
                 .id("idToken")
                 .text("Validated id_token")
-                .interaction(formatJson(claimsSet.toString()))
+                .interaction(formatJWT(jwt))
                 .build());
         return protocolTrace;
     }
@@ -203,6 +214,16 @@ public class ProtocolTracerService {
             return objectMapper.enable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(objectMapper.readTree(json));
         } catch (JsonProcessingException e) {
             return json;
+        }
+    }
+
+    protected static String formatJWT(JWT jwt) {
+        try {
+            return formatJson(jwt.getHeader().toString()) +
+                    "\n.\n" +
+                    formatJson(jwt.getJWTClaimsSet().toString());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 
