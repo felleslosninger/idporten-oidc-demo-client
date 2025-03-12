@@ -1,5 +1,6 @@
 package no.idporten.tools.oidc.democlient.config;
 
+import com.nimbusds.oauth2.sdk.ResponseMode;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -45,6 +46,9 @@ public class OIDCIntegrationProperties implements InitializingBean {
     private String clientKeystorePassword;
     private String clientKeystoreKeyAlias;
     private String clientKeystoreKeyPassword;
+
+    @NotNull
+    private ResponseMode responseMode = ResponseMode.QUERY;
 
     @Min(1)
     private int connectTimeOutMillis;

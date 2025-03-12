@@ -9,6 +9,7 @@ import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.util.ResourceRetriever;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.Issuer;
+import com.nimbusds.oauth2.sdk.jarm.JARMValidator;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,18 @@ public class OIDCIntegrationConfiguration {
                 new ClientID(properties.getClientId()),
                 keySelector,
                 (JWEKeySelector) null);
+    }
+
+    @Bean
+    public JARMValidator jarmValidator(OIDCIntegrationProperties properties, OIDCProviderMetadata oidcProviderMetadata, RemoteJWKSet remoteJWKSet) {
+        JWSKeySelector<JWKSecurityContext> keySelector = new JWSVerificationKeySelector(
+                new HashSet<>(oidcProviderMetadata.getIDTokenJWSAlgs()),
+                remoteJWKSet);
+        return new JARMValidator(
+                new Issuer(properties.getIssuer()),
+                new ClientID(properties.getClientId()),
+                keySelector,
+                null);
     }
 
 }
