@@ -18,6 +18,7 @@ import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
+import com.nimbusds.oauth2.sdk.jarm.JARMValidator;
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
@@ -40,6 +41,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
+import java.net.URI;
 import java.security.cert.Certificate;
 import java.time.Clock;
 import java.util.*;
@@ -54,6 +56,7 @@ public class OIDCIntegrationService {
     private final OIDCIntegrationProperties oidcIntegrationProperties;
     private final Optional<KeyProvider> keyProvider;
     private final IDTokenValidator idTokenValidator;
+    private final JARMValidator jarmValidator;
     private final OIDCProviderMetadata oidcProviderMetadata;
     private final ProtocolTracerService oidcProtocolTracerService;
     private final FeatureSwitchProperties featureSwitchProperties;
@@ -83,6 +86,7 @@ public class OIDCIntegrationService {
                 new ClientID(oidcIntegrationProperties.getClientId()));
         requestBuilder.scope(new Scope(authorizationRequest.getScopes().toArray(String[]::new)))
                 .redirectionURI(oidcIntegrationProperties.getRedirectUri())
+                .responseMode(oidcIntegrationProperties.getResponseMode())
                 .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
 
         if (featureSwitchProperties.isAuthorizationDetailsEnabled() && StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
@@ -115,6 +119,7 @@ public class OIDCIntegrationService {
                 new ClientID(oidcIntegrationProperties.getClientId()),
                 oidcIntegrationProperties.getRedirectUri());
         requestBuilder
+                .responseMode(oidcIntegrationProperties.getResponseMode())
                 .endpointURI(oidcProviderMetadata.getAuthorizationEndpointURI());
         if (featureSwitchProperties.isAuthorizationDetailsEnabled() && StringUtils.hasText(authorizationRequest.getAuthorizationDetails())) {
             requestBuilder.customParameter("authorization_details", authorizationRequest.getAuthorizationDetails());
@@ -178,6 +183,18 @@ public class OIDCIntegrationService {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public AuthorizationResponse parseAuthorizationResponse(URI authorizationResponseUri) {
+        try {
+            if (ResponseMode.QUERY_JWT.equals(oidcIntegrationProperties.getResponseMode())) {
+                return AuthorizationResponse.parse(authorizationResponseUri, jarmValidator);
+            }
+            return AuthorizationResponse.parse(authorizationResponseUri);
+        } catch (Exception e) {
+            log.warn("Failed to parse authorization response {}",authorizationResponseUri, e);
+            throw new OIDCIntegrationException("Failed to parse authorization response.");
         }
     }
 
