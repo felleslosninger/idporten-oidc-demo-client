@@ -33,7 +33,7 @@ public class OIDCIntegrationProperties implements InitializingBean {
     private URI frontChannelLogoutUri;
 
     @NotEmpty
-    @Pattern(regexp = "^client_secret_basic|client_secret_post|private_key_jwt$")
+    @Pattern(regexp = "^client_secret_basic|client_secret_post|client_secret_jwt|private_key_jwt$")
     private String clientAuthMethod;
 
     @NotEmpty

@@ -1,6 +1,7 @@
 package no.idporten.tools.oidc.democlient.service;
 
 
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
@@ -236,13 +237,16 @@ public class OIDCIntegrationService {
                 new State());
     }
 
-    protected ClientAuthentication clientAuthentication(OIDCIntegrationProperties oidcIntegrationProperties) {
+    protected ClientAuthentication clientAuthentication(OIDCIntegrationProperties oidcIntegrationProperties) throws JOSEException {
         ClientAuthenticationMethod clientAuthenticationMethod = ClientAuthenticationMethod.parse(oidcIntegrationProperties.getClientAuthMethod());
         if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC == clientAuthenticationMethod) {
             return new ClientSecretBasic(new ClientID(oidcIntegrationProperties.getClientId()), new Secret(oidcIntegrationProperties.getClientSecret()));
         }
         if (ClientAuthenticationMethod.CLIENT_SECRET_POST == clientAuthenticationMethod) {
             return new ClientSecretPost(new ClientID(oidcIntegrationProperties.getClientId()), new Secret(oidcIntegrationProperties.getClientSecret()));
+        }
+        if (ClientAuthenticationMethod.CLIENT_SECRET_JWT == clientAuthenticationMethod) {
+            return new ClientSecretJWT(new ClientID(oidcIntegrationProperties.getClientId()), oidcIntegrationProperties.getIssuer(), JWSAlgorithm.HS256, new Secret(oidcIntegrationProperties.getClientSecret()));
         }
         if (ClientAuthenticationMethod.PRIVATE_KEY_JWT == clientAuthenticationMethod) {
             return clientAssertion(oidcIntegrationProperties, keyProvider.get());
