@@ -3,6 +3,7 @@ package no.idporten.tools.oidc.democlient.web;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
+import com.nimbusds.oauth2.sdk.AuthorizationResponse;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
@@ -81,7 +82,7 @@ public class TestClientController {
     public String callback(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
         URI authorizationResponseUri = UriComponentsBuilder.fromUri(idPortenIntegrationConfiguration.getRedirectUri()).query(request.getQueryString()).build().toUri();
         protocolTracerService.traceAuthorizationResponse(request.getSession(), authorizationResponseUri);
-        com.nimbusds.oauth2.sdk.AuthorizationResponse authorizationResponse = com.nimbusds.oauth2.sdk.AuthorizationResponse.parse(authorizationResponseUri);
+        AuthorizationResponse authorizationResponse = oidcIntegrationService.parseAuthorizationResponse(authorizationResponseUri);
         final State state = (State) request.getSession().getAttribute("state");
         if (!Objects.equals(state, authorizationResponse.getState())) {
             throw new OIDCIntegrationException("Invalid state. Authorization response state does not match state from authorization request.");
