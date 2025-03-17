@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="nn">
+
+<head th:replace="~{fragments/header::head}"/>
+<body>
+<div class="container">
+    <h1><span th:if="${theme}" th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
+    <div>Her kan me f.eks liste ut login valg som er gjort... </div>
+    <br />
+    <a class="btn btn-primary" th:href="${uri}" role="button">Login</a>
+</div>
+
+<div th:replace="~{fragments/footer::scripts}"/>
+
+</body>
+</html>
