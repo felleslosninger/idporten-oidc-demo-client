@@ -15,4 +15,4 @@ oidc-demo-client:
     client-secret: ${OIDC-CLIENT-SECRET}
     redirect-uri: https://demo-client.ansattporten.dev/callback
     post-logout-redirect-uri: https://demo-client.ansattporten.dev/logout/callback
-  csp-header: "default-src 'self'; img-src 'self' data:; font-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' login.ansattporten.dev altinn-orgvelger.ansattporten.dev;"
+  csp-header: "default-src 'self'; img-src 'self' data:; font-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' login.ansattporten.dev;"

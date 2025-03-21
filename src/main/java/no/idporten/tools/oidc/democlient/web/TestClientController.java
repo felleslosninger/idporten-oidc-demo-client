@@ -65,7 +65,7 @@ public class TestClientController {
     }
 
     @PostMapping("/authorize")
-    public String authorize(@ModelAttribute AuthorizationRequest authorizationRequest,  HttpServletRequest request) {
+    public String authorize(@ModelAttribute AuthorizationRequest authorizationRequest,  HttpServletRequest request, Model model) {
         if (StringUtils.hasText(authorizationRequest.getCodeVerifier())) {
             request.getSession().setAttribute("code_verifier", new CodeVerifier(authorizationRequest.getCodeVerifier()));
         }
@@ -75,7 +75,9 @@ public class TestClientController {
             request.getSession().setAttribute("nonce", new Nonce(authorizationRequest.getNonce()));
         }
         protocolTracerService.traceAuthorizationRequest(request.getSession(), authenticationRequest.toURI());
-        return "redirect:" + authenticationRequest.toURI().toString();
+
+        model.addAttribute("uri", authenticationRequest.toURI().toString());
+        return "authorize";
     }
 
     @GetMapping("/callback")

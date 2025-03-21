@@ -36,6 +36,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
+import org.springframework.web.util.UriComponentsBuilder.ParserType;
 
 import jakarta.servlet.http.HttpSession;
 import java.net.URI;
@@ -43,6 +44,7 @@ import java.nio.charset.Charset;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -108,8 +110,8 @@ public class TestClientControllerTest {
         }
 
         @Test
-        @DisplayName("then redirected authorization request contains parameters with values from user input")
-        public void testRedirectedAuthorizationRequest() throws Exception {
+        @DisplayName("then the authorization request is successfull and contains a valid redirect in meta header")
+        public void testSuccessfullAuthorizationRequest() throws Exception {
             MockHttpSession mockSession = new MockHttpSession();
             ProtocolTracerService.create(mockSession);
             final String state = new State().getValue();
@@ -128,14 +130,16 @@ public class TestClientControllerTest {
                             .param("nonce", nonce)
                             .param("codeVerifier", codeVerifier)
                             .param("codeChallengeMethod", "S256"))
-                    .andExpect(status().is3xxRedirection())
+                    .andExpect(status().is2xxSuccessful())
                     .andReturn();
             HttpSession session = mvcResult.getRequest().getSession();
             UriComponents authorizationRequest = UriComponentsBuilder
-                    .fromHttpUrl(mvcResult.getResponse().getRedirectedUrl())
+                    .fromUriString(mvcResult.getResponse().getContentAsString().split("content=\"0; url=")[1].split("\"")[0].replaceAll("amp;", ""))
                     .build();
             ProtocolTrace protocolTrace = ProtocolTracerService.get(mvcResult.getRequest().getSession());
             assertAll(
+                    () -> assertNotNull(session),
+                    () -> assertEquals(oidcProviderMetadata.getAuthorizationEndpointURI().getScheme(), authorizationRequest.getScheme()),
                     () -> assertEquals(oidcProviderMetadata.getAuthorizationEndpointURI().getHost(), authorizationRequest.getHost()),
                     () -> assertEquals(oidcProviderMetadata.getAuthorizationEndpointURI().getPath(), authorizationRequest.getPath()),
                     () -> assertEquals(oidcIntegrationProperties.getClientId(), authorizationRequest.getQueryParams().getFirst("client_id")),
