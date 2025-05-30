@@ -12,7 +12,7 @@
         You are logged in as <span th:text="${personIdentifier}" th:remove="tag">personidentifier</span>.
     </div>
 
-    <div th:include="~{fragments/protocoltrace::protocoltrace}" />
+    <div th:insert="~{fragments/protocoltrace::protocoltrace}" />
 
     <br/>
     <a class="btn btn-primary" th:href="@{/}" role="button">Back</a>

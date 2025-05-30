@@ -12,7 +12,7 @@
         <p th:if="${message}" th:text="${message}" th:remove="tag"/>
     </div>
 
-    <div th:include="~{fragments/protocoltrace::protocoltrace}" />
+    <div th:insert="~{fragments/protocoltrace::protocoltrace}" />
 
     <br/>
     <a class="btn btn-primary" th:href="@{/}" role="button">Back</a>
