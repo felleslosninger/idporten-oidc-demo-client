@@ -1,3 +1,1 @@
-CVE-2024-45337 # golang.org/x/crypto/ssh: Misuse of ServerConfig.PublicKeyCallback may cause authorization bypass in golang.org/x/crypto 
-CVE-2024-45338 # Non-linear parsing of case-insensitive content in golang.org/x/net/html
-CVE-2024-57699 #  Uncontrolled Recursion vulnerability in net.minidev:json-smart
+CVE-2025-47907 # stdlib fixed in 1.24.6
