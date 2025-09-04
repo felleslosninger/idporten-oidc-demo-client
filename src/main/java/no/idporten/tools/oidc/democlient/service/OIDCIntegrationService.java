@@ -61,6 +61,7 @@ public class OIDCIntegrationService {
     private final OIDCProviderMetadata oidcProviderMetadata;
     private final ProtocolTracerService oidcProtocolTracerService;
     private final FeatureSwitchProperties featureSwitchProperties;
+    private final CertificateValidator certificateValidator;
 
     public com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest(AuthorizationRequest authorizationRequest) {
         try {
@@ -212,8 +213,11 @@ public class OIDCIntegrationService {
                 AccessTokenResponse accessTokenResponse = tokenResponse.toSuccessResponse();
                 if (accessTokenResponse instanceof OIDCTokenResponse) {
                     OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
-                    if (oidcTokenResponse.getOIDCTokens().getIDToken() != null) {
-                        idTokenValidator.validate(oidcTokenResponse.getOIDCTokens().getIDToken(), nonce);
+                    final var idToken = oidcTokenResponse.getOIDCTokens().getIDToken();
+                    if (idToken != null) {
+                        final var oidcProviderKeys = oidcProviderMetadata.getJWKSet();
+                        certificateValidator.validate(oidcProviderKeys, idToken);
+                        idTokenValidator.validate(idToken, nonce);
                     }
                 }
                 return accessTokenResponse;
