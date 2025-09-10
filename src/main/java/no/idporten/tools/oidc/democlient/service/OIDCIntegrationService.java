@@ -6,6 +6,8 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -26,6 +28,7 @@ import com.nimbusds.openid.connect.sdk.*;
 import com.nimbusds.openid.connect.sdk.claims.ACR;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
+import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.idporten.tools.oidc.democlient.config.FeatureSwitchProperties;
@@ -44,6 +47,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.time.Clock;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -203,6 +207,38 @@ public class OIDCIntegrationService {
         }
     }
 
+    public String getJwksEndpoint() {
+        return oidcProviderMetadata.getJWKSetURI().toString();
+    }
+
+    public List<X509Certificate> getSignatureCertChain(JWT jwt) {
+        final var oidcProviderKeys = oidcProviderMetadata.getJWKSet();
+       return getSignatureCertChain(oidcProviderKeys, jwt);
+    }
+
+    public static List<X509Certificate> getSignatureCertChain(@Nullable JWKSet oidcProviderKeys, @Nullable JWT jwt) {
+        if (jwt == null || oidcProviderKeys == null) {
+            // no-op; need both elements to continue
+            return List.of();
+        }
+
+        try {
+            final JWSHeader jwsHeader = (JWSHeader) jwt.getHeader();
+            final String kid = jwsHeader.getKeyID();
+            final JWK jwk = oidcProviderKeys.getKeyByKeyId(kid);
+
+            if (jwk == null) {
+                log.warn("Unable to validate signing certificate chain, no key found with ID [{}]", kid);
+                return List.of();
+            }
+            return jwk.getParsedX509CertChain();
+
+        } catch (ClassCastException ex) {
+            log.warn("Token header is not of type JWSHeader", ex);
+            return List.of();
+        }
+    }
+
     public AccessTokenResponse token(AuthorizationSuccessResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
         try {
             AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), oidcIntegrationProperties.getRedirectUri(), codeVerifier);
@@ -215,8 +251,7 @@ public class OIDCIntegrationService {
                     OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
                     final var idToken = oidcTokenResponse.getOIDCTokens().getIDToken();
                     if (idToken != null) {
-                        final var oidcProviderKeys = oidcProviderMetadata.getJWKSet();
-                        certChainValidator.validate(oidcProviderKeys, idToken);
+                        certChainValidator.validate(getSignatureCertChain(idToken));
                         idTokenValidator.validate(idToken, nonce);
                     }
                 }

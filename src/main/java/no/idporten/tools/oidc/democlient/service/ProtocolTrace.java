@@ -19,6 +19,7 @@ public class ProtocolTrace implements Serializable {
     private ProtocolInteraction tokenRequest;
     private ProtocolInteraction tokenResponse;
     private ProtocolInteraction validatedIdToken;
+    private ProtocolInteraction signatureChainX5c;
     private ProtocolInteraction bearerAccessToken;
     private ProtocolInteraction userInfoRequest;
     private ProtocolInteraction userInfoResponse;
@@ -32,7 +33,7 @@ public class ProtocolTrace implements Serializable {
     }
 
     public List<ProtocolInteraction> getLoginInteraction() {
-        return Stream.of(pushedAuthorizationRequest, pushedAuthorizationResponse, authorizationRequest, authorizationResponse, authorizationResponseJWT, tokenRequest, tokenResponse, validatedIdToken, bearerAccessToken, userInfoRequest, userInfoResponse)
+        return Stream.of(pushedAuthorizationRequest, pushedAuthorizationResponse, authorizationRequest, authorizationResponse, authorizationResponseJWT, tokenRequest, tokenResponse, validatedIdToken, signatureChainX5c, bearerAccessToken, userInfoRequest, userInfoResponse)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }

@@ -64,14 +64,15 @@ class CertChainValidatorTest {
 
     /**
      * Tests the cert chain validator and checks if various date ranges are valid
-     * @param daysBefore certificate issued date - adjusted number of days from today
-     * @param daysAfter certificate expiration date - number of days from today
-     * @param throwsError true when a validation error is expected, otherwise false
+     *
+     * @param daysBefore    certificate issued date - adjusted number of days from today
+     * @param daysAfter     certificate expiration date - number of days from today
+     * @param throwsError   true when a validation error is expected, otherwise false
      * @param expectedError to be thrown
      */
     @ParameterizedTest(name = "Test #{index}: Given the certificate is valid from {0} days and until {1} days from now, then throwError={2}")
     @CsvSource({
-            "-10,90, false, null" ,
+            "-10,90, false, null",
             "-10,-1, true, Signature certificate chain (x5c) for the key id (kid) in your JWT is invalid. Check the JWKS configuration with your OIDC provider. Cause:[Expired at",
             "10,90, true, Signature certificate chain (x5c) for the key id (kid) in your JWT is invalid. Check the JWKS configuration with your OIDC provider. Cause:[Not valid before"
     })
@@ -88,17 +89,18 @@ class CertChainValidatorTest {
         final var jwtSubject = UUID.randomUUID().toString();
         final var signedJWT = generateSignedJWT(jwkRsaKeys, jwtIssuer, jwtSubject);
 
+        final var x5c = OIDCIntegrationService.getSignatureCertChain(jwkSet, signedJWT);
+
         if (throwsError) {
             final var exception = assertThrows(RuntimeException.class, () -> {
-                validator.validate(jwkSet,signedJWT);
+                validator.validate(x5c);
             });
 
             assertTrue(exception.getMessage().contains(expectedError));
 
         } else {
             assertDoesNotThrow(() -> {
-                validator.validate(jwkSet, signedJWT);
-
+                validator.validate(x5c);
             });
         }
     }

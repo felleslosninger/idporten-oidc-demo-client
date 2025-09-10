@@ -11,8 +11,14 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpSession;
 import java.net.URI;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
@@ -204,6 +210,49 @@ public class ProtocolTracerService {
                 .id("accessToken")
                 .text("Bearer access_token")
                 .interaction(accessToken)
+                .build());
+        return protocolTrace;
+    }
+
+    public ProtocolTrace traceX509SigningCertificate(HttpSession session, List<X509Certificate> list, String jwksEndpoint, boolean enableWarning) {
+        final var encoder = Base64.getEncoder();
+        final var trace = new StringBuilder(2048);
+
+        if (list == null || list.isEmpty()) {
+           trace.append(String.format("""
+                   No certificate chain provided (x5c) by the token issuer.
+                   
+                   Check your OIDC provider configuration and JWKS endpoint: %s
+                   """, jwksEndpoint));
+           list = new ArrayList<>();
+
+           if (!enableWarning) {
+               return null;
+           }
+        }
+
+        for (X509Certificate cert : list) {
+            try {
+                final var base64 = encoder.encodeToString(cert.getEncoded());
+                final var content = String.format("""
+                    ---
+                    Base64: %s
+                    Issued date: %s
+                    Expiration date: %s
+                    Serial number: %s
+                    ---
+                    """, base64, cert.getNotBefore(), cert.getNotAfter(), cert.getSerialNumber());
+                trace.append(content);
+            } catch (CertificateEncodingException e) {
+                throw new RuntimeException("Eh!");
+            }
+        }
+
+        ProtocolTrace protocolTrace = getOrCreate(session);
+        protocolTrace.setSignatureChainX5c(ProtocolInteraction.builder()
+                .id("oidcSignatureChain")
+                .text("Issuer X.509 Signature Chain (x5c)")
+                .interaction(trace.toString())
                 .build());
         return protocolTrace;
     }
