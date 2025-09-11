@@ -14,9 +14,10 @@ import java.net.URI;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -214,22 +215,30 @@ public class ProtocolTracerService {
         return protocolTrace;
     }
 
-    public ProtocolTrace traceX509SigningCertificate(HttpSession session, List<X509Certificate> list, String jwksEndpoint, boolean enableWarning) {
+    private WarningLevel getHighestWarningLevel(Set<WarningLevel> levels) {
+        if (levels.contains(WarningLevel.ERROR)) {
+            return WarningLevel.ERROR;
+        } else if (levels.contains(WarningLevel.WARNING)) {
+            return WarningLevel.WARNING;
+        } else if (levels.contains(WarningLevel.INFO)) {
+            return WarningLevel.INFO;
+        } else  {
+            return null;
+        }
+    }
+
+    public ProtocolTrace traceX509SigningCertificate(HttpSession session, List<X509Certificate> list, String jwksEndpoint, Map<WarningLevel, List<String>> validationResults, boolean enableWarning) {
         final var encoder = Base64.getEncoder();
         final var trace = new StringBuilder(2048);
 
-        if (list == null || list.isEmpty()) {
-           trace.append(String.format("""
-                   No certificate chain provided (x5c) by the token issuer.
-                   
-                   Check your OIDC provider configuration and JWKS endpoint: %s
-                   """, jwksEndpoint));
-           list = new ArrayList<>();
+        for (var level : validationResults.keySet()) {
+            final var message = validationResults.get(level);
+            trace.append(level).append(": ");
+            trace.append(message);
 
-           if (!enableWarning) {
-               return null;
-           }
         }
+
+        trace.append("\n");
 
         for (X509Certificate cert : list) {
             try {
@@ -253,6 +262,7 @@ public class ProtocolTracerService {
                 .id("oidcSignatureChain")
                 .text("Issuer X.509 Signature Chain (x5c)")
                 .interaction(trace.toString())
+                .warningLevel(getHighestWarningLevel(validationResults.keySet()))
                 .build());
         return protocolTrace;
     }

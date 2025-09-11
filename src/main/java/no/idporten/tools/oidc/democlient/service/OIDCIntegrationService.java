@@ -1,13 +1,11 @@
 package no.idporten.tools.oidc.democlient.service;
 
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -66,6 +64,7 @@ public class OIDCIntegrationService {
     private final ProtocolTracerService oidcProtocolTracerService;
     private final FeatureSwitchProperties featureSwitchProperties;
     private final CertChainValidator certChainValidator;
+    private final RemoteJWKSet remoteJWKSet;
 
     public com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest(AuthorizationRequest authorizationRequest) {
         try {
@@ -211,10 +210,19 @@ public class OIDCIntegrationService {
         return oidcProviderMetadata.getJWKSetURI().toString();
     }
 
+
     public List<X509Certificate> getSignatureCertChain(JWT jwt) {
-        final var oidcProviderKeys = oidcProviderMetadata.getJWKSet();
-       return getSignatureCertChain(oidcProviderKeys, jwt);
+        return getSignatureCertChain(remoteJWKSet.getCachedJWKSet(),  jwt);
     }
+
+    public Map<WarningLevel, List<String>> getSignatureCertChainValidationResults(JWT idToken) {
+        try {
+            return certChainValidator.validate(getSignatureCertChain(idToken));
+        } catch (Exception e) {
+           throw new OIDCIntegrationException("Validating Signature Chain Certificate failed");
+        }
+    }
+
 
     public static List<X509Certificate> getSignatureCertChain(@Nullable JWKSet oidcProviderKeys, @Nullable JWT jwt) {
         if (jwt == null || oidcProviderKeys == null) {
@@ -251,7 +259,6 @@ public class OIDCIntegrationService {
                     OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
                     final var idToken = oidcTokenResponse.getOIDCTokens().getIDToken();
                     if (idToken != null) {
-                        certChainValidator.validate(getSignatureCertChain(idToken));
                         idTokenValidator.validate(idToken, nonce);
                     }
                 }

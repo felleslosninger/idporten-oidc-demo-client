@@ -41,5 +41,4 @@ public class ProtocolTrace implements Serializable {
     public List<ProtocolInteraction> getAllInteraction() {
         return Stream.of(getLoginInteraction(), getLogoutInteraction()).flatMap(List::stream).collect(Collectors.toList());
     }
-
 }

@@ -7,6 +7,10 @@ import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.jwk.source.JWKSourceBuilder;
+import com.nimbusds.jose.jwk.source.RemoteJWKSet;
+import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -91,20 +95,15 @@ class CertChainValidatorTest {
 
         final var x5c = OIDCIntegrationService.getSignatureCertChain(jwkSet, signedJWT);
 
-        if (throwsError) {
-            final var exception = assertThrows(RuntimeException.class, () -> {
-                validator.validate(x5c);
-            });
+        final var errors = validator.validate(x5c);
 
-            assertTrue(exception.getMessage().contains(expectedError));
+        if (throwsError) {
+            assertFalse(errors.isEmpty());
 
         } else {
-            assertDoesNotThrow(() -> {
-                validator.validate(x5c);
-            });
+            assertTrue(errors.isEmpty());
         }
     }
-
 
     private static List<Base64> toBase64(X509Certificate[] chain) {
         final var output = new ArrayList<Base64>(chain.length);

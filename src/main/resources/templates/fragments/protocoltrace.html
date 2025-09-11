@@ -10,12 +10,13 @@
         </script>
         <div class="accordion-item" th:each="interaction: ${session.protocolTrace.allInteraction}">
             <h2 class="accordion-header" th:id="'header' + ${interaction.id}">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                <button class="accordion-button collapsed +${}" type="button" data-bs-toggle="collapse"
                         th:data-bs-target="'#' + ${interaction.id}" aria-expanded="false"
                         th:aria-controls="${interaction.id}">
                     <p th:text="${interaction.text}" th:remove="tag"/>
                 </button>
             </h2>
+            <!-- TODO: Add warning indicator or error indicator -->
             <div th:id="${interaction.id}" class="accordion-collapse collapse"
                  th:aria-labelledby="'header' + ${interaction.id}"
                  data-bs-parent="#protocolTrace">

@@ -10,5 +10,6 @@ public class ProtocolInteraction {
     private String id;
     private String text;
     private String interaction;
+    private WarningLevel warningLevel;
 
 }
