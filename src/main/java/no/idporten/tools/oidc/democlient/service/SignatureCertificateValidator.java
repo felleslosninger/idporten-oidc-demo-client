@@ -35,6 +35,8 @@ public class SignatureCertificateValidator {
         }
 
         return x509Chain.stream()
+                // validate only first (root) certificate
+                .findFirst().stream()
                 .map(this::validateDateRanges)
                 .flatMap(Collection::stream).toList();
     }

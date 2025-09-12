@@ -109,6 +109,11 @@ public class TestDataUtils {
         }
     }
 
+    //TODO
+    public static RSAKey generateJwkRsaChain() {
+        //WIP !
+       throw new RuntimeException("Not implemented yet");
+    }
 
     public static RSAKey generateJwkRsaKeys(String x5cIssuer, String x5cSubject, Date notBefore, Date notAfter) {
         final var sigKid = UUID.randomUUID().toString();

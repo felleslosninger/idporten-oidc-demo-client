@@ -6,6 +6,7 @@ import no.idporten.tools.oidc.democlient.util.WarningLevel;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -87,6 +88,32 @@ class SignatureCertificateValidatorTest {
         }
     }
 
+    @Test
+    @Disabled
+        // TODO: Add test case scenario for real-life x5c with root cert + multiple chained certs
+    void givenThereAreMultipleCertificatesInChainThenTheValidatorShouldCheckRootCertificate() {
+
+        // given
+        final var notBefore = Date.from(Instant.now().plus(-180, ChronoUnit.DAYS));
+        final var notAfter = Date.from(Instant.now().plus(180, ChronoUnit.DAYS));
+
+        //TODO
+        final var jwkRsaKeys = TestDataUtils.generateJwkRsaKeys("CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
+        final var jwkSet = new JWKSet(jwkRsaKeys.toPublicJWK());
+
+        final var jwtIssuer = "https://auth.example.com";
+        final var jwtSubject = UUID.randomUUID().toString();
+        final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys, jwtIssuer, jwtSubject);
+
+        final var x5c = getSignatureCertChain(jwkSet, signedJWT);
+
+        // when
+        final var actual = validator.validate(x5c);
+
+        // then
+        //TODO
+    }
+
 
     @Test
     @DisplayName(value = "Given no certificate chain is given, then the validator should issue a warning")
@@ -103,7 +130,7 @@ class SignatureCertificateValidatorTest {
         assertNotNull(actual.getFirst().level());
         assertNotNull(actual.getFirst().message());
         assertEquals(WarningLevel.WARNING, actual.getFirst().level());
-        assertEquals(actual.getFirst().message(), "Certificate chain was not found");
+        assertEquals("Certificate chain was not found", actual.getFirst().message());
     }
 
     @Test
@@ -121,7 +148,7 @@ class SignatureCertificateValidatorTest {
         assertNotNull(actual.getFirst().level());
         assertNotNull(actual.getFirst().message());
         assertEquals(WarningLevel.WARNING, actual.getFirst().level());
-        assertEquals(actual.getFirst().message(), "Certificate chain was not found");
+        assertEquals("Certificate chain was not found", actual.getFirst().message());
     }
 
     @Test
@@ -151,6 +178,30 @@ class SignatureCertificateValidatorTest {
             final var x5c = getSignatureCertChain(jwkSet, signedButMisleadingJWT);
             assertNotNull(x5c);
             assertTrue(x5c.isEmpty());
+        });
+    }
+
+    @Test
+    @DisplayName(value = "Given a valid kid on the JWT, then retrieval attempt of cert chain should succeed")
+    void shouldHandleValidKeyAndReturnCertificateChain() {
+        // given
+        final var notBefore = Date.from(Instant.now().plus(-365, ChronoUnit.DAYS));
+        final var notAfter = Date.from(Instant.now().plus(1825, ChronoUnit.DAYS));
+
+        final var jwkRsaKeys = TestDataUtils.generateJwkRsaKeys("CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
+        final var jwkSet = new JWKSet(jwkRsaKeys.toPublicJWK());
+
+        final var jwtIssuer = "https://auth.example.com";
+        final var jwtSubject = UUID.randomUUID().toString();
+
+        // when
+        final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys, jwtIssuer, jwtSubject);
+
+        // then
+        assertDoesNotThrow(() -> {
+            final var x5c = getSignatureCertChain(jwkSet, signedJWT);
+            assertNotNull(x5c);
+            assertEquals(1, x5c.size());
         });
     }
 }

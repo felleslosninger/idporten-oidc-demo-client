@@ -222,6 +222,7 @@ public class ProtocolTracerService {
 
         trace.append("\n");
 
+        //TODO: Remove or keep after code review
         for (int i = 0, size = x509CertificateList.size(); i < size; i++) {
             X509Certificate cert = x509CertificateList.get(i);
             final var content = String.format("""
