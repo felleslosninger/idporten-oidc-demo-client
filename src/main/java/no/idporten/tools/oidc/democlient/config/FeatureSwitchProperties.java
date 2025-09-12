@@ -13,6 +13,5 @@ public class FeatureSwitchProperties {
 
     private boolean authorizationDetailsEnabled = false;
     private boolean usePushedAuthorizationRequests = false;
-    private boolean showMissingCertChainEnabled = true;
 
 }

@@ -67,9 +67,6 @@ public class TestClientControllerTest {
     private ThemeProperties themeProperties;
 
     @Autowired
-    private FeatureSwitchProperties featureSwitchProperties;
-
-    @Autowired
     private OIDCProviderMetadata oidcProviderMetadata;
 
     @Autowired
