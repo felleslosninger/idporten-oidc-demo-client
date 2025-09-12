@@ -102,7 +102,7 @@ class SignatureCertificateValidatorTest {
         assertEquals(1, actual.size());
         assertNotNull(actual.getFirst().level());
         assertNotNull(actual.getFirst().message());
-        assertEquals(WarningLevel.WARN, actual.getFirst().level());
+        assertEquals(WarningLevel.WARNING, actual.getFirst().level());
         assertEquals(actual.getFirst().message(), "Certificate chain was not found");
     }
 
@@ -120,7 +120,7 @@ class SignatureCertificateValidatorTest {
         assertEquals(1, actual.size());
         assertNotNull(actual.getFirst().level());
         assertNotNull(actual.getFirst().message());
-        assertEquals(WarningLevel.WARN, actual.getFirst().level());
+        assertEquals(WarningLevel.WARNING, actual.getFirst().level());
         assertEquals(actual.getFirst().message(), "Certificate chain was not found");
     }
 
