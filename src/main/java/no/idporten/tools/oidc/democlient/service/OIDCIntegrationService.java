@@ -1,10 +1,11 @@
 package no.idporten.tools.oidc.democlient.service;
 
 
-import com.nimbusds.jose.*;
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWT;
@@ -26,7 +27,7 @@ import com.nimbusds.openid.connect.sdk.*;
 import com.nimbusds.openid.connect.sdk.claims.ACR;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
-import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.idporten.tools.oidc.democlient.config.FeatureSwitchProperties;
@@ -38,8 +39,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -63,7 +62,7 @@ public class OIDCIntegrationService {
     private final OIDCProviderMetadata oidcProviderMetadata;
     private final ProtocolTracerService oidcProtocolTracerService;
     private final FeatureSwitchProperties featureSwitchProperties;
-    private final CertChainValidator certChainValidator;
+    private final SignatureCertificateValidator signatureCertificateValidator;
     private final RemoteJWKSet remoteJWKSet;
 
     public com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest(AuthorizationRequest authorizationRequest) {
@@ -201,51 +200,24 @@ public class OIDCIntegrationService {
             }
             return AuthorizationResponse.parse(authorizationResponseUri);
         } catch (Exception e) {
-            log.warn("Failed to parse authorization response {}",authorizationResponseUri, e);
+            log.warn("Failed to parse authorization response {}", authorizationResponseUri, e);
             throw new OIDCIntegrationException("Failed to parse authorization response.");
         }
     }
 
-    public String getJwksEndpoint() {
-        return oidcProviderMetadata.getJWKSetURI().toString();
-    }
-
-
-    public List<X509Certificate> getSignatureCertChain(JWT jwt) {
-        return getSignatureCertChain(remoteJWKSet.getCachedJWKSet(),  jwt);
-    }
-
-    public Map<WarningLevel, List<String>> getSignatureCertChainValidationResults(JWT idToken) {
-        try {
-            return certChainValidator.validate(getSignatureCertChain(idToken));
-        } catch (Exception e) {
-           throw new OIDCIntegrationException("Validating Signature Chain Certificate failed");
-        }
-    }
-
-
-    public static List<X509Certificate> getSignatureCertChain(@Nullable JWKSet oidcProviderKeys, @Nullable JWT jwt) {
-        if (jwt == null || oidcProviderKeys == null) {
-            // no-op; need both elements to continue
+    public List<X509Certificate> getSignatureCertChain(JWT idToken) {
+        final var jwks = remoteJWKSet.getCachedJWKSet();
+        if (jwks == null || jwks.isEmpty()) {
             return List.of();
         }
-
-        try {
-            final JWSHeader jwsHeader = (JWSHeader) jwt.getHeader();
-            final String kid = jwsHeader.getKeyID();
-            final JWK jwk = oidcProviderKeys.getKeyByKeyId(kid);
-
-            if (jwk == null) {
-                log.warn("Unable to validate signing certificate chain, no key found with ID [{}]", kid);
-                return List.of();
-            }
-            return jwk.getParsedX509CertChain();
-
-        } catch (ClassCastException ex) {
-            log.warn("Token header is not of type JWSHeader", ex);
-            return List.of();
-        }
+        return SignatureCertificateValidator.getSignatureCertChain(jwks, idToken);
     }
+
+    public List<ValidationResult> getSignatureCertChainValidationResults(JWT idToken) {
+        final var certificateChain = getSignatureCertChain(idToken);
+        return signatureCertificateValidator.validate(certificateChain);
+    }
+
 
     public AccessTokenResponse token(AuthorizationSuccessResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
         try {
@@ -263,7 +235,7 @@ public class OIDCIntegrationService {
                     }
                 }
                 return accessTokenResponse;
-           } else {
+            } else {
                 TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
                 log.warn("Error response from {}: {}", oidcProviderMetadata.getTokenEndpointURI(), errorResponse.toJSONObject().toJSONString());
                 throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());

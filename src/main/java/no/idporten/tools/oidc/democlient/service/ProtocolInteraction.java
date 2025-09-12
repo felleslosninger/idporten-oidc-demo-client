@@ -2,6 +2,7 @@ package no.idporten.tools.oidc.democlient.service;
 
 import lombok.Builder;
 import lombok.Data;
+import no.idporten.tools.oidc.democlient.util.WarningLevel;
 
 @Builder
 @Data
@@ -12,4 +13,12 @@ public class ProtocolInteraction {
     private String interaction;
     private WarningLevel warningLevel;
 
+
+    public boolean isError() {
+        return warningLevel == WarningLevel.ERROR;
+    }
+
+    public boolean isWarning() {
+        return warningLevel == WarningLevel.WARN;
+    }
 }
