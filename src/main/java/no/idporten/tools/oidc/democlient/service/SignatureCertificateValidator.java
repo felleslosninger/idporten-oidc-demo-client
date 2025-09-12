@@ -29,59 +29,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SignatureCertificateValidator {
 
-    public List<ValidationResult> validate(@Nullable List<X509Certificate> x509Chain) {
-        if (isNullOrEmpty(x509Chain)) {
-            return List.of(new ValidationResult(WarningLevel.WARNING, "Certificate chain was not found"));
-        }
-
-        return x509Chain.stream()
-                // validate only first (root) certificate
-                .findFirst().stream()
-                .map(this::validateDateRanges)
-                .flatMap(Collection::stream).toList();
-    }
-
-    private List<ValidationResult> validateDateRanges(X509Certificate x509) {
-        final var validationResults = new ArrayList<ValidationResult>(validateIssuedExpiredDate(x509));
-
-       if(validationResults.isEmpty()) {
-           validationResults.addAll(validateSoonExpiry(x509));
-       }
-       return validationResults;
-    }
-
-    private List<ValidationResult> validateSoonExpiry(X509Certificate x509) {
-        final var soon = Date.from(Instant.now().plus(Duration.ofDays(7)).truncatedTo(ChronoUnit.DAYS));
-
-        final var results = new ArrayList<ValidationResult>();
-        try {
-            x509.checkValidity(soon);
-        } catch (CertificateExpiredException e) {
-            results.add(new ValidationResult(WarningLevel.WARNING, String.format("Certificate expires soon [%s]", safeFormattedDate(x509.getNotBefore()))));
-        } catch (CertificateNotYetValidException _) {
-            return List.of();
-        }
-        return results;
-
-    }
-
-    private List<ValidationResult> validateIssuedExpiredDate(X509Certificate x509) {
-        final var results = new ArrayList<ValidationResult>();
-        try {
-            x509.checkValidity();
-        } catch (CertificateExpiredException e) {
-            results.add(new ValidationResult(WarningLevel.ERROR, String.format("Certificate expired [%s]", safeFormattedDate(x509.getNotBefore()))));
-        } catch (CertificateNotYetValidException e) {
-            results.add(new ValidationResult(WarningLevel.WARNING, String.format("Certificate not valid [%s]", safeFormattedDate(x509.getNotBefore()))));
-        }
-
-        return results;
-    }
-
     private static <L> boolean isNullOrEmpty(@Nullable List<L> value) {
         return value == null || value.isEmpty();
     }
 
+
+    private static <L> List<L> nullSafe(List<L> list) {
+        if (list == null) {
+            return List.of();
+        }
+        return list;
+    }
 
     public static String safeFormattedDate(Date date) {
         if (date == null) {
@@ -112,7 +70,7 @@ public class SignatureCertificateValidator {
                 log.warn("Unable to validate signing certificate chain, no key found with ID [{}]", kid);
                 return List.of();
             }
-            return nullSafeList(jwk.getParsedX509CertChain());
+            return nullSafe(jwk.getParsedX509CertChain());
 
         } catch (ClassCastException ex) {
             log.warn("Token header is not of type JWSHeader", ex);
@@ -120,11 +78,53 @@ public class SignatureCertificateValidator {
         }
     }
 
-    private static <T> List<T> nullSafeList(List<T> list) {
-       if (list == null) {
-           return List.of();
-       }
-       return list;
+    public List<ValidationResult> validate(@Nullable List<X509Certificate> x509Chain) {
+        if (isNullOrEmpty(x509Chain)) {
+            return List.of(new ValidationResult(WarningLevel.WARNING, "Certificate chain was not found"));
+        }
+
+        return x509Chain.stream()
+                // validate only first (root) certificate
+                .findFirst().stream()
+                .map(this::validateDateRanges)
+                .flatMap(Collection::stream).toList();
+    }
+
+    private List<ValidationResult> validateDateRanges(X509Certificate x509) {
+        final var validationResults = new ArrayList<ValidationResult>(validateIssuedExpiredDate(x509));
+
+        if (validationResults.isEmpty()) {
+            validationResults.addAll(validateSoonExpiry(x509));
+        }
+        return validationResults;
+    }
+
+    private List<ValidationResult> validateSoonExpiry(X509Certificate x509) {
+        final var soon = Date.from(Instant.now().plus(Duration.ofDays(7)).truncatedTo(ChronoUnit.DAYS));
+
+        final var results = new ArrayList<ValidationResult>();
+        try {
+            x509.checkValidity(soon);
+        } catch (CertificateExpiredException e) {
+            results.add(new ValidationResult(WarningLevel.WARNING, String.format("Certificate expires soon [%s]", safeFormattedDate(x509.getNotBefore()))));
+        } catch (CertificateNotYetValidException _) {
+            return List.of();
+        }
+        return results;
+
+    }
+
+    private List<ValidationResult> validateIssuedExpiredDate(X509Certificate x509) {
+        final var results = new ArrayList<ValidationResult>();
+        try {
+            x509.checkValidity();
+        } catch (CertificateExpiredException e) {
+            results.add(new ValidationResult(WarningLevel.ERROR, String.format("Certificate expired [%s]", safeFormattedDate(x509.getNotBefore()))));
+        } catch (CertificateNotYetValidException e) {
+            results.add(new ValidationResult(WarningLevel.WARNING, String.format("Certificate not valid [%s]", safeFormattedDate(x509.getNotBefore()))));
+        }
+
+        return results;
     }
 
 }
