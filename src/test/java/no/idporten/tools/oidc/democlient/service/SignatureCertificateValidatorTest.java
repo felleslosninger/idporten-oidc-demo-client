@@ -77,11 +77,13 @@ class SignatureCertificateValidatorTest {
 
         // then
         if (isErrorExpected) {
-            assertEquals(1, actual.size());
-            assertNotNull(actual.getFirst().level());
-            assertNotNull(actual.getFirst().message());
-            assertEquals(WarningLevel.valueOf(errorLevel), actual.getFirst().level());
-            assertTrue(actual.getFirst().message().contains(expectedMessage));
+            assertAll(
+                    () -> assertEquals(1, actual.size()),
+                    () -> assertNotNull(actual.getFirst().level()),
+                    () -> assertNotNull(actual.getFirst().message()),
+                    () -> assertEquals(WarningLevel.valueOf(errorLevel), actual.getFirst().level()),
+                    () -> assertTrue(actual.getFirst().message().contains(expectedMessage))
+            );
 
         } else {
             assertTrue(actual.isEmpty());
@@ -126,12 +128,14 @@ class SignatureCertificateValidatorTest {
         final var actual = validator.validate(null);
 
         // then
-        assertFalse(actual.isEmpty());
-        assertEquals(1, actual.size());
-        assertNotNull(actual.getFirst().level());
-        assertNotNull(actual.getFirst().message());
-        assertEquals(WarningLevel.WARNING, actual.getFirst().level());
-        assertEquals("Certificate chain was not found", actual.getFirst().message());
+        assertAll(
+                () -> assertFalse(actual.isEmpty()),
+                () -> assertEquals(1, actual.size()),
+                () -> assertNotNull(actual.getFirst().level()),
+                () -> assertNotNull(actual.getFirst().message()),
+                () -> assertEquals(WarningLevel.WARNING, actual.getFirst().level()),
+                () -> assertEquals("Certificate chain was not found", actual.getFirst().message())
+        );
     }
 
     @Test
@@ -144,12 +148,14 @@ class SignatureCertificateValidatorTest {
         final var actual = validator.validate(x5c);
 
         // then
-        assertFalse(actual.isEmpty());
-        assertEquals(1, actual.size());
-        assertNotNull(actual.getFirst().level());
-        assertNotNull(actual.getFirst().message());
-        assertEquals(WarningLevel.WARNING, actual.getFirst().level());
-        assertEquals("Certificate chain was not found", actual.getFirst().message());
+        assertAll(
+                () -> assertFalse(actual.isEmpty()),
+                () -> assertEquals(1, actual.size()),
+                () -> assertNotNull(actual.getFirst().level()),
+                () -> assertNotNull(actual.getFirst().message()),
+                () -> assertEquals(WarningLevel.WARNING, actual.getFirst().level()),
+                () -> assertEquals("Certificate chain was not found", actual.getFirst().message())
+        );
     }
 
     @Test
@@ -158,8 +164,10 @@ class SignatureCertificateValidatorTest {
 
         assertDoesNotThrow(() -> {
             final var x5c = getSignatureCertChain(null, null);
-            assertNotNull(x5c);
-            assertTrue(x5c.isEmpty());
+            assertAll(
+                    () -> assertNotNull(x5c),
+                    () -> assertTrue(x5c.isEmpty())
+            );
         });
     }
 
@@ -177,8 +185,10 @@ class SignatureCertificateValidatorTest {
         final var signedButMisleadingJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys, jwtIssuer, jwtSubject, "NøtteNøtteNøkkel?");
         assertDoesNotThrow(() -> {
             final var x5c = getSignatureCertChain(jwkSet, signedButMisleadingJWT);
-            assertNotNull(x5c);
-            assertTrue(x5c.isEmpty());
+            assertAll(
+                    () -> assertNotNull(x5c),
+                    () -> assertTrue(x5c.isEmpty())
+            );
         });
     }
 
@@ -201,8 +211,10 @@ class SignatureCertificateValidatorTest {
         // then
         assertDoesNotThrow(() -> {
             final var x5c = getSignatureCertChain(jwkSet, signedJWT);
-            assertNotNull(x5c);
-            assertEquals(1, x5c.size());
+            assertAll(
+                    () -> assertNotNull(x5c),
+                    () -> assertEquals(1, x5c.size())
+            );
         });
     }
 }
