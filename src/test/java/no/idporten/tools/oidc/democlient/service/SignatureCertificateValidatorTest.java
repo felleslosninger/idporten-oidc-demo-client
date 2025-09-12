@@ -54,8 +54,8 @@ class SignatureCertificateValidatorTest {
     @CsvSource({
             "-10, 90, false, null, null",
             "-10, -1, true, ERROR, Certificate expired", // Expired 1 day ago
-            "10, 90, true, WARN, Certificate not valid", // Issue date 10 days ahead
-            "-10, 3, true, WARN, Certificate expires soon" // Expires 3 days ahead
+            "10, 90, true, WARNING, Certificate not valid", // Issue date 10 days ahead
+            "-10, 3, true, WARNING, Certificate expires soon" // Expires 3 days ahead
     })
     @DisplayName("Given a certificate is provided, then the validator should check dates and return a warning or an error if invalid")
     void givenDifferentIssuedAndExpiryDatesTheValidatorShouldReturnSensibleLevelsAndMessages(int daysBefore, int daysAfter, boolean isErrorExpected, String errorLevel, String expectedMessage) {
@@ -90,8 +90,9 @@ class SignatureCertificateValidatorTest {
 
     @Test
     @Disabled
-        // TODO: Add test case scenario for real-life x5c with root cert + multiple chained certs
+    @DisplayName(value = "Given ther are multiple certificates in chain, the validator should only check root certificate")
     void givenThereAreMultipleCertificatesInChainThenTheValidatorShouldCheckRootCertificate() {
+        // TODO: Add test case scenario for real-life x5c with root cert + multiple chained certs
 
         // given
         final var notBefore = Date.from(Instant.now().plus(-180, ChronoUnit.DAYS));
