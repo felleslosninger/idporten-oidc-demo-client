@@ -229,7 +229,7 @@ public class OIDCIntegrationService {
                 AccessTokenResponse accessTokenResponse = tokenResponse.toSuccessResponse();
                 if (accessTokenResponse instanceof OIDCTokenResponse) {
                     OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
-                    if (oidcTokenResponse.getOIDCTokens().getIDToken()!= null) {
+                    if (oidcTokenResponse.getOIDCTokens().getIDToken() != null) {
                         idTokenValidator.validate(oidcTokenResponse.getOIDCTokens().getIDToken(), nonce);
                     }
                 }
