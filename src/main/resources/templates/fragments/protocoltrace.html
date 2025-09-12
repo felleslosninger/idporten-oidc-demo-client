@@ -14,10 +14,10 @@
                         th:data-bs-target="'#' + ${interaction.id}" aria-expanded="false"
                         th:aria-controls="${interaction.id}">
                     <p th:text="${interaction.text}" th:remove="tag"/>
-                    <span th:if="${interaction.warningLevel}" th:switch="${interaction.warningLevel.toLowerCase()}"
+                    <span th:if="${#objects.nullSafe(interaction.warningLevel, false)}" th:switch="${interaction.warningLevel}"
                           class="accordion-indicator">
-                        <i th:case="warning" class="bi bi-exclamation-triangle-fill text-warning"></i>
-                        <i th:case="error" class="bi bi-exclamation-circle-fill text-danger"></i>
+                        <i th:case="${T(no.idporten.tools.oidc.democlient.util.WarningLevel).WARNING}" class="bi bi-exclamation-triangle-fill text-warning"></i>
+                        <i th:case="${T(no.idporten.tools.oidc.democlient.util.WarningLevel).ERROR}" class="bi bi-exclamation-circle-fill text-danger"></i>
                     </span>
                 </button>
             </h2>

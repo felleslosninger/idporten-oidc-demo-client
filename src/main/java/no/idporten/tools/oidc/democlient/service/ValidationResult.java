@@ -18,8 +18,8 @@ public record ValidationResult(WarningLevel level, String message) {
 
         if (levels.contains(WarningLevel.ERROR)) {
             return WarningLevel.ERROR;
-        } else if (levels.contains(WarningLevel.WARN)) {
-            return WarningLevel.WARN;
+        } else if (levels.contains(WarningLevel.WARNING)) {
+            return WarningLevel.WARNING;
         } else if (levels.contains(WarningLevel.INFO)) {
             return WarningLevel.INFO;
         } else {

@@ -13,12 +13,4 @@ public class ProtocolInteraction {
     private String interaction;
     private WarningLevel warningLevel;
 
-
-    public boolean isError() {
-        return warningLevel == WarningLevel.ERROR;
-    }
-
-    public boolean isWarning() {
-        return warningLevel == WarningLevel.WARN;
-    }
 }

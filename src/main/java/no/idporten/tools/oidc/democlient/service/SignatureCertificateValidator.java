@@ -31,7 +31,7 @@ public class SignatureCertificateValidator {
 
     public List<ValidationResult> validate(@Nullable List<X509Certificate> x509Chain) {
         if (isNullOrEmpty(x509Chain)) {
-            return List.of(new ValidationResult(WarningLevel.WARN, "Certificate chain was not found"));
+            return List.of(new ValidationResult(WarningLevel.WARNING, "Certificate chain was not found"));
         }
 
         return x509Chain.stream()
@@ -55,7 +55,7 @@ public class SignatureCertificateValidator {
         try {
             x509.checkValidity(soon);
         } catch (CertificateExpiredException e) {
-            results.add(new ValidationResult(WarningLevel.WARN, String.format("Certificate expires soon [%s]", safeFormattedDate(x509.getNotBefore()))));
+            results.add(new ValidationResult(WarningLevel.WARNING, String.format("Certificate expires soon [%s]", safeFormattedDate(x509.getNotBefore()))));
         } catch (CertificateNotYetValidException _) {
             return List.of();
         }
@@ -70,7 +70,7 @@ public class SignatureCertificateValidator {
         } catch (CertificateExpiredException e) {
             results.add(new ValidationResult(WarningLevel.ERROR, String.format("Certificate expired [%s]", safeFormattedDate(x509.getNotBefore()))));
         } catch (CertificateNotYetValidException e) {
-            results.add(new ValidationResult(WarningLevel.WARN, String.format("Certificate not valid [%s]", safeFormattedDate(x509.getNotBefore()))));
+            results.add(new ValidationResult(WarningLevel.WARNING, String.format("Certificate not valid [%s]", safeFormattedDate(x509.getNotBefore()))));
         }
 
         return results;
@@ -110,12 +110,19 @@ public class SignatureCertificateValidator {
                 log.warn("Unable to validate signing certificate chain, no key found with ID [{}]", kid);
                 return List.of();
             }
-            return jwk.getParsedX509CertChain();
+            return nullSafeList(jwk.getParsedX509CertChain());
 
         } catch (ClassCastException ex) {
             log.warn("Token header is not of type JWSHeader", ex);
             return List.of();
         }
+    }
+
+    private static <T> List<T> nullSafeList(List<T> list) {
+       if (list == null) {
+           return List.of();
+       }
+       return list;
     }
 
 }
