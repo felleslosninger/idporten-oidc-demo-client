@@ -58,6 +58,8 @@ public class OIDCIntegrationProperties implements InitializingBean {
     private int jwksCacheRefreshMinutes = 5;
     @Min(1)
     private int jwksCacheLifetimeMinutes = 60;
+    @Min(1)
+    private int jwksExpiryWarningDays = 720;
 
     @Override
     public void afterPropertiesSet() throws Exception {

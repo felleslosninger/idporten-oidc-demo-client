@@ -3,6 +3,7 @@ package no.idporten.tools.oidc.democlient.service;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWKSet;
 import no.idporten.tools.oidc.democlient.TestDataUtils;
+import no.idporten.tools.oidc.democlient.config.OIDCIntegrationProperties;
 import no.idporten.tools.oidc.democlient.util.WarningLevel;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterEach;
@@ -16,6 +17,8 @@ import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
@@ -34,33 +37,38 @@ class SignatureCertificateValidatorTest {
 
     private SignatureCertificateValidator validator;
 
+    private OIDCIntegrationProperties properties;
+
     @BeforeEach
     void setUp() {
-        validator = new SignatureCertificateValidator();
+        properties = new OIDCIntegrationProperties();
+        validator = new SignatureCertificateValidator(properties);
     }
 
     @AfterEach
     void tearDown() {
         validator = null;
+        properties = null;
     }
 
     /**
      * Tests the cert chain validator and checks if various date ranges are valid
      *
-     * @param daysBefore      certificate issued date - adjusted number of days from today
-     * @param daysAfter       certificate expiration date - number of days from today
-     * @param isErrorExpected true when a validation error is expected, otherwise false
-     * @param errorLevel      severity of the validation error
+     * @param expiryWarningDays number of days to lookahead and generate a warning if the certificate expires
+     * @param daysBefore        certificate issued date - adjusted number of days from today
+     * @param daysAfter         certificate expiration date - number of days from today
+     * @param isErrorExpected   true when a validation error is expected, otherwise false
+     * @param errorLevel        severity of the validation error
      */
     @ParameterizedTest(name = "Test #{index}: The certificate has validity from {0} days and until {1} days from now, result should valid={2} with \"{3}: {4}\"")
     @CsvSource({
-            "-10, 90, false, null, null",
-            "-10, -1, true, ERROR, Certificate expired", // Expired 1 day ago
-            "10, 90, true, WARNING, Certificate not valid", // Issue date 10 days ahead
-            "-10, 3, true, WARNING, Certificate expires soon" // Expires 3 days ahead
+            "7, -10, 90, false, null, null",
+            "7, -10, -1, true, ERROR, Certificate expired", // Expired 1 day ago
+            "7,  10, 90, true, WARNING, Certificate not valid", // Issue date 10 days ahead
+            "7, -10,  3, true, WARNING, Certificate expires soon" // Expires 3 days ahead
     })
     @DisplayName("Given a certificate is provided, then the validator should check dates and return a warning or an error if invalid")
-    void givenDifferentIssuedAndExpiryDatesTheValidatorShouldReturnSensibleLevelsAndMessages(int daysBefore, int daysAfter, boolean isErrorExpected, String errorLevel, String expectedMessage) throws JOSEException {
+    void givenDifferentIssuedAndExpiryDatesTheValidatorShouldReturnSensibleLevelsAndMessages(int expiryWarningDays, int daysBefore, int daysAfter, boolean isErrorExpected, String errorLevel, String expectedMessage) throws JOSEException {
         // given
         final var notBefore = Date.from(Instant.now().plus(daysBefore, ChronoUnit.DAYS));
         final var notAfter = Date.from(Instant.now().plus(daysAfter, ChronoUnit.DAYS));
@@ -78,6 +86,7 @@ class SignatureCertificateValidatorTest {
         final var x5c = getSignatureCertChain(jwkSet, signedJWT);
 
         // when
+        properties.setJwksExpiryWarningDays(expiryWarningDays);
         final var actual = validator.validate(x5c);
 
         // then
@@ -130,14 +139,88 @@ class SignatureCertificateValidatorTest {
         );
     }
 
+    @Test
+    @DisplayName(value = "Given the certificate soon expires, then the warning message should contain the correct date")
+    void warningShouldIncludeCorrectExpiryDate() throws JOSEException {
+
+        final var halfYear = 180;
+        final var warningPeriod = 270;
+        final var notBefore = Date.from(Instant.now().minus(halfYear, ChronoUnit.DAYS));
+        final var notAfter = Date.from(Instant.now().plus(halfYear, ChronoUnit.DAYS));
+
+        final var keyPair = TestDataUtils.generateRSAKeyPair();
+        final var certificate = TestDataUtils.generateCertificate(keyPair.getPublic(), keyPair.getPrivate(), "CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
+        final var jwkRsaKeys = TestDataUtils.generateRsaSignatureJWK(keyPair, "A", new X509Certificate[]{certificate});
+        final var jwkSet = new JWKSet(jwkRsaKeys.toPublicJWK());
+
+        final var jwtIssuer = "https://auth.example.com";
+        final var jwtSubject = UUID.randomUUID().toString();
+
+        final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys.toPrivateKey(), jwtIssuer, jwtSubject, jwkRsaKeys.getKeyID());
+        final var x5c = getSignatureCertChain(jwkSet, signedJWT);
+
+
+        assertDoesNotThrow(() -> {
+            properties.setJwksExpiryWarningDays(warningPeriod);
+            final var result = validator.validate(x5c);
+
+            final var formattedExpectedDate = notAfter.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate().format(DateTimeFormatter.ISO_DATE);
+
+            assertAll(
+                    () -> assertNotNull(result),
+                    () -> assertEquals(1, result.size()),
+                    () -> assertEquals(WarningLevel.WARNING, result.getFirst().level()),
+                    () -> assertEquals("Certificate expires soon [" + formattedExpectedDate + "]", result.getFirst().message())
+            );
+        });
+
+    }
+
+
+    @Test
+    @DisplayName(value = "Given the certificate has expired, then the error message should contain the correct date")
+    void errorShouldIncludeCorrectExpiryDate() throws JOSEException {
+
+        final var defaultWarningPeriod = 30;
+        final var notBefore = Date.from(Instant.now().minus(360, ChronoUnit.DAYS));
+        final var notAfter = Date.from(Instant.now().minus(180, ChronoUnit.DAYS));
+
+        final var keyPair = TestDataUtils.generateRSAKeyPair();
+        final var certificate = TestDataUtils.generateCertificate(keyPair.getPublic(), keyPair.getPrivate(), "CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
+        final var jwkRsaKeys = TestDataUtils.generateRsaSignatureJWK(keyPair, "A", new X509Certificate[]{certificate});
+        final var jwkSet = new JWKSet(jwkRsaKeys.toPublicJWK());
+
+        final var jwtIssuer = "https://auth.example.com";
+        final var jwtSubject = UUID.randomUUID().toString();
+
+        final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys.toPrivateKey(), jwtIssuer, jwtSubject, jwkRsaKeys.getKeyID());
+        final var x5c = getSignatureCertChain(jwkSet, signedJWT);
+
+
+        assertDoesNotThrow(() -> {
+            properties.setJwksExpiryWarningDays(defaultWarningPeriod);
+            final var result = validator.validate(x5c);
+
+            final var formattedExpectedDate = notAfter.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate().format(DateTimeFormatter.ISO_DATE);
+
+            assertAll(
+                    () -> assertNotNull(result),
+                    () -> assertEquals(1, result.size()),
+                    () -> assertEquals(WarningLevel.ERROR, result.getFirst().level()),
+                    () -> assertEquals("Certificate expired [" + formattedExpectedDate + "]", result.getFirst().message())
+            );
+        });
+
+    }
+
 
     @Test
     @DisplayName(value = "Given no certificate chain is given, then the validator should issue a warning")
     void shouldHandleMissingCertificateChain() {
-        // given
-        final List<X509Certificate> x5c = null;
-
-        // when
         final var actual = validator.validate(null);
 
         // then

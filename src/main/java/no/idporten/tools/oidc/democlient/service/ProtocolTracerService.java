@@ -333,7 +333,7 @@ public class ProtocolTracerService {
                     Issued date: %s
                     Expiration date: %s
                     ---
-                    """,i, cert.getSerialNumber(), SignatureCertificateValidator.nullSafe(cert.getNotBefore()), SignatureCertificateValidator.nullSafe(cert.getNotAfter()));
+                    """,i, cert.getSerialNumber(), SignatureCertificateValidator.nullSafeIsoDate(cert.getNotBefore()), SignatureCertificateValidator.nullSafeIsoDate(cert.getNotAfter()));
             builder.append(content);
         }
         return builder.toString();
