@@ -211,7 +211,7 @@ public class ProtocolTracerService {
         return protocolTrace;
     }
 
-    public ProtocolTrace traceX509SigningCertificate(HttpSession session, List<X509Certificate> x509CertificateList, List<ValidationResult> validationResults) {
+    public ProtocolTrace traceX509SigningCertificate(HttpSession session, List<X509Certificate> certificateList, List<ValidationResult> validationResults) {
         final var trace = new StringBuilder();
         final var warningLevel = ValidationResult.getHighestLevel(validationResults);
 
@@ -221,20 +221,7 @@ public class ProtocolTracerService {
         }
 
         trace.append("\n");
-
-        //TODO: Remove or keep after code review
-        for (int i = 0, size = x509CertificateList.size(); i < size; i++) {
-            X509Certificate cert = x509CertificateList.get(i);
-            final var content = String.format("""
-                    ---
-                    Certificate #%d
-                    Serial number: %s
-                    Issued date: %s
-                    Expiration date: %s
-                    ---
-                    """,i, cert.getSerialNumber(), SignatureCertificateValidator.safeFormattedDate(cert.getNotBefore()), SignatureCertificateValidator.safeFormattedDate(cert.getNotAfter()));
-            trace.append(content);
-        }
+        trace.append(this.formatCertificateDetails(certificateList));
 
         ProtocolTrace protocolTrace = getOrCreate(session);
         protocolTrace.setSignatureChainX5c(ProtocolInteraction.builder()
@@ -323,6 +310,33 @@ public class ProtocolTracerService {
         sb.append("\n");
         sb.append(formatJson(httpResponse.getContent()));
         return sb.toString();
+    }
+
+    private String formatCertificateDetails(List<X509Certificate> list) {
+        if (list == null || list.isEmpty()) {
+            return "";
+        }
+
+        final var builder = new StringBuilder();
+
+        for (int i = 0, size = list.size(); i < size; i++) {
+            X509Certificate cert = list.get(i);
+
+            if (cert == null) {
+                continue;
+            }
+
+            final var content = String.format("""
+                    ---
+                    Certificate #%d
+                    Serial number: %s
+                    Issued date: %s
+                    Expiration date: %s
+                    ---
+                    """,i, cert.getSerialNumber(), SignatureCertificateValidator.nullSafe(cert.getNotBefore()), SignatureCertificateValidator.nullSafe(cert.getNotAfter()));
+            builder.append(content);
+        }
+        return builder.toString();
     }
 
 }

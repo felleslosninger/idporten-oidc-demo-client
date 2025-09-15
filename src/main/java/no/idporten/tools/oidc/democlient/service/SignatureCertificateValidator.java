@@ -41,7 +41,7 @@ public class SignatureCertificateValidator {
         return list;
     }
 
-    public static String safeFormattedDate(Date date) {
+    public static String nullSafe(Date date) {
         if (date == null) {
             return "";
         }
@@ -91,7 +91,9 @@ public class SignatureCertificateValidator {
     }
 
     private List<ValidationResult> validateDateRanges(X509Certificate x509) {
-        final var validationResults = new ArrayList<ValidationResult>(validateIssuedExpiredDate(x509));
+        final var validationResults = new ArrayList<ValidationResult>();
+
+        validationResults.addAll(validateIssuedExpiredDate(x509));
 
         if (validationResults.isEmpty()) {
             validationResults.addAll(validateSoonExpiry(x509));
@@ -106,7 +108,7 @@ public class SignatureCertificateValidator {
         try {
             x509.checkValidity(soon);
         } catch (CertificateExpiredException e) {
-            results.add(new ValidationResult(WarningLevel.WARNING, String.format("Certificate expires soon [%s]", safeFormattedDate(x509.getNotBefore()))));
+            results.add(new ValidationResult(WarningLevel.WARNING, String.format("Certificate expires soon [%s]", nullSafe(x509.getNotBefore()))));
         } catch (CertificateNotYetValidException _) {
             return List.of();
         }
@@ -119,9 +121,9 @@ public class SignatureCertificateValidator {
         try {
             x509.checkValidity();
         } catch (CertificateExpiredException e) {
-            results.add(new ValidationResult(WarningLevel.ERROR, String.format("Certificate expired [%s]", safeFormattedDate(x509.getNotBefore()))));
+            results.add(new ValidationResult(WarningLevel.ERROR, String.format("Certificate expired [%s]", nullSafe(x509.getNotBefore()))));
         } catch (CertificateNotYetValidException e) {
-            results.add(new ValidationResult(WarningLevel.WARNING, String.format("Certificate not valid [%s]", safeFormattedDate(x509.getNotBefore()))));
+            results.add(new ValidationResult(WarningLevel.WARNING, String.format("Certificate not valid [%s]", nullSafe(x509.getNotBefore()))));
         }
 
         return results;
