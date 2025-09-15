@@ -70,8 +70,8 @@ public class TestDataUtils {
     }
 
     public static List<Base64> toBase64(X509Certificate[] chain) {
-        final var output = new ArrayList<Base64>(chain.length);
-        final var encoder = java.util.Base64.getEncoder();
+        var output = new ArrayList<Base64>(chain.length);
+        var encoder = java.util.Base64.getEncoder();
 
         try {
             for (X509Certificate cert : chain) {
@@ -96,8 +96,8 @@ public class TestDataUtils {
     }
 
     public static X509Certificate generateCertificate(PublicKey subjectKey, PrivateKey signingKey, String issuer, String subject, Date notBefore, Date notAfter) {
-        final X500Name iss = new X500Name(issuer);
-        final X500Name sub = new X500Name(subject);
+        X500Name iss = new X500Name(issuer);
+        X500Name sub = new X500Name(subject);
         BigInteger serial = BigInteger.valueOf(System.currentTimeMillis());
 
         try {
@@ -132,8 +132,8 @@ public class TestDataUtils {
     public static SignedJWT generateSignedJWT(PrivateKey signingKey, String issuer, String subject, String keyId) {
         try {
 
-            final RSASSASigner signer = new RSASSASigner(signingKey);
-            final var claims = new JWTClaimsSet.Builder()
+            RSASSASigner signer = new RSASSASigner(signingKey);
+            var claims = new JWTClaimsSet.Builder()
                     .subject(subject)
                     .issuer(issuer)
                     .expirationTime(Date.from(Instant.now().plus(5, ChronoUnit.MINUTES)))
