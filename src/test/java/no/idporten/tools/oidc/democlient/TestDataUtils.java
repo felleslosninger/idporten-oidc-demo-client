@@ -9,7 +9,11 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import org.bouncycastle.asn1.ASN1BitString;
 import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.KeyUsage;
+import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
@@ -24,6 +28,8 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -33,7 +39,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Utilities for test data.
@@ -91,60 +96,55 @@ public class TestDataUtils {
         }
     }
 
-    public static X509Certificate generateCertificate(KeyPair signingKeys, X500Name issuer, X500Name subject, Date notBefore, Date notAfter) {
-
+    public static X509Certificate generateCertificate(PublicKey subjectKey, PrivateKey signingKey, String issuer, String subject, Date notBefore, Date notAfter) {
+        final X500Name iss = new X500Name(issuer);
+        final X500Name sub = new X500Name(subject);
         BigInteger serial = BigInteger.valueOf(System.currentTimeMillis());
 
         try {
-            X509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(issuer, serial, notBefore, notAfter, subject, signingKeys.getPublic());
+            X509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(iss, serial, notBefore, notAfter, sub, subjectKey);
             ContentSigner signer = new JcaContentSignerBuilder("SHA256withRSA")
                     .setProvider(BouncyCastleProvider.PROVIDER_NAME)
-                    .build(signingKeys.getPrivate());
+                    .build(signingKey);
 
-            X509CertificateHolder certHolder = builder.build(signer);
+            X509CertificateHolder certHolder = builder
+                    .addExtension(Extension.keyUsage,true, new KeyUsage(KeyUsage.digitalSignature).toASN1Primitive())
+                    .build(signer);
             return new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(certHolder);
 
-        } catch (OperatorCreationException | CertificateException e) {
+        } catch (OperatorCreationException | CertificateException | CertIOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    //TODO
-    public static RSAKey generateJwkRsaChain() {
-        //WIP !
-       throw new RuntimeException("Not implemented yet");
-    }
+    public static RSAKey generateRsaSignatureJWK(KeyPair rsaKeySet, String keyId, X509Certificate[] signatureChain) {
 
-    public static RSAKey generateJwkRsaKeys(String x5cIssuer, String x5cSubject, Date notBefore, Date notAfter) {
-        final var sigKid = UUID.randomUUID().toString();
-        final var signingKeys = generateRSAKeyPair();
-
-        X500Name issuer = new X500Name(x5cIssuer);
-        X500Name subject = new X500Name(x5cSubject);
-
-        final var certificate = generateCertificate(signingKeys, issuer, subject, notBefore, notAfter);
-        final var x5c = new X509Certificate[]{certificate};
-
-        return new RSAKey.Builder((RSAPublicKey) signingKeys.getPublic())
-                .privateKey(signingKeys.getPrivate())
+        return new RSAKey.Builder((RSAPublicKey) rsaKeySet.getPublic())
+                .privateKey(rsaKeySet.getPrivate())
                 .keyUse(KeyUse.SIGNATURE)
-                .keyID(sigKid)
+                .keyID(keyId)
                 .issueTime(null)
                 .expirationTime(null)
-                .x509CertChain(toBase64(x5c))
+                .x509CertChain(toBase64(signatureChain))
                 .build();
+
     }
 
+    /**
     public static SignedJWT generateSignedJWT(RSAKey jwk, String issuer, String subject) {
-        return generateSignedJWT(jwk, issuer, subject, jwk.getKeyID());
+        try {
+            final var privateKey = jwk.toKeyPair().getPrivate();
+            return generateSignedJWT(privateKey, issuer, subject, jwk.getKeyID());
+        } catch (JOSEException e) {
+            throw new RuntimeException("Unable to generate signed JWT", e);
+        }
     }
+     */
 
-    public static SignedJWT generateSignedJWT(RSAKey jwk, String issuer, String subject, String keyId) {
+    public static SignedJWT generateSignedJWT(PrivateKey signingKey, String issuer, String subject, String keyId) {
         try {
 
-            final KeyPair keyPair = jwk.toKeyPair();
-
-            final RSASSASigner signer = new RSASSASigner(keyPair.getPrivate());
+            final RSASSASigner signer = new RSASSASigner(signingKey);
             final var claims = new JWTClaimsSet.Builder()
                     .subject(subject)
                     .issuer(issuer)

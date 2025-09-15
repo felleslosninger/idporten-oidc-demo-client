@@ -1,12 +1,12 @@
 package no.idporten.tools.oidc.democlient.service;
 
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWKSet;
 import no.idporten.tools.oidc.democlient.TestDataUtils;
 import no.idporten.tools.oidc.democlient.util.WarningLevel;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,19 +14,21 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import static no.idporten.tools.oidc.democlient.TestDataUtils.*;
 import static no.idporten.tools.oidc.democlient.service.SignatureCertificateValidator.getSignatureCertChain;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SignatureCertificateValidatorTest {
 
     static {
-        // synthetic certificate chain generation
+        // required to generate certificates
         Security.addProvider(new BouncyCastleProvider());
     }
 
@@ -58,17 +60,20 @@ class SignatureCertificateValidatorTest {
             "-10, 3, true, WARNING, Certificate expires soon" // Expires 3 days ahead
     })
     @DisplayName("Given a certificate is provided, then the validator should check dates and return a warning or an error if invalid")
-    void givenDifferentIssuedAndExpiryDatesTheValidatorShouldReturnSensibleLevelsAndMessages(int daysBefore, int daysAfter, boolean isErrorExpected, String errorLevel, String expectedMessage) {
+    void givenDifferentIssuedAndExpiryDatesTheValidatorShouldReturnSensibleLevelsAndMessages(int daysBefore, int daysAfter, boolean isErrorExpected, String errorLevel, String expectedMessage) throws JOSEException {
         // given
         final var notBefore = Date.from(Instant.now().plus(daysBefore, ChronoUnit.DAYS));
         final var notAfter = Date.from(Instant.now().plus(daysAfter, ChronoUnit.DAYS));
 
-        final var jwkRsaKeys = TestDataUtils.generateJwkRsaKeys("CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
+        final var signatureKeys = generateRSAKeyPair();
+        final var signatureCertificate = generateCertificate(signatureKeys.getPublic(), signatureKeys.getPrivate(), "CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
+
+        final var jwkRsaKeys = TestDataUtils.generateRsaSignatureJWK(signatureKeys, "A", new X509Certificate[]{signatureCertificate});
         final var jwkSet = new JWKSet(jwkRsaKeys.toPublicJWK());
 
         final var jwtIssuer = "https://auth.example.com";
         final var jwtSubject = UUID.randomUUID().toString();
-        final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys, jwtIssuer, jwtSubject);
+        final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys.toPrivateKey(), jwtIssuer, jwtSubject, jwkRsaKeys.getKeyID());
 
         final var x5c = getSignatureCertChain(jwkSet, signedJWT);
 
@@ -91,22 +96,28 @@ class SignatureCertificateValidatorTest {
     }
 
     @Test
-    @Disabled
-    @DisplayName(value = "Given ther are multiple certificates in chain, the validator should only check root certificate")
-    void givenThereAreMultipleCertificatesInChainThenTheValidatorShouldCheckRootCertificate() {
-        // TODO: Add test case scenario for real-life x5c with root cert + multiple chained certs
+    @DisplayName(value = "Given there are multiple certificates in chain, the validator should only check the first certificate")
+    void givenThereAreMultipleCertificatesInChainThenTheValidatorShouldCheckRootCertificate() throws JOSEException {
 
-        // given
-        final var notBefore = Date.from(Instant.now().plus(-180, ChronoUnit.DAYS));
-        final var notAfter = Date.from(Instant.now().plus(180, ChronoUnit.DAYS));
+        // given we have a valid key set
+        final var halfYear = Duration.ofDays(180);
+        final var validStart = Date.from(Instant.now().minus(halfYear));
+        final var validEnd = Date.from(Instant.now().plus(halfYear));
+        final var caKeys = generateRSAKeyPair();
+        final var intermediateKeys = generateRSAKeyPair();
+        final var signatureKeys = generateRSAKeyPair();
 
-        //TODO
-        final var jwkRsaKeys = TestDataUtils.generateJwkRsaKeys("CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
-        final var jwkSet = new JWKSet(jwkRsaKeys.toPublicJWK());
+        final var rootCertificate = generateCertificate(caKeys.getPublic(), caKeys.getPrivate(), "CN=SnakeOil CA", "CN=SnakeOil CA", validStart, validEnd);
+        final var intermediateCert = generateCertificate(intermediateKeys.getPublic(), caKeys.getPrivate(), "CN=SnakeOil CA", "CN=SnakeOil Intermediate", validStart, validEnd);
+        final var signatureCertificate = generateCertificate(signatureKeys.getPublic(), intermediateKeys.getPrivate(), "CN=SnakeOil Intermediate", "CN=SnakeOil Signature", validStart, validEnd);
+        final var chain = new X509Certificate[]{signatureCertificate, intermediateCert, rootCertificate};
+
+        final var jwkRsaKey = generateRsaSignatureJWK(signatureKeys, "A", chain);
+        final var jwkSet = new JWKSet(jwkRsaKey.toPublicJWK());
 
         final var jwtIssuer = "https://auth.example.com";
         final var jwtSubject = UUID.randomUUID().toString();
-        final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys, jwtIssuer, jwtSubject);
+        final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKey.toPrivateKey(), jwtIssuer, jwtSubject, jwkRsaKey.getKeyID());
 
         final var x5c = getSignatureCertChain(jwkSet, signedJWT);
 
@@ -114,7 +125,9 @@ class SignatureCertificateValidatorTest {
         final var actual = validator.validate(x5c);
 
         // then
-        //TODO
+        assertAll(
+                () -> assertEquals(0, actual.size())
+        );
     }
 
 
@@ -173,16 +186,19 @@ class SignatureCertificateValidatorTest {
 
     @Test
     @DisplayName(value = "Given a non-related kid on the JWT, then retrieval attempt of cert chain should not crash but give an empty list")
-    void shouldHandleKeyNotFoundInKeySet() {
+    void shouldHandleKeyNotFoundInKeySet() throws JOSEException {
         final var notBefore = Date.from(Instant.now().plus(-365, ChronoUnit.DAYS));
         final var notAfter = Date.from(Instant.now().plus(1825, ChronoUnit.DAYS));
 
-        final var jwkRsaKeys = TestDataUtils.generateJwkRsaKeys("CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
+        final var signatureKeys = TestDataUtils.generateRSAKeyPair();
+        final var signatureCertificate = TestDataUtils.generateCertificate(signatureKeys.getPublic(), signatureKeys.getPrivate(), "CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
+
+        final var jwkRsaKeys = TestDataUtils.generateRsaSignatureJWK(signatureKeys, UUID.randomUUID().toString(), new X509Certificate[]{signatureCertificate});
         final var jwkSet = new JWKSet(jwkRsaKeys.toPublicJWK());
 
         final var jwtIssuer = "https://auth.example.com";
         final var jwtSubject = UUID.randomUUID().toString();
-        final var signedButMisleadingJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys, jwtIssuer, jwtSubject, "NøtteNøtteNøkkel?");
+        final var signedButMisleadingJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys.toPrivateKey(), jwtIssuer, jwtSubject, "loremIpsumKey");
         assertDoesNotThrow(() -> {
             final var x5c = getSignatureCertChain(jwkSet, signedButMisleadingJWT);
             assertAll(
@@ -194,19 +210,21 @@ class SignatureCertificateValidatorTest {
 
     @Test
     @DisplayName(value = "Given a valid kid on the JWT, then retrieval attempt of cert chain should succeed")
-    void shouldHandleValidKeyAndReturnCertificateChain() {
+    void shouldHandleValidKeyAndReturnCertificateChain() throws JOSEException {
         // given
         final var notBefore = Date.from(Instant.now().plus(-365, ChronoUnit.DAYS));
         final var notAfter = Date.from(Instant.now().plus(1825, ChronoUnit.DAYS));
 
-        final var jwkRsaKeys = TestDataUtils.generateJwkRsaKeys("CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
+        final var keyPair = TestDataUtils.generateRSAKeyPair();
+        final var certificate = TestDataUtils.generateCertificate(keyPair.getPublic(), keyPair.getPrivate(), "CN=SnakeOil", "CN=SnakeOil", notBefore, notAfter);
+        final var jwkRsaKeys = TestDataUtils.generateRsaSignatureJWK(keyPair, "A", new X509Certificate[]{certificate});
         final var jwkSet = new JWKSet(jwkRsaKeys.toPublicJWK());
 
         final var jwtIssuer = "https://auth.example.com";
         final var jwtSubject = UUID.randomUUID().toString();
 
         // when
-        final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys, jwtIssuer, jwtSubject);
+        final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys.toPrivateKey(), jwtIssuer, jwtSubject, jwkRsaKeys.getKeyID());
 
         // then
         assertDoesNotThrow(() -> {
