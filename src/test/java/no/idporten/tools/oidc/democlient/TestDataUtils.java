@@ -90,7 +90,7 @@ public class TestDataUtils {
             final var keyGen = KeyPairGenerator.getInstance("RSA");
             keyGen.initialize(2048);
             return keyGen.generateKeyPair();
-        } catch (final NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new JUnitException("Unable to generate RSA key pair", e);
         }
     }
