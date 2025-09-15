@@ -102,7 +102,7 @@ public class TestClientController {
                 request.getSession().setAttribute("id_token", idToken);
                 model.addAttribute("personIdentifier", idToken.getJWTClaimsSet().getClaim(themeProperties.getUserIdClaim()));
 
-                protocolTracerService.traceX509SigningCertificate(request.getSession(), oidcIntegrationService.getSignatureCertChain(idToken), oidcIntegrationService.getSignatureCertChainValidationResults(idToken));
+                protocolTracerService.traceX509SigningCertificate(request.getSession(), oidcIntegrationService.getSignatureCertChain(idToken), oidcIntegrationService.validateSignatureCertificate(idToken));
             }
             if (tokenResponse.getTokens().getAccessToken() != null) {
                 protocolTracerService.traceBearerAccessToken(request.getSession(), accessToken.getValue());

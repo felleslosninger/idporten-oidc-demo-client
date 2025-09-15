@@ -213,9 +213,14 @@ public class OIDCIntegrationService {
         return SignatureCertificateValidator.getSignatureCertChain(jwks, idToken);
     }
 
-    public List<ValidationResult> getSignatureCertChainValidationResults(JWT idToken) {
-        final var certificateChain = getSignatureCertChain(idToken);
-        return signatureCertificateValidator.validate(certificateChain);
+    public List<ValidationResult> validateSignatureCertificate(JWT idToken) {
+
+        // Only first certificate in chain of x5c should be validated
+        final var firstCertificate = getSignatureCertChain(idToken).stream()
+                .findFirst()
+                .orElse(null);
+
+        return signatureCertificateValidator.validate(firstCertificate);
     }
 
 

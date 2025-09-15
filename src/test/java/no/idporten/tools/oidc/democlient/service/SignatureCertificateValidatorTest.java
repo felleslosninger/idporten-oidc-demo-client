@@ -83,7 +83,7 @@ class SignatureCertificateValidatorTest {
         final var jwtSubject = UUID.randomUUID().toString();
         final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys.toPrivateKey(), jwtIssuer, jwtSubject, jwkRsaKeys.getKeyID());
 
-        final var x5c = getSignatureCertChain(jwkSet, signedJWT);
+        final var x5c = getSignatureCertChain(jwkSet, signedJWT).getFirst();
 
         // when
         properties.setJwksExpiryWarningDays(expiryWarningDays);
@@ -128,7 +128,7 @@ class SignatureCertificateValidatorTest {
         final var jwtSubject = UUID.randomUUID().toString();
         final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKey.toPrivateKey(), jwtIssuer, jwtSubject, jwkRsaKey.getKeyID());
 
-        final var x5c = getSignatureCertChain(jwkSet, signedJWT);
+        final var x5c = getSignatureCertChain(jwkSet, signedJWT).getFirst();
 
         // when
         final var actual = validator.validate(x5c);
@@ -157,7 +157,7 @@ class SignatureCertificateValidatorTest {
         final var jwtSubject = UUID.randomUUID().toString();
 
         final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys.toPrivateKey(), jwtIssuer, jwtSubject, jwkRsaKeys.getKeyID());
-        final var x5c = getSignatureCertChain(jwkSet, signedJWT);
+        final var x5c = getSignatureCertChain(jwkSet, signedJWT).getFirst();
 
 
         assertDoesNotThrow(() -> {
@@ -196,7 +196,7 @@ class SignatureCertificateValidatorTest {
         final var jwtSubject = UUID.randomUUID().toString();
 
         final var signedJWT = TestDataUtils.generateSignedJWT(jwkRsaKeys.toPrivateKey(), jwtIssuer, jwtSubject, jwkRsaKeys.getKeyID());
-        final var x5c = getSignatureCertChain(jwkSet, signedJWT);
+        final var x5c = getSignatureCertChain(jwkSet, signedJWT).getFirst();
 
 
         assertDoesNotThrow(() -> {
@@ -238,7 +238,7 @@ class SignatureCertificateValidatorTest {
     @DisplayName(value = "Given an empty certificate chain is given, then the validator should issue a warning")
     void shouldHandleEmptyCertificateChain() {
         // given
-        final List<X509Certificate> x5c = null;
+        X509Certificate x5c = null;
 
         // when
         final var actual = validator.validate(x5c);

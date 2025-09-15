@@ -21,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -32,12 +31,7 @@ public class SignatureCertificateValidator {
 
     private final OIDCIntegrationProperties oidcIntegrationProperties;
 
-    private static <L> boolean isNullOrEmpty(@Nullable List<L> value) {
-        return value == null || value.isEmpty();
-    }
-
-
-    private static <L> List<L> nullSafeIsoDate(@Nullable List<L> list) {
+    private static <L> List<L> nullSafeList(@Nullable List<L> list) {
         if (list == null) {
             return List.of();
         }
@@ -73,7 +67,7 @@ public class SignatureCertificateValidator {
                 log.warn("Unable to validate signing certificate chain, no key found with ID [{}]", kid);
                 return List.of();
             }
-            return nullSafeIsoDate(jwk.getParsedX509CertChain());
+            return nullSafeList(jwk.getParsedX509CertChain());
 
         } catch (ClassCastException ex) {
             log.warn("Token header is not of type JWSHeader", ex);
@@ -81,24 +75,19 @@ public class SignatureCertificateValidator {
         }
     }
 
-    public List<ValidationResult> validate(@Nullable List<X509Certificate> x509Chain) {
+    public List<ValidationResult> validate(X509Certificate signatureCertificate) {
         final var soonExpiryOffset = Duration.ofDays(oidcIntegrationProperties.getJwksExpiryWarningDays());
 
-        if (isNullOrEmpty(x509Chain)) {
+        if (signatureCertificate == null) {
             return List.of(new ValidationResult(WarningLevel.WARNING, "Certificate chain was not found"));
         }
 
-        return x509Chain.stream()
-                // validate only first (root) certificate
-                .findFirst().stream()
-                .map(cert -> this.validateDateRanges(cert, soonExpiryOffset))
-                .flatMap(Collection::stream).toList();
+        return this.validateDateRanges(signatureCertificate, soonExpiryOffset);
     }
 
     private List<ValidationResult> validateDateRanges(X509Certificate x509, Duration soonExpiryOffset) {
-        final var validationResults = new ArrayList<ValidationResult>();
 
-        validationResults.addAll(validateIssuedExpiredDate(x509));
+        final var validationResults = new ArrayList<ValidationResult>(validateIssuedExpiredDate(x509));
 
         if (validationResults.isEmpty()) {
             validationResults.addAll(validateSoonExpiry(x509, soonExpiryOffset));
