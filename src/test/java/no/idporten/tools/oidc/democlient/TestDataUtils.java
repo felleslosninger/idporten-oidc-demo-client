@@ -9,7 +9,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import org.bouncycastle.asn1.ASN1BitString;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.Extension;
 import org.bouncycastle.asn1.x509.KeyUsage;
@@ -129,17 +128,6 @@ public class TestDataUtils {
                 .build();
 
     }
-
-    /**
-    public static SignedJWT generateSignedJWT(RSAKey jwk, String issuer, String subject) {
-        try {
-            final var privateKey = jwk.toKeyPair().getPrivate();
-            return generateSignedJWT(privateKey, issuer, subject, jwk.getKeyID());
-        } catch (JOSEException e) {
-            throw new RuntimeException("Unable to generate signed JWT", e);
-        }
-    }
-     */
 
     public static SignedJWT generateSignedJWT(PrivateKey signingKey, String issuer, String subject, String keyId) {
         try {
