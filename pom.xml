@@ -112,15 +112,7 @@
             <artifactId>idporten-actuator-starter</artifactId>
             <version>${idporten.actuator.version}</version>
         </dependency>
-        <!-- TODO: remove or enhance the lib -->
-        <!--
-        <dependency>
-            <groupId>no.idporten.validator.certificate</groupId>
-            <artifactId>idporten-certvalidator</artifactId>
-            <version>${idporten.certvalidator.version}</version>
-        </dependency>
 
-        -->
         <!-- Bouncy Castle dependencies for certificate tests -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
