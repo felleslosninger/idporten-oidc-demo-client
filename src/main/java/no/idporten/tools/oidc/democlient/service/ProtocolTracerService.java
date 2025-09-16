@@ -11,8 +11,11 @@ import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpSession;
 import java.net.URI;
+import java.security.cert.X509Certificate;
 import java.text.ParseException;
+import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Slf4j
 @Service
@@ -208,6 +211,28 @@ public class ProtocolTracerService {
         return protocolTrace;
     }
 
+    public ProtocolTrace traceX509SigningCertificate(HttpSession session, List<X509Certificate> certificateList, List<ValidationResult> validationResults) {
+        final var trace = new StringBuilder();
+        final var warningLevel = ValidationResult.getHighestLevel(validationResults);
+
+        for (var entry : validationResults) {
+            trace.append(entry.level()).append(": ");
+            trace.append(entry.message());
+        }
+
+        trace.append("\n");
+        trace.append(this.formatCertificateDetails(certificateList));
+
+        ProtocolTrace protocolTrace = getOrCreate(session);
+        protocolTrace.setSignatureChainX5c(ProtocolInteraction.builder()
+                .id("oidcSignatureChain")
+                .text("Issuer X.509 Signature Chain (x5c)")
+                .interaction(trace.toString())
+                .warningLevel(warningLevel)
+                .build());
+        return protocolTrace;
+    }
+
     protected static String formatJson(String json) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -285,6 +310,33 @@ public class ProtocolTracerService {
         sb.append("\n");
         sb.append(formatJson(httpResponse.getContent()));
         return sb.toString();
+    }
+
+    private String formatCertificateDetails(List<X509Certificate> list) {
+        if (list == null || list.isEmpty()) {
+            return "";
+        }
+
+        final var builder = new StringBuilder();
+
+        for (int i = 0, size = list.size(); i < size; i++) {
+            X509Certificate cert = list.get(i);
+
+            if (cert == null) {
+                continue;
+            }
+
+            final var content = String.format("""
+                    ---
+                    Certificate #%d
+                    Serial number: %s
+                    Issued date: %s
+                    Expiration date: %s
+                    ---
+                    """,i, cert.getSerialNumber(), SignatureCertificateValidator.nullSafeIsoDate(cert.getNotBefore()), SignatureCertificateValidator.nullSafeIsoDate(cert.getNotAfter()));
+            builder.append(content);
+        }
+        return builder.toString();
     }
 
 }

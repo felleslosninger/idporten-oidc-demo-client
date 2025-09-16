@@ -136,3 +136,11 @@ a.ln-List_Element {
 .Box_Section_Title:hover .tooltiptext {
     visibility: visible;
 }
+
+.accordion-indicator {
+    display: flex;
+    flex-direction: row;
+    justify-items: start;
+    align-items: center;
+    padding: 2px 8px;
+}

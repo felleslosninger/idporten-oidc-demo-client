@@ -6,6 +6,7 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
+import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -26,6 +27,7 @@ import com.nimbusds.openid.connect.sdk.*;
 import com.nimbusds.openid.connect.sdk.claims.ACR;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.idporten.tools.oidc.democlient.config.FeatureSwitchProperties;
@@ -37,13 +39,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
 import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.time.Clock;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -61,6 +62,8 @@ public class OIDCIntegrationService {
     private final OIDCProviderMetadata oidcProviderMetadata;
     private final ProtocolTracerService oidcProtocolTracerService;
     private final FeatureSwitchProperties featureSwitchProperties;
+    private final SignatureCertificateValidator signatureCertificateValidator;
+    private final RemoteJWKSet remoteJWKSet;
 
     public com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest(AuthorizationRequest authorizationRequest) {
         try {
@@ -197,10 +200,29 @@ public class OIDCIntegrationService {
             }
             return AuthorizationResponse.parse(authorizationResponseUri);
         } catch (Exception e) {
-            log.warn("Failed to parse authorization response {}",authorizationResponseUri, e);
+            log.warn("Failed to parse authorization response {}", authorizationResponseUri, e);
             throw new OIDCIntegrationException("Failed to parse authorization response.");
         }
     }
+
+    public List<X509Certificate> getSignatureCertChain(JWT idToken) {
+        final var jwks = remoteJWKSet.getCachedJWKSet();
+        if (jwks == null || jwks.isEmpty()) {
+            return List.of();
+        }
+        return SignatureCertificateValidator.getSignatureCertChain(jwks, idToken);
+    }
+
+    public List<ValidationResult> validateSignatureCertificate(JWT idToken) {
+
+        // Only first certificate in chain of x5c should be validated
+        final var firstCertificate = getSignatureCertChain(idToken).stream()
+                .findFirst()
+                .orElse(null);
+
+        return signatureCertificateValidator.validate(firstCertificate);
+    }
+
 
     public AccessTokenResponse token(AuthorizationSuccessResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
         try {
@@ -217,7 +239,7 @@ public class OIDCIntegrationService {
                     }
                 }
                 return accessTokenResponse;
-           } else {
+            } else {
                 TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
                 log.warn("Error response from {}: {}", oidcProviderMetadata.getTokenEndpointURI(), errorResponse.toJSONObject().toJSONString());
                 throw new OIDCIntegrationException(errorResponse.getErrorObject().getCode() + ":" + errorResponse.getErrorObject().getDescription());

@@ -60,12 +60,12 @@ public class TestClientController {
                 .nonce(new Nonce().getValue())
                 .codeVerifier(new CodeVerifier().getValue())
                 .codeChallengeMethod(CodeChallengeMethod.S256.getValue())
-        .build());
+                .build());
         return "index";
     }
 
     @PostMapping("/authorize")
-    public String authorize(@ModelAttribute AuthorizationRequest authorizationRequest,  HttpServletRequest request, Model model) {
+    public String authorize(@ModelAttribute AuthorizationRequest authorizationRequest, HttpServletRequest request, Model model) {
         if (StringUtils.hasText(authorizationRequest.getCodeVerifier())) {
             request.getSession().setAttribute("code_verifier", new CodeVerifier(authorizationRequest.getCodeVerifier()));
         }
@@ -94,11 +94,15 @@ public class TestClientController {
             final CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
             AccessTokenResponse tokenResponse = oidcIntegrationService.token(authorizationResponse.toSuccessResponse(), state, nonce, codeVerifier);
             AccessToken accessToken = tokenResponse.getTokens().getAccessToken();
+
             if (accessToken != null && accessToken.getScope() != null && accessToken.getScope().contains("openid")) {
                 OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse;
-                protocolTracerService.traceValidatedIdToken(request.getSession(), oidcTokenResponse.getOIDCTokens().getIDToken());
-                request.getSession().setAttribute("id_token", oidcTokenResponse.getOIDCTokens().getIDToken());
-                model.addAttribute("personIdentifier",  oidcTokenResponse.getOIDCTokens().getIDToken().getJWTClaimsSet().getClaim(themeProperties.getUserIdClaim()));
+                final var idToken = oidcTokenResponse.getOIDCTokens().getIDToken();
+                protocolTracerService.traceValidatedIdToken(request.getSession(), idToken);
+                request.getSession().setAttribute("id_token", idToken);
+                model.addAttribute("personIdentifier", idToken.getJWTClaimsSet().getClaim(themeProperties.getUserIdClaim()));
+
+                protocolTracerService.traceX509SigningCertificate(request.getSession(), oidcIntegrationService.getSignatureCertChain(idToken), oidcIntegrationService.validateSignatureCertificate(idToken));
             }
             if (tokenResponse.getTokens().getAccessToken() != null) {
                 protocolTracerService.traceBearerAccessToken(request.getSession(), accessToken.getValue());
@@ -118,7 +122,7 @@ public class TestClientController {
     public String logout(HttpServletRequest request) {
         JWT idToken = (JWT) request.getSession().getAttribute("id_token");
         request.getSession().invalidate();
-        LogoutRequest logoutRequest =  oidcIntegrationService.logoutRequest(idToken);
+        LogoutRequest logoutRequest = oidcIntegrationService.logoutRequest(idToken);
         request.getSession(true);
         request.getSession().setAttribute("state", logoutRequest.getState());
         String htmlFormPage = htmlFormService.createHtmlFormAutosubmitPage(logoutRequest.getEndpointURI(), logoutRequest.toParameters());
