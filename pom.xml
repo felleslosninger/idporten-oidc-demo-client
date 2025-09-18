@@ -17,7 +17,7 @@
     <properties>
         <java.version>24</java.version>
         <nimbus.oauth2-oidc-sdk.version>11.28</nimbus.oauth2-oidc-sdk.version>
-        <lombok-version>1.18.40</lombok-version>
+        <lombok-version>1.18.42</lombok-version>
         <surefire.plugin.version>3.5.4</surefire.plugin.version>
         <idporten.actuator.version>2.0.0</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>2.8.0</idporten-access-log-spring-boot-starter.version>
