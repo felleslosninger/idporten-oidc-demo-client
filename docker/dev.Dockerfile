@@ -1,4 +1,4 @@
-FROM maven:3.9-eclipse-temurin-24 as builder
+FROM maven:3.9-eclipse-temurin-25 as builder
 
 ARG GIT_PACKAGE_TOKEN
 ARG GIT_PACKAGE_USERNAME
@@ -15,7 +15,7 @@ COPY src ./src
 RUN --mount=type=cache,target=/root/.m2/repository mvn -B package dependency:go-offline -Dmaven.test.skip=true -Dmaven.gitcommitid.skip=true
 
 
-FROM eclipse-temurin:24-jre-noble
+FROM eclipse-temurin:25-jre-noble
 
 ARG APPLICATION=idporten-oidc-demo-client
 RUN mkdir /var/log/${APPLICATION}

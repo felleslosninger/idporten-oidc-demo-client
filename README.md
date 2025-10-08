@@ -23,7 +23,16 @@ Applikasjonen er ikke et eksempel på hvordan en Spring Boot-basert applikasjon 
 
 ### Applikasjonen kan ikke brukes til å teste ID-portens grensesnitt i detalj
 Applikasjonen tilbyr for lite funksjonalitet til å teste ID-porten i detalj.  Det blir begrenset av mengden parametere som benyttes av applikasjonen, muligheten til å manipulere dette, samt at applikasjonen bruker biblioteker som gjør sjekker før interaksjon med ID-porten.  Til detaljert testing har vi andre og mer egnede verktøy internt.
+## Bygge og kjøre lokalt
 
+For å bygge og kjøre applikasjonen lokalt trenger du:
+
+* Java 25
+* Maven
+Og kjør følgende kommando frå rot-mappa:
+```
+mvn spring-boot:run -Dspring-boot.run.profiles=<profile>
+```
 ## Lokal bygging med Docker
 ### Byggast og køyrast lokalt med docker compose
 Frå rot-mappa kan ein køyre følgande kommando:
