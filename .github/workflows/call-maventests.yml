@@ -11,11 +11,11 @@ jobs:
   call-workflow-maven-build:
     uses: felleslosninger/github-workflows/.github/workflows/ci-maven-build.yml@main
     with:
-      java-version: 24
+      java-version: 25
     secrets: inherit
   call-container-scan:
     uses: felleslosninger/github-workflows/.github/workflows/ci-spring-boot-container-scan.yml@main
     with:
       image-name: idporten-oidc-demo-client
-      java-version: 24
+      java-version: 25
     secrets: inherit

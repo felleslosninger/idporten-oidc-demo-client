@@ -19,7 +19,7 @@ jobs:
     uses: felleslosninger/github-workflows/.github/workflows/ci-spring-boot-build-publish-image.yml@main
     with:
       image-name: idporten-oidc-demo-client
-      java-version: 24
+      java-version: 25
     secrets: inherit
 
   call-update-image:
