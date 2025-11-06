@@ -21,7 +21,7 @@
         <surefire.plugin.version>3.5.4</surefire.plugin.version>
         <idporten.actuator.version>2.0.0</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>2.8.0</idporten-access-log-spring-boot-starter.version>
-        <open.telemetry.version>2.20.1</open.telemetry.version>
+        <open.telemetry.version>2.21.0</open.telemetry.version>
         <snakeyaml.version>2.0</snakeyaml.version><!-- To avoid CVE-2022-1471  -->
         <bc-jdk18on.version>1.82</bc-jdk18on.version>
         <compiler-plugin.version>3.14.1</compiler-plugin.version>
