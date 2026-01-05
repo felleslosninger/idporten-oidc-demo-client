@@ -16,7 +16,7 @@
 
     <properties>
         <java.version>25</java.version>
-        <nimbus.oauth2-oidc-sdk.version>11.30</nimbus.oauth2-oidc-sdk.version>
+        <nimbus.oauth2-oidc-sdk.version>11.31</nimbus.oauth2-oidc-sdk.version>
         <lombok-version>1.18.42</lombok-version>
         <surefire.plugin.version>3.5.4</surefire.plugin.version>
         <idporten.actuator.version>2.0.0</idporten.actuator.version>
