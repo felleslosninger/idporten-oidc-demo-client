@@ -16,6 +16,7 @@ import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import no.idporten.tools.oidc.democlient.TestDataUtils;
 import no.idporten.tools.oidc.democlient.config.FeatureSwitchProperties;
 import no.idporten.tools.oidc.democlient.config.OIDCIntegrationProperties;
+import no.idporten.tools.oidc.democlient.config.OIDCIntegrationTestConfiguration;
 import no.idporten.tools.oidc.democlient.config.ThemeProperties;
 import no.idporten.tools.oidc.democlient.service.OIDCIntegrationService;
 import no.idporten.tools.oidc.democlient.service.ProtocolTrace;
@@ -23,11 +24,16 @@ import no.idporten.tools.oidc.democlient.service.ProtocolTracerService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -55,6 +61,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@Import(OIDCIntegrationTestConfiguration.class)
 public class TestClientControllerTest {
 
     @Autowired
