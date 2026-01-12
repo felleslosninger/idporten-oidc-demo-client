@@ -26,6 +26,7 @@
         <bc-jdk18on.version>1.82</bc-jdk18on.version>
 
         <!-- idporten -->
+        <!-- FIXME: bump to stable versions -->
         <idporten.actuator.version>3.0.0-rc2</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>3.0.0-rc1</idporten-access-log-spring-boot-starter.version>
 
