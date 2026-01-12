@@ -1,8 +1,5 @@
 package no.idporten.tools.oidc.democlient.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
@@ -10,6 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpSession;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+
 import java.net.URI;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
@@ -235,9 +237,11 @@ public class ProtocolTracerService {
 
     protected static String formatJson(String json) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.enable(SerializationFeature.INDENT_OUTPUT).writeValueAsString(objectMapper.readTree(json));
-        } catch (JsonProcessingException e) {
+            final var mapper = JsonMapper.builder()
+                    .enable(SerializationFeature.INDENT_OUTPUT)
+                    .build();
+            return mapper.writeValueAsString(mapper.readTree(json));
+        } catch (JacksonException e) {
             return json;
         }
     }

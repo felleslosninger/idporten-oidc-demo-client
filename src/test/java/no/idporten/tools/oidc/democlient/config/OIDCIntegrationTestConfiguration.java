@@ -4,14 +4,13 @@ import com.nimbusds.jose.jwk.source.RemoteJWKSet;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+
+import static org.mockito.Mockito.mock;
 
 @Slf4j
-@Configuration
-@Profile("test")
+@TestConfiguration
 public class OIDCIntegrationTestConfiguration {
 
     @Bean
@@ -57,10 +56,14 @@ public class OIDCIntegrationTestConfiguration {
         return oidcProviderMetadata;
     }
 
-    @MockBean
-    public RemoteJWKSet remoteJWKSet;
+    @Bean
+    public RemoteJWKSet remoteJWKSet() {
+        return mock(RemoteJWKSet.class);
+    }
 
-    @MockBean
-    public IDTokenValidator idTokenValidator;
+    @Bean
+    public IDTokenValidator idTokenValidator() {
+        return mock(IDTokenValidator.class);
+    }
 
 }
