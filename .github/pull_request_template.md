@@ -21,4 +21,4 @@ Kodeles:
 - [ ] Risikovurdering ok
 - [ ] Nødvendige unit-tester er på plass
 - [ ] Nødvendige regresjonstester er oppdatert/oppretta/planlagt
-- [ ] Har oppdatert readme (evt digdir docs om nødvendig)
+- [ ] Har oppdatert readme
