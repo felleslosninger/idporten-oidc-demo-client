@@ -1,3 +1,9 @@
+
+body {
+    font-family: "Inter", sans-serif;
+    font-feature-settings: "cv05" 1; /* Enable lowercase l with tail */
+}
+
 .selector {
     padding-top: 20px;
     margin: auto;
@@ -143,4 +149,10 @@ a.ln-List_Element {
     justify-items: start;
     align-items: center;
     padding: 2px 8px;
+}
+
+.details-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
