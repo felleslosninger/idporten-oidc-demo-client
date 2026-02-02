@@ -21,6 +21,7 @@ oidc-demo-client:
     redirect-uri: https://client.junit.idporten.no/callback
     post-logout-redirect-uri: https://client.junit.idporten.no/logout/callback
   csp-header:
-    - "style-src 'self' cdn.jsdelivr.net;"
-    - "script-src 'self' cdn.jsdelivr.net;"
+    - "font-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
+    - "style-src 'self' cdn.jsdelivr.net static.test.idporten.no static.idporten.no altinncdn.no;"
+    - "connect-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
     - "form-action 'self' junit.idporten.no"
