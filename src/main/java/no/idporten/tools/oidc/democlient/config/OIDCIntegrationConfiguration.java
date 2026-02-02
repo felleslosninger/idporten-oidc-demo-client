@@ -10,6 +10,7 @@ import com.nimbusds.oauth2.sdk.jarm.JARMValidator;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import lombok.extern.slf4j.Slf4j;
+import no.idporten.tools.oidc.democlient.config.properties.OIDCIntegrationProperties;
 import no.idporten.tools.oidc.democlient.service.LoggingResourceRetriever;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

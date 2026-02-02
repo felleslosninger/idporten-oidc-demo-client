@@ -7,7 +7,7 @@ import com.nimbusds.jwt.JWT;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.idporten.tools.oidc.democlient.config.OIDCIntegrationProperties;
+import no.idporten.tools.oidc.democlient.config.properties.OIDCIntegrationProperties;
 import no.idporten.tools.oidc.democlient.util.WarningLevel;
 import org.springframework.stereotype.Component;
 
