@@ -1,175 +1,172 @@
 
 /* layer priorities - low to high */
-@layer bootstrap, ds, main;
+@layer bootstrap, ds;
 
-@layer main {
-    body {
-        font-family: "Inter", sans-serif;
-        font-feature-settings: "cv05" 1; /* Enable lowercase l with tail */
-    }
+body {
+    font-family: "Inter", sans-serif;
+    font-feature-settings: "cv05" 1; /* Enable lowercase l with tail */
+}
 
-    .selector {
-        padding-top: 20px;
-        margin: auto;
-        width: 40%;
-    }
+.selector {
+    padding-top: 20px;
+    margin: auto;
+    width: 40%;
+}
 
-    ul {
-        list-style-type: none;
-        padding: 0;
-        margin:auto;
-        text-align: center;
-    }
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin:auto;
+    text-align: center;
+}
 
-    li a {
-        width: 90%;
-        display:block;
-        background-color: lightskyblue;
-        color: #000;
-        margin: 16px;
-        padding: 8px 16px;
-        text-decoration: none;
-        border-radius: 25px;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        transition: padding 200ms;
-    }
+li a {
+    width: 90%;
+    display:block;
+    background-color: lightskyblue;
+    color: #000;
+    margin: 16px;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 25px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    transition: padding 200ms;
+}
 
-    /* Change the link color on hover */
-    li a:hover {
-        background-color: lightblue;
-        color: black;
-        padding: 20px 60px;
-    }
+/* Change the link color on hover */
+li a:hover {
+    background-color: lightblue;
+    color: black;
+    padding: 20px 60px;
+}
 
-    .error {
-        text-align: center;
-        color: red;
-    }
+.error {
+    text-align: center;
+    color: red;
+}
 
-    .Box {
-        width: 100%;
-        border: 0;
-    }
+.Box {
+    width: 100%;
+    border: 0;
+}
 
-    .Box_Section {
-        background-color: #fff;
-        padding: 1rem 2rem;
-        display: flex;
-        flex-direction: column;
-    }
+.Box_Section {
+    background-color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    flex-direction: column;
+}
 
-    .Box_Section-ServiceProvider {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-top-right-radius: 4px;
-        border-top-left-radius: 4px;
-        border-bottom: 1px solid #e6ebf0;
-    }
+.Box_Section-ServiceProvider {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
+    border-bottom: 1px solid #e6ebf0;
+}
 
-    .Box_header {
-        padding: 0 .5em;
-        border-bottom: 1px solid #e6ebf0;
-    }
+.Box_header {
+    padding: 0 .5em;
+    border-bottom: 1px solid #e6ebf0;
+}
 
-    .Box_header-title.with-logo {
-        position: relative;
-        padding-left: calc(.5em + 25px);
-        padding-top: calc(.5em + 15px);
-    }
+.Box_header-title.with-logo {
+    position: relative;
+    padding-left: calc(.5em + 25px);
+    padding-top: calc(.5em + 15px);
+}
 
-    .Box_header-title {
-        text-transform: uppercase;
-        font-size: .875em;
-        line-height: 1.2em;
-        color: #222;
-        font-weight: 700;
-        min-height: 60px;
-        position: relative;
-    }
+.Box_header-title {
+    text-transform: uppercase;
+    font-size: .875em;
+    line-height: 1.2em;
+    color: #222;
+    font-weight: 700;
+    min-height: 60px;
+    position: relative;
+}
 
-    .Box_header-title.with-logo:before {
-        content: "";
-        display: block;
-        position: absolute;
-        width: 25px;
-        height: 25px;
-        left: 0;
-        top: 1.25em;
-        background-repeat: no-repeat;
-        background-size: 100%;
-    }
+.Box_header-title.with-logo:before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    left: 0;
+    top: 1.25em;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
 
-    .Box_header-title.logo-eid-gray:before {
-        background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIwLjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA2NCA2NCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNjQgNjQ7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojNkE2QTZBO30KPC9zdHlsZT4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTI3LjQsNDAuOEwyNy40LDQwLjhMMjAsNTAuN2wwLDBjLTEsMS45LDAuOSwyLjksMS4xLDNsMCwwdjIuNEgxMGMtMC40LDAtMC44LTAuMy0wLjgtMC44di05YzAsMCwwLDAsMC4xLDAKCWMxLjMtMC4xLDIuMS0wLjksMi4xLTIuMXYtNy43YzAtMC40LTAuMS0wLjgtMC40LTEuMWMtMC40LTAuNi0wLjgtMC45LTEuNy0wLjljMCwwLDAsMC0wLjEsMFYyMy45aDExLjl2Mi40bDAsMAoJYy0wLjIsMC4xLTIuNCwxLTEuNiwyLjhsMCwwTDI3LjQsNDAuOEwyNy40LDQwLjhMMjcuNCw0MC44TDI3LjQsNDAuOHoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTU0LjgsMzQuNUw1NC44LDM0LjVjLTAuOSwwLTEuMywwLjMtMS44LDAuOWMtMC4yLDAuMy0wLjQsMC43LTAuNCwxLjF2Ny43YzAsMS4yLDAuNywyLjEsMi4xLDIuMQoJYzAsMCwwLDAsMC4xLDB2OWMwLDAuNC0wLjMsMC44LTAuOCwwLjhINDIuOXYtMi40bDAsMGMwLjItMC4xLDIuMi0xLjEsMS4xLTNsMCwwbC03LjUtOS45bDAsMGwwLDBsMCwwbDAsMGw3LjktMTEuNmwwLDAKCWMwLjgtMS44LTEuNS0yLjgtMS42LTIuOGwwLDBWMjRoMTEuOUw1NC44LDM0LjVMNTQuOCwzNC41eiIvPgo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNTQuOCwxOS43SDkuMnYtOS40YzAtMS4zLDEtMi40LDIuMi0yLjZsMCwwaDYuMnY1LjZoOS4yYzAuNSwwLDAuNy0wLjIsMC43LTAuN1Y3LjdoOS4xdjQuOQoJYzAsMC41LDAuMiwwLjcsMC43LDAuN2g5LjFWNy44aDUuOWMxLjQsMCwyLjUsMS4yLDIuNSwyLjZDNTQuOCwxMC40LDU0LjgsMTkuNyw1NC44LDE5Ljd6Ii8+Cjwvc3ZnPgo=);
-    }
+.Box_header-title.logo-eid-gray:before {
+    background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIwLjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8IURPQ1RZUEUgc3ZnIFBVQkxJQyAiLS8vVzNDLy9EVEQgU1ZHIDEuMS8vRU4iICJodHRwOi8vd3d3LnczLm9yZy9HcmFwaGljcy9TVkcvMS4xL0RURC9zdmcxMS5kdGQiPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA2NCA2NCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgNjQgNjQ7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHN0eWxlIHR5cGU9InRleHQvY3NzIj4KCS5zdDB7ZmlsbDojNkE2QTZBO30KPC9zdHlsZT4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTI3LjQsNDAuOEwyNy40LDQwLjhMMjAsNTAuN2wwLDBjLTEsMS45LDAuOSwyLjksMS4xLDNsMCwwdjIuNEgxMGMtMC40LDAtMC44LTAuMy0wLjgtMC44di05YzAsMCwwLDAsMC4xLDAKCWMxLjMtMC4xLDIuMS0wLjksMi4xLTIuMXYtNy43YzAtMC40LTAuMS0wLjgtMC40LTEuMWMtMC40LTAuNi0wLjgtMC45LTEuNy0wLjljMCwwLDAsMC0wLjEsMFYyMy45aDExLjl2Mi40bDAsMAoJYy0wLjIsMC4xLTIuNCwxLTEuNiwyLjhsMCwwTDI3LjQsNDAuOEwyNy40LDQwLjhMMjcuNCw0MC44TDI3LjQsNDAuOHoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTU0LjgsMzQuNUw1NC44LDM0LjVjLTAuOSwwLTEuMywwLjMtMS44LDAuOWMtMC4yLDAuMy0wLjQsMC43LTAuNCwxLjF2Ny43YzAsMS4yLDAuNywyLjEsMi4xLDIuMQoJYzAsMCwwLDAsMC4xLDB2OWMwLDAuNC0wLjMsMC44LTAuOCwwLjhINDIuOXYtMi40bDAsMGMwLjItMC4xLDIuMi0xLjEsMS4xLTNsMCwwbC03LjUtOS45bDAsMGwwLDBsMCwwbDAsMGw3LjktMTEuNmwwLDAKCWMwLjgtMS44LTEuNS0yLjgtMS42LTIuOGwwLDBWMjRoMTEuOUw1NC44LDM0LjVMNTQuOCwzNC41eiIvPgo8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNTQuOCwxOS43SDkuMnYtOS40YzAtMS4zLDEtMi40LDIuMi0yLjZsMCwwaDYuMnY1LjZoOS4yYzAuNSwwLDAuNy0wLjIsMC43LTAuN1Y3LjdoOS4xdjQuOQoJYzAsMC41LDAuMiwwLjcsMC43LDAuN2g5LjFWNy44aDUuOWMxLjQsMCwyLjUsMS4yLDIuNSwyLjZDNTQuOCwxMC40LDU0LjgsMTkuNyw1NC44LDE5Ljd6Ii8+Cjwvc3ZnPgo=);
+}
 
-    h1 {
-        display: block;
-        font-size: 2em;
-        margin-block-start: 0.67em;
-        margin-block-end: 0.67em;
-        margin-inline-start: 0px;
-        margin-inline-end: 0px;
-        font-weight: bold;
-    }
+h1 {
+    display: block;
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
 
-    a.ln-List_Element {
-        cursor: pointer;
-    }
+a.ln-List_Element {
+    cursor: pointer;
+}
 
-    .ln-List_Element {
-        display: flex;
-        align-items: center;
-        box-sizing: border-box;
-        width: 100%;
-        color: #000;
-        font-size: .875em;
-        line-height: 1.5em;
-        padding: .7857em 1.7142em .7857em 1.1429em;
-        text-decoration: none;
-        border-bottom: 1px solid #e6ebf0;
-    }
+.ln-List_Element {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    color: #000;
+    font-size: .875em;
+    line-height: 1.5em;
+    padding: .7857em 1.7142em .7857em 1.1429em;
+    text-decoration: none;
+    border-bottom: 1px solid #e6ebf0;
+}
 
 
-    .Box_Section_Title .tooltiptext {
-        visibility: hidden;
-        width: 120px;
-        background-color: lightgrey;
-        color: darkblue;
-        text-align: center;
-        border-radius: 6px;
-        padding: 5px 0;
-    }
+.Box_Section_Title .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: lightgrey;
+    color: darkblue;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+}
 
-    .Box_Section_Title:hover .tooltiptext {
-        visibility: visible;
-    }
+.Box_Section_Title:hover .tooltiptext {
+    visibility: visible;
+}
 
-    .accordion-indicator {
-        display: flex;
-        flex-direction: row;
-        justify-items: start;
-        align-items: center;
-        padding: 2px 8px;
-    }
+.accordion-indicator {
+    display: flex;
+    flex-direction: row;
+    justify-items: start;
+    align-items: center;
+    padding: 2px 8px;
+}
 
-    /* Adjustments for designsystemet */
+/* Adjustments for designsystemet */
 
-    .details-heading {
-        display: flex;
-        flex-direction: row;
-        justify-content: start;
-    }
+.details-heading {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+}
 
-    .headline {
-        padding-top: 16px;
-    }
-    .details-form {
-        display: flex;
-        flex-direction: column;
-        /*gap: 12px;*/
-    }
-
+.headline {
+    padding-top: 16px;
+}
+.details-form {
+    display: flex;
+    flex-direction: column;
+    /*gap: 12px;*/
 }
