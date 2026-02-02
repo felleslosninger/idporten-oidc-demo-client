@@ -1,4 +1,3 @@
-/* ds - designsystemet variable overrides */
 @layer ds  {
     :root {
         --ds-size: var(--ds-size--sm);
