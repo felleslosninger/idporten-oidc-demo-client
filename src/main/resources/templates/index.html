@@ -4,7 +4,7 @@
       lang="nn">
 <head th:replace="~{fragments/header::head}"/>
 <body>
-<div class="container">
+<div class="container" role="main">
     <div class="ds-heading headline" data-size="lg"><span th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></div>
     <br/>
     <form id="authorizationRequestForm" action="#" th:action="@{/authorize}" th:object="${authorizationRequest}" method="post">
@@ -19,39 +19,39 @@
                      aria-labelledby="authorizationRequestHeading" data-bs-parent="#authorizationRequestAccordion">
                     <div class="details-form">
                         <div class="ds-field">
-                            <label class="ds-label" data-weight="regular"  th:for="scopes">Scope (scope)</label>
+                            <label class="ds-label"   th:for="scopes">Scope (scope)</label>
                             <input type="text" th:field="*{scopes}" class=" ds-input"/>
                         </div>
                         <div th:if="${features.isAuthorizationDetailsEnabled()}" class="ds-field">
-                            <label class="ds-label" data-weight="regular" th:for="authorizationDetails">Authorization details (authorization_details)</label>
+                            <label class="ds-label" th:for="authorizationDetails">Authorization details (authorization_details)</label>
                             <input type="text" th:field="*{authorizationDetails}" class="form-control ds-input"/>
                         </div>
                         <div class="ds-field">
-                            <label class="ds-label" data-weight="regular" th:for="acrValues">Acr (acr_values) - use eidas-loa-substantial or eidas-loa-high for eIDAS</label>
+                            <label class="ds-label" th:for="acrValues">Acr (acr_values) - use eidas-loa-substantial or eidas-loa-high for eIDAS</label>
                             <input type="text" th:field="*{acrValues}" class="form-control ds-input"/>
                         </div>
                         <div class="ds-field">
-                            <label class="ds-label" data-weight="regular" th:for="uiLocales">Locale (ui_locales)</label>
+                            <label class="ds-label" th:for="uiLocales">Locale (ui_locales)</label>
                             <input type="text" th:field="*{uiLocales}" class="form-control ds-input"/>
                         </div>
                         <div class="ds-field">
-                            <label class="ds-label" data-weight="regular" th:for="prompt">Prompt (prompt)</label>
+                            <label class="ds-label" th:for="prompt">Prompt (prompt)</label>
                             <input type="text" th:field="*{prompt}" class="form-control ds-input"/>
                         </div>
                         <div class="ds-field">
-                            <label class="ds-label" data-weight="regular" th:for="state">State (state)</label>
+                            <label class="ds-label" th:for="state">State (state)</label>
                             <input type="text" th:field="*{state}" class="form-control ds-input"/>
                         </div>
                         <div class="ds-field">
-                            <label class="ds-label" data-weight="regular" th:for="nonce">Nonce (nonce)</label>
+                            <label class="ds-label" th:for="nonce">Nonce (nonce)</label>
                             <input type="text" th:field="*{nonce}" class="form-control ds-input"/>
                         </div>
                         <div class="ds-field">
-                            <label class="ds-label" data-weight="regular" th:for="codeVerifier">PKCE Code verifier used to compute Code challenge (code_challenge)</label>
+                            <label class="ds-label" th:for="codeVerifier">PKCE Code verifier used to compute Code challenge (code_challenge)</label>
                             <input type="text" th:field="*{codeVerifier}" class="form-control ds-input"/>
                         </div>
                         <div class="ds-field">
-                            <label class="ds-label" data-weight="regular" th:for="codeChallengeMethod">PKCE Code challenge method (code_challenge_method)</label>
+                            <label class="ds-label" th:for="codeChallengeMethod">PKCE Code challenge method (code_challenge_method)</label>
                             <input type="text" th:field="*{codeChallengeMethod}" class="form-control ds-input"/>
                         </div>
                     </div>

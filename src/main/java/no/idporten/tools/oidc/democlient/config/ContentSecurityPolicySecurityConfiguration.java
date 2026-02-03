@@ -20,14 +20,14 @@ import java.util.stream.Collectors;
 public class ContentSecurityPolicySecurityConfiguration {
 
     public ContentSecurityPolicySecurityConfiguration(OidcDemoClientProperties properties) {
-        this.properties = properties;
+        this.cspHeader = String.join(" ", properties.cspHeader());
     }
 
-    private final OidcDemoClientProperties properties;
+    private final String cspHeader;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.headers( headers -> headers.contentSecurityPolicy(c -> c.policyDirectives(String.join(" ", properties.cspHeader()))));
+        http.headers( headers -> headers.contentSecurityPolicy(c -> c.policyDirectives(cspHeader)));
         return http.build();
     }
 }
