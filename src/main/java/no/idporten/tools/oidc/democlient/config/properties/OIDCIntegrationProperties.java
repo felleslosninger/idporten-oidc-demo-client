@@ -1,4 +1,4 @@
-package no.idporten.tools.oidc.democlient.config;
+package no.idporten.tools.oidc.democlient.config.properties;
 
 import com.nimbusds.oauth2.sdk.ResponseMode;
 import lombok.Data;

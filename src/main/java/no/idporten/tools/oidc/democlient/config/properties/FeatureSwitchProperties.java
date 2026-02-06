@@ -1,4 +1,4 @@
-package no.idporten.tools.oidc.democlient.config;
+package no.idporten.tools.oidc.democlient.config.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

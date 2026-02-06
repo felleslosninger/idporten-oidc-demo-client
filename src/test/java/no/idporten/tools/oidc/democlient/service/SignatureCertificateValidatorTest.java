@@ -3,7 +3,7 @@ package no.idporten.tools.oidc.democlient.service;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWKSet;
 import no.idporten.tools.oidc.democlient.TestDataUtils;
-import no.idporten.tools.oidc.democlient.config.OIDCIntegrationProperties;
+import no.idporten.tools.oidc.democlient.config.properties.OIDCIntegrationProperties;
 import no.idporten.tools.oidc.democlient.util.WarningLevel;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.junit.jupiter.api.AfterEach;

@@ -13,4 +13,10 @@ oidc-demo-client:
     client-secret: ${OIDC_DEMO_CLIENT_SECRET}
     redirect-uri: https://demo-client.test.idporten.no/callback
     post-logout-redirect-uri: https://demo-client.test.idporten.no/logout/callback
-  csp-header: "default-src 'self'; img-src 'self' data:; font-src 'self' cdn.jsdelivr.net; style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' login.test.idporten.no;"
+  csp-header:
+    - "default-src 'self';"
+    - "img-src 'self' data:;"
+    - "font-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
+    - "style-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
+    - "connect-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
+    - "form-action 'self' login.test.idporten.no;"
