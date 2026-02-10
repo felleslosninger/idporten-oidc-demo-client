@@ -1,2 +1,4 @@
 CVE-2025-61726 #golang
 CVE-2025-61728 #golang
+CVE-2025-68121 #stdlib
+CVE-2025-61730 #stdlib
