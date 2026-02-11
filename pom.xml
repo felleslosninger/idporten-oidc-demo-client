@@ -21,7 +21,7 @@
         <lombok-version>1.18.42</lombok-version>
 
         <nimbus.oauth2-oidc-sdk.version>11.33</nimbus.oauth2-oidc-sdk.version>
-        <open.telemetry.version>2.23.0</open.telemetry.version>
+        <open.telemetry.version>2.24.0</open.telemetry.version>
         <bc-jdk18on.version>1.83</bc-jdk18on.version>
 
         <!-- idporten -->
