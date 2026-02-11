@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 public class OIDCIntegrationTestConfiguration {
 
     @Bean
-    public OIDCProviderMetadata junitOidcProviderMetadata(OIDCIntegrationProperties properties) throws Exception {
+    public OIDCProviderMetadata junitOidcProviderMetadata() throws Exception {
         OIDCProviderMetadata oidcProviderMetadata = OIDCProviderMetadata.parse("{\n" +
                 "\"issuer\": \"http://junit.idporten.no/testid/\",\n" +
                 "\"pushed_authorization_request_endpoint\": \"http://junit.idporten.no/testid/par\",\n" +

@@ -203,7 +203,7 @@ public class TestClientControllerTest {
             CodeVerifier codeVerifier = new CodeVerifier();
             JWT idToken = new PlainJWT(TestDataUtils.idTokenClaimsSet(TestDataUtils.testUserPersonIdentifier()));
             OIDCTokenResponse tokenResponse = new OIDCTokenResponse(new OIDCTokens(idToken, new BearerAccessToken("at", 120, new Scope("openid")), null));
-            doReturn(tokenResponse).when(oidcIntegrationService).token(any(AuthorizationSuccessResponse.class), eq(state), eq(nonce), eq(codeVerifier));
+            doReturn(tokenResponse).when(oidcIntegrationService).token(any(AuthorizationSuccessResponse.class), eq(nonce), eq(codeVerifier));
             MockHttpSession mockSession = new MockHttpSession();
             ProtocolTracerService.create(mockSession);
             mockSession.setAttribute("state", state);
