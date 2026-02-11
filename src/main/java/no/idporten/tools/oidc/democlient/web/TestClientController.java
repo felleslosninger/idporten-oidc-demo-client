@@ -81,7 +81,7 @@ public class TestClientController {
     }
 
     @GetMapping("/callback")
-    public String callback(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
+    public String callback(HttpServletRequest request, Model model) throws Exception {
         URI authorizationResponseUri = UriComponentsBuilder.fromUri(idPortenIntegrationConfiguration.getRedirectUri()).query(request.getQueryString()).build().toUri();
         protocolTracerService.traceAuthorizationResponse(request.getSession(), authorizationResponseUri);
         AuthorizationResponse authorizationResponse = oidcIntegrationService.parseAuthorizationResponse(authorizationResponseUri);
