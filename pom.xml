@@ -33,7 +33,6 @@
         <surefire-plugin.version>3.5.4</surefire-plugin.version>
         <argLine/> <!-- needed by surefire plugin-->
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.nimbusds</groupId>
