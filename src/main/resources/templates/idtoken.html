@@ -5,7 +5,7 @@
 
 <head th:replace="~{fragments/header::head}"/>
 <body>
-<div class="ds-card">
+<div class="container">
     <div class="ds-heading headline" data-size="lg"><span  th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></div>
 
     <div th:if="${personIdentifier}" class="alert alert-success" role="alert">
@@ -14,16 +14,16 @@
 
     <div th:insert="~{fragments/protocoltrace::protocoltrace}" />
 
-</div>
+
 <br/>
-<div class="ds-buttongroup">
+<div class="buttongroup">
     <a  th:href="@{/}">
         <button role="button" class="ds-button" data-variant="primary">Back</button>
     </a>
     <a  th:href="@{/logout}">
         <button role="button" class="ds-button" data-variant="primary">Logout</button></a>
 
-</div>
+    </div>
 
 <div th:replace="~{fragments/footer::scripts}"/>
 

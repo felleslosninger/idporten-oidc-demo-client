@@ -171,7 +171,7 @@ a.ln-List_Element {
     /*gap: 12px;*/
 }
 /* Adjustments for buttongroup */
-.ds-buttongroup {
+.buttongroup {
     display: flex;
     flex-direction: row;
     justify-content: start;

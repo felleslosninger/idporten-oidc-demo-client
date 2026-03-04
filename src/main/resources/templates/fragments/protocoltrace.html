@@ -26,10 +26,10 @@
                     </span>
                 </summary>
             </summary>
-            <div th:id="${interaction.id}" class="ds-field"
+            <div th:id="${interaction.id}"
                  th:aria-labelledby="'header' + ${interaction.id}"
                  data-bs-parent="#protocolTrace">
-                <div class="ds-field">
+                <div class="ds-paragraph">
                     <pre th:text="${interaction.interaction}"/>
 
                     <button type="button" class="ds-button btn-default bi bi-clipboard-plus"
@@ -37,7 +37,8 @@
 
                 </div>
             </div>
-
+    <scrtipt th:src="@{/dcscript-0.2.js}" defer></scrtipt>
+            <spna></spna>
     </details>
 
     </div>
