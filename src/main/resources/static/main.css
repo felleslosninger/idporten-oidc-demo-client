@@ -170,3 +170,10 @@ a.ln-List_Element {
     flex-direction: column;
     /*gap: 12px;*/
 }
+/* Adjustments for buttongroup */
+.buttongroup {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap: 12px;
+}

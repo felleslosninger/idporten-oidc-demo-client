@@ -4,33 +4,43 @@
       xmlns:th="http://www.thymeleaf.org">
 
 <body>
-<div th:fragment="protocoltrace">
-    <div th:if="${session.protocolTrace}" class="accordion" id="protocolTrace">
-        <script th:src="@{/dcscript-0.2.js}" defer>
-        </script>
-        <div class="accordion-item" th:each="interaction: ${session.protocolTrace.allInteraction}">
-            <h2 class="accordion-header" th:id="'header' + ${interaction.id}">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+
+<summary role="button" aria-expanded="false" slot="summary" tabindex="0" class="details-heading" id="authorizationRequestHeading"
+         aria-controls="authorizationRequest" >
+    Authorization request
+</summary>
+
+<div th:fragment="protocoltrace" >
+    <div th:if="${session.protocolTrace}"  id="protocolTrace" class="ds-card">
+        <details class="ds-details" th:each="interaction: ${session.protocolTrace.allInteraction}">
+
+            <summary th:id="'header' + ${interaction.id}">
+                <summary class="details-heading" role="button"
                         th:data-bs-target="'#' + ${interaction.id}" aria-expanded="false"
                         th:aria-controls="${interaction.id}">
                     <p th:text="${interaction.text}" th:remove="tag"/>
                     <span th:if="${#objects.nullSafe(interaction.warningLevel, false)}" th:switch="${interaction.warningLevel}"
-                          class="accordion-indicator">
+                          class="ds-field">
                         <i th:case="${T(no.idporten.tools.oidc.democlient.util.WarningLevel).WARNING}" class="bi bi-exclamation-triangle-fill text-warning"></i>
                         <i th:case="${T(no.idporten.tools.oidc.democlient.util.WarningLevel).ERROR}" class="bi bi-exclamation-circle-fill text-danger"></i>
                     </span>
-                </button>
-            </h2>
-            <div th:id="${interaction.id}" class="accordion-collapse collapse"
+                </summary>
+            </summary>
+            <div th:id="${interaction.id}"
                  th:aria-labelledby="'header' + ${interaction.id}"
                  data-bs-parent="#protocolTrace">
-                <div class="accordion-body">
+                <div class="ds-paragraph">
                     <pre th:text="${interaction.interaction}"/>
-                    <button type="button" class="btn btn-default bi bi-clipboard-plus" data-bs-toggle="tooltip"
-                            data-bs-placement="top" title="Kopier" th:copytext="${interaction.interaction}"></button>
+
+                    <button type="button" class="ds-button btn-default bi bi-clipboard-plus"
+                          title="Kopier" th:copytext="${interaction.interaction}"></button>
+
                 </div>
             </div>
-        </div>
+    <scrtipt th:src="@{/dcscript-0.2.js}" defer></scrtipt>
+            <spna></spna>
+    </details>
+
     </div>
 </div>
 </body>

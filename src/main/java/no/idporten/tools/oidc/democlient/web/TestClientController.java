@@ -81,7 +81,7 @@ public class TestClientController {
     }
 
     @GetMapping("/callback")
-    public String callback(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
+    public String callback(HttpServletRequest request, Model model) throws Exception {
         URI authorizationResponseUri = UriComponentsBuilder.fromUri(idPortenIntegrationConfiguration.getRedirectUri()).query(request.getQueryString()).build().toUri();
         protocolTracerService.traceAuthorizationResponse(request.getSession(), authorizationResponseUri);
         AuthorizationResponse authorizationResponse = oidcIntegrationService.parseAuthorizationResponse(authorizationResponseUri);
@@ -92,7 +92,7 @@ public class TestClientController {
         if (authorizationResponse.indicatesSuccess()) {
             final Nonce nonce = (Nonce) request.getSession().getAttribute("nonce");
             final CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
-            AccessTokenResponse tokenResponse = oidcIntegrationService.token(authorizationResponse.toSuccessResponse(), state, nonce, codeVerifier);
+            AccessTokenResponse tokenResponse = oidcIntegrationService.token(authorizationResponse.toSuccessResponse(), nonce, codeVerifier);
             AccessToken accessToken = tokenResponse.getTokens().getAccessToken();
 
             if (accessToken != null && accessToken.getScope() != null && accessToken.getScope().contains("openid")) {
