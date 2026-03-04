@@ -25,7 +25,9 @@
     <p>Logging you in...  </p>
     <p>If you are not redirected automatically within 30 sek, click button to continue.</p>
     <br />
-    <a class="ds-button" data-variant="secondary" th:href="${uri}" role="button">Login</a>
+    <a th:href="${uri}">
+        <button type="button" class="ds-button" data-variant="secondary">Login</button>
+    </a>
 </div>
 
 <div th:replace="~{fragments/footer::scripts}"/>
