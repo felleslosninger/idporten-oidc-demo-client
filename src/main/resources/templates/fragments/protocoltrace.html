@@ -12,8 +12,6 @@
 
 <div th:fragment="protocoltrace" >
     <div th:if="${session.protocolTrace}"  id="protocolTrace" class="ds-card">
-        <script th:src="@{/dcscript-0.2.js}" defer>
-        </script>
         <details class="ds-details" th:each="interaction: ${session.protocolTrace.allInteraction}">
 
             <summary th:id="'header' + ${interaction.id}">
