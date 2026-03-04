@@ -224,7 +224,7 @@ public class OIDCIntegrationService {
     }
 
 
-    public AccessTokenResponse token(AuthorizationSuccessResponse authorizationResponse, State state, Nonce nonce, CodeVerifier codeVerifier) {
+    public AccessTokenResponse token(AuthorizationSuccessResponse authorizationResponse,  Nonce nonce, CodeVerifier codeVerifier) {
         try {
             AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), oidcIntegrationProperties.getRedirectUri(), codeVerifier);
             final ClientAuthentication clientAuth = clientAuthentication(oidcIntegrationProperties);
