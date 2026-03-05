@@ -17,13 +17,9 @@
 
 <br/>
 <div class="buttongroup">
-    <a  th:href="@{/}">
-        <button role="button" class="ds-button" data-variant="primary">Back</button>
-    </a>
-    <a  th:href="@{/logout}">
-        <button role="button" class="ds-button" data-variant="primary">Logout</button></a>
-
-    </div>
+    <a  th:href="@{/}" class="ds-button" data-variant="primary">Back</a>
+    <a  th:href="@{/logout}" class="ds-button" data-variant="primary">Logout</a>
+</div>
 
 <div th:replace="~{fragments/footer::scripts}"/>
 
