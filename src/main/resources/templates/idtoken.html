@@ -6,12 +6,12 @@
 <head th:replace="~{fragments/header::head}"/>
 <body>
 <div class="container">
-    <div class="ds-heading headline" data-size="lg"><span  th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></div>
+    <h1 class="ds-heading" data-size="lg"><span  th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
 
-    <div th:if="${personIdentifier}" class="alert alert-success" role="alert">
+    <div th:if="${personIdentifier}" class="ds-alert" data-color='success' role="alert">
         You are logged in as <span th:text="${personIdentifier}" th:remove="tag">personidentifier</span>.
     </div>
-
+<br/>
     <div th:insert="~{fragments/protocoltrace::protocoltrace}" />
 
 

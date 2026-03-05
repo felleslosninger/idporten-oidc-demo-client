@@ -5,7 +5,7 @@
 <head th:replace="~{fragments/header::head}"/>
 <body>
 <div class="container" role="main">
-    <div class="ds-heading headline" data-size="lg"><span th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></div>
+    <h1 class="ds-heading" data-size="lg"><span th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
     <br/>
     <form id="authorizationRequestForm" action="#" th:action="@{/authorize}" th:object="${authorizationRequest}" method="post">
 
