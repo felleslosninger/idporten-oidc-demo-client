@@ -14,10 +14,12 @@
     </div>
     <br/>
 
-    <div th:insert="~{fragments/protocoltrace::protocoltrace}" />
+    <div th:insert="~{fragments/protocoltrace::protocoltrace}"/>
     <br/>
 
-    <a th:href="@{/}" class="ds-button" data-variant="primary">Back</a>
+    <div class="buttongroup">
+        <a th:href="@{/}" class="ds-button" data-variant="primary">Back</a>
+    </div>
 </div>
 
 <div th:replace="~{fragments/footer::scripts}"/>
