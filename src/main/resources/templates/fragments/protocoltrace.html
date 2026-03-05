@@ -32,15 +32,12 @@
                 <div class="ds-paragraph">
                     <pre th:text="${interaction.interaction}"/>
 
-                    <button type="button" class="ds-button btn-default bi bi-clipboard-plus"
+                    <button type="button" class="ds-button btn-default bi bi-clipboard-plus" aria-label="Kopier"
                           title="Kopier" th:copytext="${interaction.interaction}"></button>
 
                 </div>
             </div>
-    <script th:src="@{/dcscript-0.2.js}" defer></script>
-            <span></span>
     </details>
-
     </div>
 </div>
 </body>
