@@ -32,7 +32,9 @@
                 <div class="ds-paragraph">
                     <pre th:text="${interaction.interaction}"/>
 
-                    <button type="button" class="ds-button btn-default bi bi-clipboard-plus" aria-label="Kopier"
+                    <button type="button" class="ds-button
+                     bi bi-clipboard-plus" aria-label="Kopier"
+                            data-tooltip="Kopier" data-placement="top" data-autoplacement="true"
                           title="Kopier" th:copytext="${interaction.interaction}"></button>
 
                 </div>
