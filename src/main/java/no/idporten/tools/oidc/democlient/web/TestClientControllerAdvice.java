@@ -39,14 +39,14 @@ public class TestClientControllerAdvice {
     }
 
     @ExceptionHandler(OIDCIntegrationException.class)
-    public String handleException(OIDCIntegrationException e, Model model) {
+    public String handleOIDCIntegrationException(OIDCIntegrationException e, Model model) {
         addCommonModelAttributes(model);
         model.addAttribute("message", e.getMessage());
         return "error";
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public String handleException(NoResourceFoundException e, Model model) {
+    public String handleNoResourceFoundException(NoResourceFoundException e, Model model) {
         addCommonModelAttributes(model);
         return "error";
     }
