@@ -6,7 +6,7 @@
 <head th:replace="~{fragments/header::head}"/>
 <body>
 <div class="container">
-    <h1 class="ds-heading" data-size="lg"><span th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
+    <h1 th:replace="~{fragments/header::heading}"></h1>
     <br/>
 
     <div class="ds-alert" data-color="success">
@@ -17,6 +17,7 @@
     <div th:insert="~{fragments/protocoltrace::protocoltrace}"/>
     <br/>
 
+    <!-- TODO: replace with button group component from idporten-designsystem when published -->
     <div class="buttongroup">
         <a th:href="@{/}" class="ds-button" data-variant="primary">Back</a>
     </div>

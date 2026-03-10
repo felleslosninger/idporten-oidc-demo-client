@@ -6,7 +6,7 @@
 <head th:replace="~{fragments/header::head}"/>
 <body>
 <div class="container">
-    <h1 class="ds-heading" data-size="lg"><span th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>>
+    <h1 th:replace="~{fragments/header::heading}"></h1>
 
     <div class="ds-alert" data-color="success" role="alert">
         Current protocol trace.

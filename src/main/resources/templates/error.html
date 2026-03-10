@@ -6,7 +6,8 @@
 <head th:replace="~{fragments/header::head}"/>
 <body>
 <div class="container">
-    <h1 class="ds-heading" data-size="lg"><span th:if="${theme}" th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
+    <div th:replace="~{fragments/header::heading}"></div>
+
     <div  class="ds-alert" data-color="warning" role="alert"   >
         An error occurred during login.<br/>
         <p th:if="${message}" th:text="${message}" th:remove="tag"/>

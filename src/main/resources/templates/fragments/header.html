@@ -23,6 +23,7 @@
         <link rel="stylesheet" th:href="@{/bootstrap.css}" href="bootstrap.css"/>
         <link rel="stylesheet" th:href="@{/override.css}" href="override.css"/>
     </head>
+    <h1 th:fragment="heading" class="ds-heading" data-size="lg"><span th:if="${theme}" th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
 </div>
 </body>
 </html>
