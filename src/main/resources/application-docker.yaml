@@ -25,7 +25,8 @@ oidc-demo-client:
     - "font-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
     - "style-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
     - "connect-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
-    - "script-src 'self' cdn.jsdelivr.net; form-action 'self' idporten:7070;"
+    - "form-action 'self' idporten:7070;"
+    - "script-src 'self' cdn.jsdelivr.net;"
 
 management:
   server:
