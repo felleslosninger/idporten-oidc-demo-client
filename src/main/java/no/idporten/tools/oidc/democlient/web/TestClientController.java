@@ -167,18 +167,5 @@ public class TestClientController {
         return "trace";
     }
 
-    @ExceptionHandler
-    public String handleException(Exception e, Model model) {
-        addCommonModelAttributes(model);
-        log.error("Request handling failed", e);
-        return "error";
-    }
-
-    @ExceptionHandler
-    public String handleExcepion(OIDCIntegrationException e, Model model) {
-        addCommonModelAttributes(model);
-        model.addAttribute("message", e.getMessage());
-        return "error";
-    }
 
 }

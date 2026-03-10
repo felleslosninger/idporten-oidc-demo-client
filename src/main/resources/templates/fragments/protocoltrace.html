@@ -11,7 +11,7 @@
 </summary>
 
 <div th:fragment="protocoltrace" >
-    <div th:if="${session.protocolTrace}"  id="protocolTrace" class="ds-card">
+    <div th:if="${ session?.protocolTrace?.allInteraction?.size > 0 }"  id="protocolTrace" class="ds-card">
         <details class="ds-details" th:each="interaction: ${session.protocolTrace.allInteraction}">
 
             <summary th:id="'header' + ${interaction.id}">
