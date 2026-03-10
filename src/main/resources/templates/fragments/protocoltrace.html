@@ -13,18 +13,13 @@
 <div th:fragment="protocoltrace" >
     <div th:if="${ session?.protocolTrace?.allInteraction?.size > 0 }"  id="protocolTrace" class="ds-card">
         <details class="ds-details" th:each="interaction: ${session.protocolTrace.allInteraction}">
-
-            <summary th:id="'header' + ${interaction.id}">
-                <summary class="details-heading" role="button"
-                        th:data-bs-target="'#' + ${interaction.id}" aria-expanded="false"
-                        th:aria-controls="${interaction.id}">
-                    <p th:text="${interaction.text}" th:remove="tag"/>
-                    <span th:if="${#objects.nullSafe(interaction.warningLevel, false)}" th:switch="${interaction.warningLevel}"
-                          class="ds-field">
+            <summary th:id="'header' + ${interaction.id}" class="details-heading" role='button'>
+                <p th:text="${interaction.text}" th:remove="tag"/>
+                <span th:if="${#objects.nullSafe(interaction.warningLevel, false)}" th:switch="${interaction.warningLevel}"
+                      class="ds-field">
                         <i th:case="${T(no.idporten.tools.oidc.democlient.util.WarningLevel).WARNING}" class="bi bi-exclamation-triangle-fill text-warning"></i>
                         <i th:case="${T(no.idporten.tools.oidc.democlient.util.WarningLevel).ERROR}" class="bi bi-exclamation-circle-fill text-danger"></i>
                     </span>
-                </summary>
             </summary>
             <div th:id="${interaction.id}"
                  th:aria-labelledby="'header' + ${interaction.id}"
