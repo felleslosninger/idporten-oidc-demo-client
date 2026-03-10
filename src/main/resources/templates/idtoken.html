@@ -6,17 +6,19 @@
 <head th:replace="~{fragments/header::head}"/>
 <body>
 <div class="container">
-    <h1><span th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
+    <h1 th:replace="~{fragments/header::heading}"></h1>
 
-    <div th:if="${personIdentifier}" class="alert alert-success" role="alert">
+    <div th:if="${personIdentifier}" class="ds-alert" data-color='success' role="alert">
         You are logged in as <span th:text="${personIdentifier}" th:remove="tag">personidentifier</span>.
     </div>
-
+<br/>
     <div th:insert="~{fragments/protocoltrace::protocoltrace}" />
 
-    <br/>
-    <a class="btn btn-primary" th:href="@{/}" role="button">Back</a>
-    <a class="btn btn-primary" th:href="@{/logout}" role="button">Logout</a>
+
+<br/>
+<div class="buttongroup">
+    <a  th:href="@{/}" class="ds-button" data-variant="primary">Back</a>
+    <a  th:href="@{/logout}" class="ds-button" data-variant="primary">Logout</a>
 </div>
 
 <div th:replace="~{fragments/footer::scripts}"/>

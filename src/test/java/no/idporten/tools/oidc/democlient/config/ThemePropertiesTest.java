@@ -1,9 +1,8 @@
 package no.idporten.tools.oidc.democlient.config;
 
+import no.idporten.tools.oidc.democlient.config.properties.ThemeProperties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 

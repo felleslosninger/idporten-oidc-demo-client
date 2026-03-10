@@ -1,4 +1,4 @@
-package no.idporten.tools.oidc.democlient.config;
+package no.idporten.tools.oidc.democlient.config.properties;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

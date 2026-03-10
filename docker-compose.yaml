@@ -17,9 +17,10 @@ services:
       # spring_profiles_active: eidas, eidas-test
     ports:
       - "7074:7074"
+      - "5888:5888"
     networks:
       - idporten
     entrypoint: "/bin/bash -c"
     command:
       - |
-        java -jar application.jar
+        java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5888 -jar application.jar

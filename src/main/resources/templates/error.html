@@ -6,16 +6,19 @@
 <head th:replace="~{fragments/header::head}"/>
 <body>
 <div class="container">
-    <h1><span th:if="${theme}" th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
-    <div  class="alert alert-warning" role="alert">
+    <div th:replace="~{fragments/header::heading}"></div>
+
+    <div  class="ds-alert" data-color="warning" role="alert"   >
         An error occurred during login.<br/>
         <p th:if="${message}" th:text="${message}" th:remove="tag"/>
     </div>
-
+<br/>
     <div th:insert="~{fragments/protocoltrace::protocoltrace}" />
 
     <br/>
-    <a class="btn btn-primary" th:href="@{/}" role="button">Back</a>
+    <div class="buttongroup">
+        <a  th:href="@{/}" class="ds-button" data-variant="primary">Back</a>
+    </div>
 </div>
 
 <div th:replace="~{fragments/footer::scripts}"/>

@@ -35,7 +35,10 @@ oidc-demo-client:
     jwks-cache-lifetime-minutes: 60
     jwks-cache-refresh-minutes: 5
     jwks-expiry-warning-days: 30
-  csp-header: "style-src 'self' cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net; form-action 'self' idporten:7070"
+  csp-header:
+    - "style-src 'self' cdn.jsdelivr.net;"
+    - "script-src 'self' cdn.jsdelivr.net;"
+    - "form-action 'self' idporten:7070"
 
 ---
 spring:
