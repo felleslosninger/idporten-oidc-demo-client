@@ -19,7 +19,7 @@ function copyToClipboard(element) {
 }
 
 
-var btns = document.getElementsByClassName("bi-clipboard-plus");
+var btns = document.getElementsByClassName("protocoltrace-copy-button");
 for( i = 0; i < btns.length; i++){
     btns[i].addEventListener("click", function(){copyToClipboard(this)});
 }

@@ -3,9 +3,11 @@
       xmlns:th="http://www.thymeleaf.org"
       lang="nn">
 
-<head>
-    <link rel="stylesheet" th:href="@{/main.css}" href="main.css"/>
-    <link rel="stylesheet" th:href="@{/bootstrap.css}" href="bootstrap.css"/>
+<head lang="nn">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login with ID-porten</title>
+    <link rel="stylesheet" th:href="@{/layers.css}" href="layers.css"/>
     <link rel="shortcut icon" th:href="@{/favicon.ico}" href="/favicon.ico">
     <link
             rel="stylesheet"
@@ -15,9 +17,10 @@
     />
     <link rel="stylesheet" href="https://static.idporten.no/ds/v1.7.1/css/ds-style.css">
     <link rel="stylesheet" href="https://static.idporten.no/ds/v1.7.1/css/ds-theme.css">
+    <link rel="stylesheet" th:href="@{/main.css}" href="main.css"/>
+    <link rel="stylesheet" th:href="@{/bootstrap.css}" href="bootstrap.css"/>
     <link rel="stylesheet" th:href="@{/override.css}" href="override.css"/>
     <meta http-equiv="refresh" th:content="|0; url=${uri}|" />
-    <title>Login with ID-porten</title>
 </head>
 <body>
 <div class="container">
