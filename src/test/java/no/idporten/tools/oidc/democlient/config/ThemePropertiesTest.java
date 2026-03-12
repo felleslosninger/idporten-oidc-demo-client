@@ -17,7 +17,7 @@ public class ThemePropertiesTest {
                 () -> assertNotNull(themeProperties.getFormDefaults()),
                 () -> assertEquals("openid", themeProperties.getFormDefaults().getScope()),
                 () -> assertEquals("low", themeProperties.getFormDefaults().getAcrValue()),
-                () -> assertEquals("substantial,high", themeProperties.getFormDefaults().getSupportedAcrValues()),
+                () -> assertEquals(java.util.List.of("substantial", "high"), themeProperties.getFormDefaults().getSupportedAcrValues()),
                 () -> assertEquals("en", themeProperties.getFormDefaults().getUiLocale())
         );
     }
