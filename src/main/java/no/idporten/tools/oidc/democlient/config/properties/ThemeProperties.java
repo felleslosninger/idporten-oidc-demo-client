@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
+import java.util.List;
 
 @Configuration
 @Data
@@ -23,9 +24,6 @@ public class ThemeProperties {
         private String scope = "openid";
         private String uiLocale = "en";
         private String acrValue = "low";
-
-    }
-
-
-
+        private List<String> supportedAcrValues = List.of("substantial", "high");
+        }
 }

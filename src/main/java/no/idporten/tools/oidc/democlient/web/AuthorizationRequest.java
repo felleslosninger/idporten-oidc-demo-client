@@ -16,6 +16,8 @@ public class AuthorizationRequest {
     private String authorizationDetails;
     @Singular("acrValue")
     private List<String> acrValues = new ArrayList<>();
+    @Singular("supportedAcrValues")
+    private List<String> supportedAcrValues = new ArrayList<>();
     @Singular("uiLocale")
     private List<String> uiLocales = new ArrayList<>();
     private List<String> prompt;

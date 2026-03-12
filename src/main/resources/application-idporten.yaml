@@ -12,4 +12,8 @@ oidc-demo-client:
     form-defaults:
       scope: openid profile
       acr-value: idporten-loa-substantial
+      supported-acr-values:
+        - idporten-loa-substantial
+        - idporten-loa-high
+        - selfregistered-email
       ui-locale: nb

@@ -7,6 +7,9 @@ oidc-demo-client:
     form-defaults:
       scope: openid profile
       acr-value: substantial
+      supported-acr-values:
+            - substantial
+            - high
       ui-locale: nb
 
   oidc-integration:

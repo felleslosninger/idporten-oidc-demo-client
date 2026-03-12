@@ -26,7 +26,7 @@
                             <input type="text" th:field="*{authorizationDetails}" class="form-control ds-input"/>
                         </div>
                         <div class="ds-field">
-                            <label class="ds-label" th:for="acrValues">Acr (acr_values) - use eidas-loa-substantial or eidas-loa-high for eIDAS</label>
+                            <label class="ds-label" th:for="acrValues" th:text="'Acr Supported Values (acr_values)' + *{supportedAcrValues}"></label>
                             <input type="text" th:field="*{acrValues}" class="form-control ds-input"/>
                         </div>
                         <div class="ds-field">
