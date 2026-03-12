@@ -56,6 +56,7 @@ public class TestClientController {
                 .scope(themeProperties.getFormDefaults().getScope())
                 .acrValue(themeProperties.getFormDefaults().getAcrValue())
                 .uiLocale(themeProperties.getFormDefaults().getUiLocale())
+                .supportedAcrValues(themeProperties.getFormDefaults().getSupportedAcrValues())
                 .state(new State().getValue())
                 .nonce(new Nonce().getValue())
                 .codeVerifier(new CodeVerifier().getValue())
