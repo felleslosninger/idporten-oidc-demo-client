@@ -1,0 +1,16 @@
+---
+spring:
+  application:
+    name: unitporten-oidc-demo-client
+    environment: unitland
+
+oidc-demo-client:
+  features:
+    authorization-details-enabled: true
+  theme:
+    user-id-claim: pid
+    heading: Login with Unit-porten
+    form-defaults:
+      scope: openid profile
+      acr-value: unitporten-loa-substantial
+      ui-locale: nb
