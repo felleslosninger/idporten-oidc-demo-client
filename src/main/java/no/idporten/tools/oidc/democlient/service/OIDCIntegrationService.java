@@ -238,6 +238,9 @@ public class OIDCIntegrationService {
                         idTokenValidator.validate(oidcTokenResponse.getOIDCTokens().getIDToken(), nonce);
                     }
                 }
+                if (accessTokenResponse.getTokens().getAccessToken() != null) {
+                    validateAccessTokenAmr(accessTokenResponse.getTokens().getAccessToken());
+                }
                 return accessTokenResponse;
             } else {
                 TokenErrorResponse errorResponse = tokenResponse.toErrorResponse();
@@ -323,6 +326,20 @@ public class OIDCIntegrationService {
             return new PrivateKeyJWT(signedJWT);
         } catch (Exception e) {
             throw new RuntimeException();
+        }
+    }
+
+    protected void validateAccessTokenAmr(AccessToken accessToken) {
+        try {
+            SignedJWT jwt = SignedJWT.parse(accessToken.getValue());
+            List<String> amr = jwt.getJWTClaimsSet().getStringListClaim("amr");
+            if (amr == null || amr.isEmpty()) {
+                throw new OIDCIntegrationException("Access token is missing required amr claim.");
+            }
+        } catch (OIDCIntegrationException e) {
+            throw e;
+        } catch (Exception e) {
+            log.warn("Could not parse access token as JWT for amr validation", e);
         }
     }
 
