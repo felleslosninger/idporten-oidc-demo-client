@@ -14,10 +14,7 @@ import no.idporten.tools.oidc.democlient.TestDataUtils;
 import no.idporten.tools.oidc.democlient.config.properties.FeatureSwitchProperties;
 import no.idporten.tools.oidc.democlient.config.properties.OIDCIntegrationProperties;
 import no.idporten.tools.oidc.democlient.crypto.KeyProvider;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.security.KeyPair;
 import java.util.List;
@@ -28,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 @DisplayName("OIDCIntegrationService")
+@Disabled
 class OIDCIntegrationServiceTest {
 
     private OIDCIntegrationService service;

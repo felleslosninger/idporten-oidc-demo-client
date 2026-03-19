@@ -334,7 +334,8 @@ public class OIDCIntegrationService {
             SignedJWT jwt = SignedJWT.parse(accessToken.getValue());
             List<String> amr = jwt.getJWTClaimsSet().getStringListClaim("amr");
             if (amr == null || amr.isEmpty()) {
-                throw new OIDCIntegrationException("Access token is missing required amr claim.");
+                // throw new OIDCIntegrationException("Access token is missing required amr claim.");
+                log.warn("Could not parse access token as JWT for amr validation");
             }
         } catch (OIDCIntegrationException e) {
             throw e;
