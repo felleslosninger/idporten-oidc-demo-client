@@ -57,6 +57,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OIDCIntegrationService {
 
+    public static final String ACR_SUBSTANTIAL = "substantial";
+    public static final String ACR_HIGH = "high";
     private final OIDCIntegrationProperties oidcIntegrationProperties;
     private final Optional<KeyProvider> keyProvider;
     private final IDTokenValidator idTokenValidator;
@@ -257,7 +259,7 @@ public class OIDCIntegrationService {
     }
 
     private void validateIdTokenClaimSet(IDTokenClaimsSet idTokenClaimsSet, List<String> requestedAcrValues) {
-        if (idTokenClaimsSet.getACR().toString().endsWith("substantial") && requestedAcrValues.stream().allMatch(acr -> acr.endsWith("high"))) {
+        if (idTokenClaimsSet.getACR().toString().endsWith(ACR_SUBSTANTIAL) && requestedAcrValues.stream().allMatch(acr -> acr.endsWith(ACR_HIGH))) {
             throw new OIDCIntegrationException(idTokenClaimsSet.getACR().toString() + ": given when asked for " +
                     String.join(", ", requestedAcrValues.getFirst()));
         }
