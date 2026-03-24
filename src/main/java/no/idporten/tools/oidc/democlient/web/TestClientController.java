@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -72,6 +73,8 @@ public class TestClientController {
         }
         com.nimbusds.oauth2.sdk.AuthorizationRequest authenticationRequest = oidcIntegrationService.authorizationRequest(authorizationRequest);
         request.getSession().setAttribute("state", new State(authorizationRequest.getState()));
+        request.getSession().setAttribute("requested_acr_values", authorizationRequest.getAcrValues());
+
         if (StringUtils.hasText(authorizationRequest.getNonce())) {
             request.getSession().setAttribute("nonce", new Nonce(authorizationRequest.getNonce()));
         }
@@ -93,7 +96,8 @@ public class TestClientController {
         if (authorizationResponse.indicatesSuccess()) {
             final Nonce nonce = (Nonce) request.getSession().getAttribute("nonce");
             final CodeVerifier codeVerifier = (CodeVerifier) request.getSession().getAttribute("code_verifier");
-            AccessTokenResponse tokenResponse = oidcIntegrationService.token(authorizationResponse.toSuccessResponse(), nonce, codeVerifier);
+            final List<String> requestedAcrValues =  (List<String>) request.getSession().getAttribute("requested_acr_values");
+            AccessTokenResponse tokenResponse = oidcIntegrationService.token(authorizationResponse.toSuccessResponse(), nonce, codeVerifier, requestedAcrValues);
             AccessToken accessToken = tokenResponse.getTokens().getAccessToken();
 
             if (accessToken != null && accessToken.getScope() != null && accessToken.getScope().contains("openid")) {
