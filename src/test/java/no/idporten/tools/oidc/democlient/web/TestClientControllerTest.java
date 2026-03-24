@@ -42,6 +42,7 @@ import org.springframework.web.util.UriUtils;
 import jakarta.servlet.http.HttpSession;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -198,12 +199,15 @@ public class TestClientControllerTest {
             CodeVerifier codeVerifier = new CodeVerifier();
             JWT idToken = new PlainJWT(TestDataUtils.idTokenClaimsSet(TestDataUtils.testUserPersonIdentifier()));
             OIDCTokenResponse tokenResponse = new OIDCTokenResponse(new OIDCTokens(idToken, new BearerAccessToken("at", 120, new Scope("openid")), null));
-            doReturn(tokenResponse).when(oidcIntegrationService).token(any(AuthorizationSuccessResponse.class), eq(nonce), eq(codeVerifier));
+            List<String> requestedAcrValues = List.of("idporten-loa-substantial");
+            doReturn(tokenResponse).when(oidcIntegrationService).token(any(AuthorizationSuccessResponse.class), eq(nonce), eq(codeVerifier), eq(requestedAcrValues));
             MockHttpSession mockSession = new MockHttpSession();
             ProtocolTracerService.create(mockSession);
             mockSession.setAttribute("state", state);
             mockSession.setAttribute("nonce", nonce);
             mockSession.setAttribute("code_verifier", codeVerifier);
+            mockSession.setAttribute("requested_acr_values", requestedAcrValues);
+
             MvcResult mvcResult = mockMvc.perform(
                     get("/callback")
                             .session(mockSession)

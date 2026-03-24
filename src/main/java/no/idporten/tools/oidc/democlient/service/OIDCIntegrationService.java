@@ -25,6 +25,7 @@ import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import com.nimbusds.openid.connect.sdk.*;
 import com.nimbusds.openid.connect.sdk.claims.ACR;
+import com.nimbusds.openid.connect.sdk.claims.IDTokenClaimsSet;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.validators.IDTokenValidator;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.idporten.tools.oidc.democlient.config.properties.FeatureSwitchProperties;
 import no.idporten.tools.oidc.democlient.config.properties.OIDCIntegrationProperties;
+import no.idporten.tools.oidc.democlient.config.properties.ThemeProperties;
 import no.idporten.tools.oidc.democlient.crypto.KeyProvider;
 import no.idporten.tools.oidc.democlient.web.AuthorizationRequest;
 import org.springframework.stereotype.Service;
@@ -55,6 +57,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OIDCIntegrationService {
 
+    public static final String ACR_SUBSTANTIAL = "substantial";
+    public static final String ACR_HIGH = "high";
     private final OIDCIntegrationProperties oidcIntegrationProperties;
     private final Optional<KeyProvider> keyProvider;
     private final IDTokenValidator idTokenValidator;
@@ -64,6 +68,7 @@ public class OIDCIntegrationService {
     private final FeatureSwitchProperties featureSwitchProperties;
     private final SignatureCertificateValidator signatureCertificateValidator;
     private final RemoteJWKSet remoteJWKSet;
+    private final ThemeProperties themeProperties;
 
     public com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest(AuthorizationRequest authorizationRequest) {
         try {
@@ -224,7 +229,7 @@ public class OIDCIntegrationService {
     }
 
 
-    public AccessTokenResponse token(AuthorizationSuccessResponse authorizationResponse,  Nonce nonce, CodeVerifier codeVerifier) {
+    public AccessTokenResponse token(AuthorizationSuccessResponse authorizationResponse, Nonce nonce, CodeVerifier codeVerifier, List<String> requestedAcrValues) {
         try {
             AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), oidcIntegrationProperties.getRedirectUri(), codeVerifier);
             final ClientAuthentication clientAuth = clientAuthentication(oidcIntegrationProperties);
@@ -235,7 +240,8 @@ public class OIDCIntegrationService {
                 if (accessTokenResponse instanceof OIDCTokenResponse) {
                     OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
                     if (oidcTokenResponse.getOIDCTokens().getIDToken() != null) {
-                        idTokenValidator.validate(oidcTokenResponse.getOIDCTokens().getIDToken(), nonce);
+                        IDTokenClaimsSet idTokenClaimsSet = idTokenValidator.validate(oidcTokenResponse.getOIDCTokens().getIDToken(), nonce);
+                        validateIdTokenClaimSet(idTokenClaimsSet, requestedAcrValues);
                     }
                 }
                 return accessTokenResponse;
@@ -250,6 +256,20 @@ public class OIDCIntegrationService {
             log.error("Failed to retrieve tokens from {}", oidcProviderMetadata.getTokenEndpointURI(), e);
             throw new OIDCIntegrationException("Failed to retrieve tokens.");
         }
+    }
+
+    private void validateIdTokenClaimSet(IDTokenClaimsSet idTokenClaimsSet, List<String> requestedAcrValues) {
+        if (idTokenClaimsSet.getACR().toString().endsWith(ACR_SUBSTANTIAL) && requestedAcrValues.stream().allMatch(acr -> acr.endsWith(ACR_HIGH))) {
+            throw new OIDCIntegrationException(idTokenClaimsSet.getACR().toString() + ": given when asked for " +
+                    String.join(", ", requestedAcrValues.getFirst()));
+        }
+
+        if (!themeProperties.getFormDefaults().getSupportedAcrValues().contains(idTokenClaimsSet.getACR().toString())) {
+            throw new OIDCIntegrationException(idTokenClaimsSet.getACR().toString() + ": is not one of valid values: " +
+                    String.join(", ", themeProperties.getFormDefaults().getSupportedAcrValues()));
+        }
+
+
     }
 
     public String userinfo(AccessToken accessToken) {
