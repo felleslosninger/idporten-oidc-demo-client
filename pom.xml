@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.3</version>
+        <version>4.0.4</version>
         <relativePath/>
     </parent>
     <groupId>no.idporten.tools</groupId>
@@ -21,7 +21,7 @@
         <lombok-version>1.18.44</lombok-version>
 
         <nimbus.oauth2-oidc-sdk.version>11.35</nimbus.oauth2-oidc-sdk.version>
-        <open.telemetry.version>2.26.0</open.telemetry.version>
+        <open.telemetry.version>2.26.1</open.telemetry.version>
         <bc-jdk18on.version>1.83</bc-jdk18on.version>
 
         <!-- idporten -->
