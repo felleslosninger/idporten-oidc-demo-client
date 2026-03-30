@@ -51,18 +51,30 @@ public class TestClientController {
     }
 
     @GetMapping("/")
-    public String index(HttpServletRequest request, Model model) {
+    public String index(
+            HttpServletRequest request,
+            Model model,
+            @RequestParam(required = false) String scopes,
+            @RequestParam(required = false) String acrValues,
+            @RequestParam(required = false) String uiLocales,
+            @RequestParam(required = false) String authorizationDetails,
+            @RequestParam(required = false) String prompt) {
         ProtocolTracerService.create(request.getSession());
-        model.addAttribute("authorizationRequest", AuthorizationRequest.builder()
-                .scope(themeProperties.getFormDefaults().getScope())
-                .acrValue(themeProperties.getFormDefaults().getAcrValue())
-                .uiLocale(themeProperties.getFormDefaults().getUiLocale())
+        AuthorizationRequest.AuthorizationRequestBuilder builder = AuthorizationRequest.builder()
                 .supportedAcrValues(themeProperties.getFormDefaults().getSupportedAcrValues())
                 .state(new State().getValue())
                 .nonce(new Nonce().getValue())
                 .codeVerifier(new CodeVerifier().getValue())
-                .codeChallengeMethod(CodeChallengeMethod.S256.getValue())
-                .build());
+                .codeChallengeMethod(CodeChallengeMethod.S256.getValue());
+        String effectiveScope = scopes != null ? scopes : themeProperties.getFormDefaults().getScope();
+        String effectiveAcrValue = acrValues != null ? acrValues : themeProperties.getFormDefaults().getAcrValue();
+        String effectiveUiLocale = uiLocales != null ? uiLocales : themeProperties.getFormDefaults().getUiLocale();
+        if (effectiveScope != null) builder.scope(effectiveScope);
+        if (effectiveAcrValue != null) builder.acrValue(effectiveAcrValue);
+        if (effectiveUiLocale != null) builder.uiLocale(effectiveUiLocale);
+        if (authorizationDetails != null) builder.authorizationDetails(authorizationDetails);
+        if (prompt != null) builder.prompt(List.of(prompt));
+        model.addAttribute("authorizationRequest", builder.build());
         return "index";
     }
 

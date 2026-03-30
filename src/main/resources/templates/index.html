@@ -60,7 +60,20 @@
 
         <br/>
         <button type="submit" class="ds-button" role="button" data-variant="primary">Login</button>
+        <button type="button" class="ds-button" data-variant="secondary" onclick="togglePermlink()">Create permlink</button>
     </form>
+
+    <div id="permlinkSection" style="display:none; margin-top: 1rem;">
+        <div class="ds-field">
+            <label class="ds-label">Permlink</label>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <input type="text" id="permlinkUrl" class="ds-input" readonly style="flex: 1;" />
+                <button type="button" class="ds-button" data-variant="secondary" onclick="copyPermlink()">Copy</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/permlink.js}"></script>
 </div>
 
 <div th:replace="~{fragments/footer::scripts}"/>
