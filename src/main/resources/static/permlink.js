@@ -8,22 +8,18 @@ function buildPermlink() {
         }
     });
     var query = params.toString();
-    return window.location.origin + '/' + (query ? '?' + query : '');
-}
-
-function togglePermlink() {
-    var section = document.getElementById('permlinkSection');
-    var urlInput = document.getElementById('permlinkUrl');
-    if (section.style.display === 'none') {
-        urlInput.value = buildPermlink();
-        section.style.display = 'block';
-    } else {
-        section.style.display = 'none';
-    }
+    return window.location.origin + '/idporten-oidc-demo-client?' + query;
 }
 
 function copyPermlink() {
-    var urlInput = document.getElementById('permlinkUrl');
-    urlInput.value = buildPermlink();
-    navigator.clipboard.writeText(urlInput.value);
+    var url = buildPermlink();
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(url);
+    } else {
+        const temp = document.createElement('textarea');
+        temp.setAttribute("copytext", url);
+        copyToClipboard(temp)
+    }
 }
+
+document.getElementById('permlink-button').addEventListener('click', copyPermlink);
