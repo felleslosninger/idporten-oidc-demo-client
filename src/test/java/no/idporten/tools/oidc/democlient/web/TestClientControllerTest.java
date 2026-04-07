@@ -113,6 +113,32 @@ public class TestClientControllerTest {
         }
 
         @Test
+        @DisplayName("then the model is populated with query-param values and generated values for state, nonce and code_verifier")
+        public void testLoginPageWithPermLinks() throws Exception {
+            MvcResult mvcResult = mockMvc.perform(
+                            get("/?acrValues=idporten-loa-high&uiLocales=nn&authorizationDetails=test&scopes=openid&prompt=testprompt"))
+                    .andExpect(status().is2xxSuccessful())
+                    .andExpect(view().name("index"))
+                    .andExpect(model().attributeExists("authorizationRequest"))
+                    .andExpect(model().attributeExists("theme"))
+                    .andExpect(model().attributeExists("features"))
+                    .andReturn();
+            AuthorizationRequest authorizationRequest = (AuthorizationRequest) mvcResult.getModelAndView().getModel().get("authorizationRequest");
+            assertAll(
+                    () -> assertTrue(mvcResult.getResponse().getContentAsString().contains(themeProperties.getHeading())),
+                    () -> assertTrue(StringUtils.hasText(authorizationRequest.getState())),
+                    () -> assertTrue(StringUtils.hasText(authorizationRequest.getNonce())),
+                    () -> assertTrue(StringUtils.hasText(authorizationRequest.getCodeVerifier())),
+                    () -> assertEquals("openid", authorizationRequest.getScopes().getFirst()),
+                    () -> assertEquals("idporten-loa-high", authorizationRequest.getAcrValues().getFirst()),
+                    () -> assertEquals("nn", authorizationRequest.getUiLocales().getFirst()),
+                    () -> assertEquals("test", authorizationRequest.getAuthorizationDetails()),
+                    () -> assertEquals("testprompt", authorizationRequest.getPrompt().getFirst()),
+                    () -> assertEquals("S256", authorizationRequest.getCodeChallengeMethod())
+            );
+        }
+
+        @Test
         @DisplayName("then the authorization request is successfull and contains a valid redirect in meta header")
         public void testSuccessfullAuthorizationRequest() throws Exception {
             MockHttpSession mockSession = new MockHttpSession();
