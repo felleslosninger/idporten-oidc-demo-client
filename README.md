@@ -16,6 +16,18 @@ Applikasjonen støtter innlogging med ID-porten med:
   * Validering av ID-token
 * OpenID Connect RP-Initiated Logout for utlogging - https://openid.net/specs/openid-connect-rpinitiated-1_0.html
 
+Applikasjonen støtter også query-params for følgende felt
+* scope
+* authorization_details
+* acr
+* locale
+* prompt
+
+Dersom disse feltene sendes med så preutfylles skjemaet for autorisasjonsforespørselen. For å generere en slik lenke (som regel for å gi til andre) så er det letteste å preutfylle feltene selv og trykk på 
+knappen for å generere permlenka. Denne legger seg på clipboard.
+
+En typiske lenke vil se slik ut: http://demo-client.idporten.dev/idporten-oidc-demo-client?scopes=openid+profile+difitest%3Akrrrctrigger&acrValues=idporten-loa-substantial&uiLocales=nb
+
 
 ## Begrensninger
 ### Applikasjonen er ikke et startpunkt for å integrere med ID-porten
