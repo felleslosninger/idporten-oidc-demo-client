@@ -8,7 +8,7 @@ function buildPermlink() {
         }
     });
     var query = params.toString();
-    return window.location.origin + '/idporten-oidc-demo-client?' + query;
+    return window.location.href + '?' + query;
 }
 
 function copyPermlink() {
