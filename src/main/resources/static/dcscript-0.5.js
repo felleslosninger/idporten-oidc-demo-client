@@ -20,6 +20,6 @@ function copyToClipboard(element) {
 
 
 var btns = document.getElementsByClassName("protocoltrace-copy-button");
-for( i = 0; i < btns.length; i++){
+for(let i = 0; i < btns.length; i++){
     btns[i].addEventListener("click", function(){copyToClipboard(this)});
 }
