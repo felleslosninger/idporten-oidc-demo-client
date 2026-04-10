@@ -1,5 +1,1 @@
-CVE-2026-29062 #jackson-databind fixed 3.1.0
-GHSA-72hv-8253-57qq # jackson-databind fixed 3.1.0
-CVE-2026-25679 # stdlib
-CVE-2026-27137 # stdlib
-CVE-2026-27142 # stdlib
+GHSA-2m67-wjpj-xhg9 # jackson-databind fixed 3.1.1
