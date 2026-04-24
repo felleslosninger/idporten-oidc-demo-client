@@ -25,7 +25,7 @@
         <bc-jdk18on.version>1.83</bc-jdk18on.version>
 
         <!-- idporten -->
-        <idporten.actuator.version>3.0.0</idporten.actuator.version>
+        <idporten.actuator.version>3.1.0</idporten.actuator.version>
         <idporten-access-log-spring-boot-starter.version>4.0.0</idporten-access-log-spring-boot-starter.version>
 
         <!-- maven -->
