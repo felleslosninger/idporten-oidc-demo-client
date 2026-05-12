@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 
 <body>
 <div>
+    <!-- head -->
     <head th:fragment="head" lang="nn">
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>ID-porten OpenID Connect demo client</title>
+        <th:block th:replace="~{fragments/header::links}"></th:block>
+    </head>
+
+    <!-- head links -->
+    <th:block th:fragment="links">
         <link rel="stylesheet" th:href="@{/layers.css}" href="layers.css"/>
         <link rel="shortcut icon" th:href="@{/favicon.ico}" href="/favicon.ico">
         <link
@@ -22,7 +27,9 @@
         <link rel="stylesheet" th:href="@{/main.css}" href="main.css"/>
         <link rel="stylesheet" th:href="@{/bootstrap.css}" href="bootstrap.css"/>
         <link rel="stylesheet" th:href="@{/override.css}" href="override.css"/>
-    </head>
+    </th:block>
+
+    <!-- heading -->
     <h1 th:fragment="heading" class="ds-heading" data-size="lg"><span th:if="${theme}" th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
 </div>
 </body>

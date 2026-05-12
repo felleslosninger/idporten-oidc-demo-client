@@ -7,19 +7,7 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login with ID-porten</title>
-    <link rel="stylesheet" th:href="@{/layers.css}" href="layers.css"/>
-    <link rel="shortcut icon" th:href="@{/favicon.ico}" href="/favicon.ico">
-    <link
-            rel="stylesheet"
-            href="https://altinncdn.no/fonts/inter/v4.1/inter.css"
-            integrity="sha384-OcHzc/By/OPw9uJREawUCjP2inbOGKtKb4A/I2iXxmknUfog2H8Adx71tWVZRscD"
-            crossorigin="anonymous"
-    />
-    <link rel="stylesheet" href="http://static-resources:8083/ds/v1.14.0/css/ds-style.css">
-    <link rel="stylesheet" href="http://static-resources:8083/ds/v1.14.0/css/ds-theme.css">
-    <link rel="stylesheet" th:href="@{/main.css}" href="main.css"/>
-    <link rel="stylesheet" th:href="@{/bootstrap.css}" href="bootstrap.css"/>
-    <link rel="stylesheet" th:href="@{/override.css}" href="override.css"/>
+    <th:block th:include="~{fragments/header::links}"></th:block>
     <meta http-equiv="refresh" th:content="|0; url=${uri}|" />
 </head>
 <body>
