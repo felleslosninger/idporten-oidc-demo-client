@@ -35,6 +35,9 @@ management:
 # when running static resources locally
 #---
 #oidc-demo-client:
+#  static:
+#    resources:
+#      host: http://static-resources:8083
 #  csp-header:
 #    - "default-src 'self';"
 #    - "img-src 'self' data:;"

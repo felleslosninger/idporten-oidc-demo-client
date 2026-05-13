@@ -4,6 +4,9 @@ spring:
     environment: systest
 
 oidc-demo-client:
+  static:
+    resources:
+      host: https://static.test.idporten.no
   theme:
     heading: Login with EIDAS (systest)
   oidc-integration:
