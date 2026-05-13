@@ -10,6 +10,9 @@ on:
 jobs:
   call-workflow-maven-build:
     uses: felleslosninger/github-workflows/.github/workflows/ci-maven-build.yml@main
+    permissions:
+      contents: write
+      pull-requests: write
     with:
       java-version: 25
     secrets: inherit
