@@ -29,6 +29,9 @@ management:
         enabled: true
 
 oidc-demo-client:
+  static:
+    resources:
+      ds-version: v1.14.0
   oidc-integration:
     connect-timeout-millis: 5000
     read-timeout-millis: 5000

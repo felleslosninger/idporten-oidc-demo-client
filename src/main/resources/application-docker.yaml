@@ -26,8 +26,23 @@ oidc-demo-client:
     - "style-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
     - "connect-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
     - "form-action 'self' idporten:7070;"
-    - "script-src 'self';"
+    - "script-src 'self' static.idporten.no static.test.idporten.no;"
 
 management:
   server:
     port: ${server.port}
+
+# when running static resources locally
+#---
+#oidc-demo-client:
+#  static:
+#    resources:
+#      host: http://static-resources:8083
+#  csp-header:
+#    - "default-src 'self';"
+#    - "img-src 'self' data:;"
+#    - "font-src 'self' http://static-resources:8083 altinncdn.no;"
+#    - "style-src 'self' cdn.jsdelivr.net http://static-resources:8083 altinncdn.no;"
+#    - "connect-src 'self' cdn.jsdelivr.net http://static-resources:8083 altinncdn.no;"
+#    - "form-action 'self' idporten:7070;"
+#    - "script-src 'self' http://static-resources:8083;"

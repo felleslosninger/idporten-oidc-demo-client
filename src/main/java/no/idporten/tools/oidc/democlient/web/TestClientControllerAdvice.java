@@ -1,6 +1,7 @@
 package no.idporten.tools.oidc.democlient.web;
 
 import no.idporten.tools.oidc.democlient.config.properties.FeatureSwitchProperties;
+import no.idporten.tools.oidc.democlient.config.properties.StaticResourcesProperties;
 import no.idporten.tools.oidc.democlient.config.properties.ThemeProperties;
 import no.idporten.tools.oidc.democlient.service.OIDCIntegrationException;
 import org.slf4j.Logger;
@@ -17,17 +18,21 @@ public class TestClientControllerAdvice {
     private final static Logger log = LoggerFactory.getLogger(TestClientControllerAdvice.class);
     private final ThemeProperties themeProperties;
     private final FeatureSwitchProperties featureSwitchProperties;
+    private final StaticResourcesProperties staticResourcesProperties;
 
 
-    public TestClientControllerAdvice(ThemeProperties themeProperties, FeatureSwitchProperties featureSwitchProperties) {
+    public TestClientControllerAdvice(ThemeProperties themeProperties, FeatureSwitchProperties featureSwitchProperties,
+                                      StaticResourcesProperties staticResourcesProperties) {
         this.themeProperties = themeProperties;
         this.featureSwitchProperties = featureSwitchProperties;
+        this.staticResourcesProperties = staticResourcesProperties;
     }
 
     @ModelAttribute
     public void addCommonModelAttributes(Model model) {
         model.addAttribute("theme", themeProperties);
         model.addAttribute("features", featureSwitchProperties);
+        model.addAttribute("staticResourcesDsBaseUri", staticResourcesProperties.getDsStaticResourcesBaseUri());
     }
 
 

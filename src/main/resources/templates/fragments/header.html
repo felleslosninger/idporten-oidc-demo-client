@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 
 <body>
 <div>
+    <!-- head -->
     <head th:fragment="head" lang="nn">
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>ID-porten OpenID Connect demo client</title>
+        <th:block th:include="~{fragments/header::links}"></th:block>
+    </head>
+
+    <!-- head links -->
+    <th:block th:fragment="links" th:with="">
         <link rel="stylesheet" th:href="@{/layers.css}" href="layers.css"/>
         <link rel="shortcut icon" th:href="@{/favicon.ico}" href="/favicon.ico">
         <link
@@ -17,12 +22,14 @@
                 integrity="sha384-OcHzc/By/OPw9uJREawUCjP2inbOGKtKb4A/I2iXxmknUfog2H8Adx71tWVZRscD"
                 crossorigin="anonymous"
         />
-        <link rel="stylesheet" href="https://static.idporten.no/ds/v1.7.1/css/ds-style.css">
-        <link rel="stylesheet" href="https://static.idporten.no/ds/v1.7.1/css/ds-theme.css">
+        <link rel="stylesheet" th:href="@{|${staticResourcesDsBaseUri}/css/ds-style.css|}">
+        <link rel="stylesheet" th:href="@{|${staticResourcesDsBaseUri}/css/ds-theme.css|}">
         <link rel="stylesheet" th:href="@{/main.css}" href="main.css"/>
         <link rel="stylesheet" th:href="@{/bootstrap.css}" href="bootstrap.css"/>
         <link rel="stylesheet" th:href="@{/override.css}" href="override.css"/>
-    </head>
+    </th:block>
+
+    <!-- heading -->
     <h1 th:fragment="heading" class="ds-heading" data-size="lg"><span th:if="${theme}" th:text="${theme.heading}" th:remove="tag">Login with ID-porten</span></h1>
 </div>
 </body>
