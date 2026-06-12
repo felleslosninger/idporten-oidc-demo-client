@@ -30,8 +30,10 @@
 
         <!-- maven -->
         <compiler-plugin.version>3.15.0</compiler-plugin.version>
-        <surefire-plugin.version>3.5.5</surefire-plugin.version>
+        <surefire-plugin.version>3.5.6</surefire-plugin.version>
         <argLine/> <!-- needed by surefire plugin-->
+        <!--spring boot managed dependencies -->
+        <tomcat.version>11.0.22</tomcat.version>
     </properties>
     <dependencies>
         <dependency>
