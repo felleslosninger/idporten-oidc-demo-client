@@ -9,11 +9,11 @@
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>ID-porten OpenID Connect demo client</title>
-        <th:block th:include="~{fragments/header::links}"></th:block>
+        <th:block th:insert="~{fragments/header :: links}"></th:block>
     </head>
 
     <!-- head links -->
-    <th:block th:fragment="links" th:with="">
+    <th:block th:fragment="links">
         <link rel="stylesheet" th:href="@{/layers.css}" href="layers.css"/>
         <link rel="shortcut icon" th:href="@{/favicon.ico}" href="/favicon.ico">
         <link
