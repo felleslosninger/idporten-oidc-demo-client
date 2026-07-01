@@ -11,10 +11,8 @@ COPY docker/settings.xml /root/.m2/settings.xml
 WORKDIR /home/app
 COPY pom.xml ./
 COPY src ./src
-COPY docker/repository /root/.m2/repository
 
-#RUN --mount=type=cache,target=/root/.m2/repository mvn -B package dependency:go-offline -Dmaven.test.skip=true -Dmaven.gitcommitid.skip=true
-RUN mvn -B package dependency:go-offline -Dmaven.test.skip=true -Dmaven.gitcommitid.skip=true
+RUN --mount=type=cache,target=/root/.m2/repository mvn -B package dependency:go-offline -Dmaven.test.skip=true -Dmaven.gitcommitid.skip=true
 
 
 FROM eclipse-temurin:25-jre-noble
