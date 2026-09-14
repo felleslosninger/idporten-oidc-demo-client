@@ -33,7 +33,7 @@
         <surefire-plugin.version>3.6.0</surefire-plugin.version>
         <argLine/> <!-- needed by surefire plugin-->
         <!--spring boot managed dependencies -->
-        <tomcat.version>11.0.22</tomcat.version>
+        <tomcat.version>11.0.25</tomcat.version>
     </properties>
     <dependencies>
         <dependency>
