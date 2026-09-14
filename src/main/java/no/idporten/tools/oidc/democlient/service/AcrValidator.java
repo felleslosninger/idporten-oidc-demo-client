@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Validates the acr claim of an ID token against acr_values_supported from the provider's discovery document.
- */
+// Validates the acr claim of an ID token against acr_values_supported from the provider's discovery document.
 @Component
 @RequiredArgsConstructor
 public class AcrValidator {
