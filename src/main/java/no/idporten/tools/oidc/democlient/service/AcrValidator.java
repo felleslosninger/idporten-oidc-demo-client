@@ -31,7 +31,9 @@ public class AcrValidator {
             return;
         }
         if (acr == null || !supportedAcrValues.contains(acr)) {
-            throw new OIDCIntegrationException(acr + ": is not one of acr_values_supported: " + String.join(", ", supportedAcrValues));
+            throw new OIDCIntegrationException(acr == null
+                    ? "ID token is missing the acr claim."
+                    : acr + ": is not one of acr_values_supported: " + String.join(", ", supportedAcrValues));
         }
     }
 
