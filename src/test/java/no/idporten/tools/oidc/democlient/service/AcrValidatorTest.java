@@ -1,14 +1,16 @@
 package no.idporten.tools.oidc.democlient.service;
 
-import no.idporten.tools.oidc.democlient.config.properties.ThemeProperties;
-import org.junit.jupiter.api.BeforeEach;
+import com.nimbusds.oauth2.sdk.id.Issuer;
+import com.nimbusds.openid.connect.sdk.SubjectType;
+import com.nimbusds.openid.connect.sdk.claims.ACR;
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Arrays;
+import java.net.URI;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,126 +18,67 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("When validating the acr claim of an ID token")
 class AcrValidatorTest {
 
-    private AcrValidator validator;
+    private static final List<String> PUBLISHED = List.of("idporten-loa-substantial", "idporten-loa-high", "eidas-loa-substantial", "eidas-loa-high");
 
-    @BeforeEach
-    void setUp() {
-        ThemeProperties themeProperties = new ThemeProperties();
-        themeProperties.getFormDefaults().setSupportedAcrValues(List.of(
-                "selfregistered-email",
-                "eidas-loa-low",
-                "idporten-loa-substantial-limited",
-                "idporten-loa-substantial",
-                "eidas-loa-substantial",
-                "idporten-loa-high",
-                "eidas-loa-high"));
-        themeProperties.getFormDefaults().setAcrLevels(List.of(
-                List.of("selfregistered-email"),
-                List.of("eidas-loa-low"),
-                List.of("idporten-loa-substantial-limited"),
-                List.of("idporten-loa-substantial", "eidas-loa-substantial"),
-                List.of("idporten-loa-high", "eidas-loa-high")));
-        validator = new AcrValidator(themeProperties);
+    private static AcrValidator validator(List<String> acrValuesSupported) {
+        OIDCProviderMetadata metadata = new OIDCProviderMetadata(
+                new Issuer("https://junit.idporten.no"),
+                List.of(SubjectType.PUBLIC),
+                URI.create("https://junit.idporten.no/jwks"));
+        if (acrValuesSupported != null) {
+            metadata.setACRs(acrValuesSupported.stream().map(ACR::new).toList());
+        }
+        return new AcrValidator(metadata);
     }
 
     @Nested
-    @DisplayName("and the level is at least what was requested")
-    class AcceptedTests {
+    @DisplayName("and the provider publishes acr_values_supported")
+    class PublishedTests {
 
-        @ParameterizedTest(name = "acr {0} is accepted when {1} was requested")
-        @CsvSource({
-                "idporten-loa-substantial, idporten-loa-substantial",
-                "idporten-loa-high, idporten-loa-substantial",
-                "idporten-loa-substantial, 'idporten-loa-substantial idporten-loa-high'",
-                "eidas-loa-substantial, idporten-loa-substantial",
-                "idporten-loa-substantial, eidas-loa-substantial",
-                "eidas-loa-high, idporten-loa-high",
-                "idporten-loa-substantial-limited, idporten-loa-substantial-limited",
-                "selfregistered-email, 'selfregistered-email idporten-loa-high'",
-        })
-        @DisplayName("then the token is accepted")
-        void testAccepted(String acr, String requested) {
-            assertDoesNotThrow(() -> validator.validate(acr, requestedAcrValues(requested)));
+        private final AcrValidator validator = validator(PUBLISHED);
+
+        @Test
+        @DisplayName("then the supported values are the published ones, in order")
+        void testSupportedAcrValues() {
+            assertEquals(PUBLISHED, validator.supportedAcrValues());
+        }
+
+        @ParameterizedTest(name = "acr {0} is accepted")
+        @ValueSource(strings = {"idporten-loa-substantial", "idporten-loa-high", "eidas-loa-high"})
+        @DisplayName("then a published value is accepted")
+        void testAccepted(String acr) {
+            assertDoesNotThrow(() -> validator.validate(acr));
         }
 
         @Test
-        @DisplayName("then unranked requested values are ignored")
-        void testUnrankedRequestedValueIsIgnored() {
-            assertDoesNotThrow(() -> validator.validate("idporten-loa-substantial", List.of("Level3")));
-        }
-
-        @Test
-        @DisplayName("then no requested values means no level to compare against")
-        void testNoRequestedValues() {
-            assertAll(
-                    () -> assertDoesNotThrow(() -> validator.validate("selfregistered-email", List.of())),
-                    () -> assertDoesNotThrow(() -> validator.validate("selfregistered-email", null))
-            );
-        }
-    }
-
-    @Nested
-    @DisplayName("and the level is lower than what was requested")
-    class DowngradeTests {
-
-        @ParameterizedTest(name = "acr {0} is rejected when {1} was requested")
-        @CsvSource({
-                "idporten-loa-substantial, idporten-loa-high",
-                "idporten-loa-substantial-limited, idporten-loa-high",
-                "idporten-loa-substantial-limited, idporten-loa-substantial",
-                "eidas-loa-low, idporten-loa-substantial",
-                "selfregistered-email, idporten-loa-substantial",
-                "eidas-loa-substantial, 'idporten-loa-high eidas-loa-high'",
-                "idporten-loa-substantial-limited, 'idporten-loa-substantial idporten-loa-high'",
-        })
-        @DisplayName("then the token is rejected")
-        void testRejected(String acr, String requested) {
-            OIDCIntegrationException e = assertThrows(OIDCIntegrationException.class,
-                    () -> validator.validate(acr, requestedAcrValues(requested)));
-            assertAll(
-                    () -> assertTrue(e.getMessage().startsWith(acr + ": given when asked for")),
-                    () -> assertTrue(e.getMessage().contains(requestedAcrValues(requested).getFirst()))
-            );
-        }
-    }
-
-    @Nested
-    @DisplayName("and the value is not supported")
-    class UnsupportedTests {
-
-        @Test
-        @DisplayName("then an unknown value is rejected even when nothing was requested")
-        void testUnknownValue() {
-            OIDCIntegrationException e = assertThrows(OIDCIntegrationException.class,
-                    () -> validator.validate("Level4", List.of()));
-            assertTrue(e.getMessage().startsWith("Level4: is not one of valid values: selfregistered-email"));
+        @DisplayName("then an unpublished value is rejected")
+        void testRejected() {
+            OIDCIntegrationException e = assertThrows(OIDCIntegrationException.class, () -> validator.validate("Level4"));
+            assertEquals("Level4: is not one of acr_values_supported: " + String.join(", ", PUBLISHED), e.getMessage());
         }
 
         @Test
         @DisplayName("then a missing acr claim is rejected")
-        void testMissingValue() {
-            assertThrows(OIDCIntegrationException.class, () -> validator.validate(null, List.of("idporten-loa-high")));
+        void testMissing() {
+            assertThrows(OIDCIntegrationException.class, () -> validator.validate(null));
         }
     }
 
     @Nested
-    @DisplayName("and looking up levels")
-    class LevelTests {
+    @DisplayName("and the provider publishes no acr_values_supported")
+    class UnpublishedTests {
+
+        private final AcrValidator validator = validator(null);
 
         @Test
-        @DisplayName("then equivalent values share a level and unknown values have none")
-        void testLevels() {
+        @DisplayName("then there are no supported values and nothing is rejected")
+        void testNothingToValidateAgainst() {
             assertAll(
-                    () -> assertEquals(0, validator.level("selfregistered-email").getAsInt()),
-                    () -> assertEquals(validator.level("idporten-loa-substantial"), validator.level("eidas-loa-substantial")),
-                    () -> assertTrue(validator.level("idporten-loa-high").getAsInt() > validator.level("idporten-loa-substantial").getAsInt()),
-                    () -> assertTrue(validator.level("Level3").isEmpty())
+                    () -> assertEquals(List.of(), validator.supportedAcrValues()),
+                    () -> assertDoesNotThrow(() -> validator.validate("anything")),
+                    () -> assertDoesNotThrow(() -> validator.validate(null))
             );
         }
-    }
-
-    private static List<String> requestedAcrValues(String spaceSeparated) {
-        return Arrays.asList(spaceSeparated.split(" "));
     }
 
 }

@@ -3,8 +3,6 @@ package no.idporten.tools.oidc.democlient.config;
 import no.idporten.tools.oidc.democlient.config.properties.ThemeProperties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import java.util.Arrays;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("When using theme properties")
@@ -18,8 +16,6 @@ public class ThemePropertiesTest {
                 () -> assertNotNull(themeProperties.getFormDefaults()),
                 () -> assertEquals("openid", themeProperties.getFormDefaults().getScope()),
                 () -> assertEquals("low", themeProperties.getFormDefaults().getAcrValue()),
-                () -> assertEquals(Arrays.asList("substantial", "high"),themeProperties.getFormDefaults().getSupportedAcrValues()),
-                () -> assertEquals(List.of(List.of("low"), List.of("substantial-limited"), List.of("substantial"), List.of("high")), themeProperties.getFormDefaults().getAcrLevels()),
                 () -> assertEquals("en", themeProperties.getFormDefaults().getUiLocale())
         );
     }

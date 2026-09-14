@@ -30,18 +30,7 @@ En typiske lenke vil se slik ut: http://demo-client.idporten.dev/idporten-oidc-d
 
 
 ## Sikkerhetsnivå (acr)
-Hvilke `acr`-verdier klienten godtar, og hvordan de rangeres, er konfigurert per produkt i `application-<produkt>.yaml` under `oidc-demo-client.theme.form-defaults`:
-
-* `supported-acr-values` – verdiene som vises i skjemaet og som godtas i ID-token
-* `acr-levels` – rangering fra lavest til høyest; verdier på samme linje regnes som likeverdige
-
-Etter innlogging validerer klienten at `acr` i ID-token er en av de støttede verdiene, og at nivået ikke er lavere enn det laveste nivået som ble forespurt i `acr_values`. Bryter tokenet en av reglene, vises feilsiden.
-
-| Produkt | Støttede `acr`-verdier, lavest til høyest |
-|---|---|
-| ID-porten | `selfregistered-email`, `eidas-loa-low`, `idporten-loa-substantial-limited`, `idporten-loa-substantial` / `eidas-loa-substantial`, `idporten-loa-high` / `eidas-loa-high` |
-| Ansattporten | `substantial-limited`, `entraid`, `substantial`, `high` |
-| eIDAS | `eidas-loa-substantial`, `eidas-loa-high` |
+Hvilke `acr`-verdier som kan brukes hentes fra `acr_values_supported` i discovery-dokumentet til ID-porten (`/.well-known/openid-configuration`) og vises i skjemaet. Etter innlogging validerer klienten at `acr` i ID-token er en av disse verdiene; hvis ikke, vises feilsiden. Standardverdien i skjemaet settes per produkt med `oidc-demo-client.theme.form-defaults.acr-value`.
 
 ## Begrensninger
 ### Applikasjonen er ikke et startpunkt for å integrere med ID-porten

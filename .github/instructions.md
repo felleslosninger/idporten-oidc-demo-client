@@ -30,7 +30,7 @@ docker-compose -f docker-compose-test.yaml up --build   # profile docker-test â†
 ## Architecture
 
 - Package `no.idporten.tools.oidc.democlient`. No database; the only outbound calls go to the OIDC provider. All
-  state lives in the `HttpSession`: `state`, `nonce`, `code_verifier`, `requested_acr_values`, `id_token` and the
+  state lives in the `HttpSession`: `state`, `nonce`, `code_verifier`, `id_token` and the
   `ProtocolTrace`.
 - Endpoints (`TestClientController`): `GET /` form (query params `scopes`, `acrValues`, `uiLocales`,
   `authorizationDetails`, `prompt` pre-fill it â€” the "permlink") â†’ `POST /authorize` (builds the request, renders
@@ -43,8 +43,9 @@ docker-compose -f docker-compose-test.yaml up --build   # profile docker-test â†
   client auth `client_secret_basic | client_secret_post | client_secret_jwt | private_key_jwt` (keystore via
   `KeyStoreProvider`/`KeyProvider`). `IDTokenValidator`, `JARMValidator`, `RemoteJWKSet`, `OIDCProviderMetadata`
   are beans in `OIDCIntegrationConfiguration` (`@Profile("!test")`).
-- `validateIdTokenClaimSet` rejects an ID token whose `acr` is not in `theme.form-defaults.supported-acr-values`,
-  or is `*substantial` when only `*high` was requested. Adding a new acr for a product = its product profile.
+- `AcrValidator` rejects an ID token whose `acr` is not in the provider's `acr_values_supported` (discovery); the
+  same list feeds the acr label on the form. There is deliberately no level ranking â€” do not reintroduce
+  string-suffix or ordered-list checks. The product profiles only set the default `acr-value`.
 - `ProtocolTracerService` records every request/response into the session's `ProtocolTrace` and formats it for
   display; it masks `Authorization: Basic`, `client_secret` and the signature of `client_assertion`. A new
   protocol step needs a field on `ProtocolTrace`, a `trace*` method, and a slot in `getLoginInteraction()` /
@@ -64,7 +65,7 @@ docker-compose -f docker-compose-test.yaml up --build   # profile docker-test â†
 - Prefix `oidc-demo-client.*`, one `@ConfigurationProperties` class per group in `config.properties`:
   `oidc-integration` (`OIDCIntegrationProperties`, validated; `afterPropertiesSet` enforces secret/keystore per
   auth method and derives `frontChannelLogoutUri`), `theme` (`ThemeProperties`: heading, `user-id-claim`, form
-  defaults, `supported-acr-values`), `features` (`FeatureSwitchProperties`: `authorization-details-enabled`,
+  defaults), `features` (`FeatureSwitchProperties`: `authorization-details-enabled`,
   `use-pushed-authorization-requests`, default off), `static.resources` (`StaticResourcesProperties`: designsystem
   host + `ds-version`), `csp-header` (list joined into the CSP header by `ContentSecurityPolicySecurityConfiguration`).
 - Profile layering: `application.yaml` (base: actuator, timeouts, kubernetes import of `/etc/config/`)

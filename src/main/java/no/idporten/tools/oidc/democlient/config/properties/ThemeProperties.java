@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
-import java.util.List;
 
 @Configuration
 @Data
@@ -24,8 +23,5 @@ public class ThemeProperties {
         private String scope = "openid";
         private String uiLocale = "en";
         private String acrValue = "low";
-        private List<String> supportedAcrValues = List.of("substantial", "high");
-        // ascending level of assurance; values in the same inner list are equivalent
-        private List<List<String>> acrLevels = List.of(List.of("low"), List.of("substantial-limited"), List.of("substantial"), List.of("high"));
         }
 }

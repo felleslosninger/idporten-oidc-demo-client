@@ -12,10 +12,4 @@ oidc-demo-client:
     form-defaults:
       scope: openid profile
       acr-value: eidas-loa-substantial
-      supported-acr-values:
-            - eidas-loa-substantial
-            - eidas-loa-high
-      acr-levels:
-        - [eidas-loa-substantial]
-        - [eidas-loa-high]
       ui-locale: nb

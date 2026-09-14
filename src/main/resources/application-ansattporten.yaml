@@ -12,14 +12,4 @@ oidc-demo-client:
     form-defaults:
       scope: openid profile
       acr-value: substantial
-      supported-acr-values:
-        - substantial
-        - substantial-limited
-        - high
-        - entraid
-      acr-levels:
-        - [substantial-limited]
-        - [entraid]
-        - [substantial]
-        - [high]
       ui-locale: nb

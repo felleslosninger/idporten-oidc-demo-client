@@ -33,7 +33,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.idporten.tools.oidc.democlient.config.properties.FeatureSwitchProperties;
 import no.idporten.tools.oidc.democlient.config.properties.OIDCIntegrationProperties;
-import no.idporten.tools.oidc.democlient.config.properties.ThemeProperties;
 import no.idporten.tools.oidc.democlient.crypto.KeyProvider;
 import no.idporten.tools.oidc.democlient.web.AuthorizationRequest;
 import org.springframework.stereotype.Service;
@@ -66,7 +65,6 @@ public class OIDCIntegrationService {
     private final FeatureSwitchProperties featureSwitchProperties;
     private final SignatureCertificateValidator signatureCertificateValidator;
     private final RemoteJWKSet remoteJWKSet;
-    private final ThemeProperties themeProperties;
     private final AcrValidator acrValidator;
 
     public com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest(AuthorizationRequest authorizationRequest) {
@@ -228,7 +226,7 @@ public class OIDCIntegrationService {
     }
 
 
-    public AccessTokenResponse token(AuthorizationSuccessResponse authorizationResponse, Nonce nonce, CodeVerifier codeVerifier, List<String> requestedAcrValues) {
+    public AccessTokenResponse token(AuthorizationSuccessResponse authorizationResponse, Nonce nonce, CodeVerifier codeVerifier) {
         try {
             AuthorizationGrant codeGrant = new AuthorizationCodeGrant(authorizationResponse.toSuccessResponse().getAuthorizationCode(), oidcIntegrationProperties.getRedirectUri(), codeVerifier);
             final ClientAuthentication clientAuth = clientAuthentication(oidcIntegrationProperties);
@@ -240,7 +238,7 @@ public class OIDCIntegrationService {
                     OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse.toSuccessResponse();
                     if (oidcTokenResponse.getOIDCTokens().getIDToken() != null) {
                         IDTokenClaimsSet idTokenClaimsSet = idTokenValidator.validate(oidcTokenResponse.getOIDCTokens().getIDToken(), nonce);
-                        validateIdTokenClaimSet(idTokenClaimsSet, requestedAcrValues);
+                        validateIdTokenClaimSet(idTokenClaimsSet);
                     }
                 }
                 return accessTokenResponse;
@@ -257,9 +255,12 @@ public class OIDCIntegrationService {
         }
     }
 
-    private void validateIdTokenClaimSet(IDTokenClaimsSet idTokenClaimsSet, List<String> requestedAcrValues) {
-        String acr = idTokenClaimsSet.getACR() == null ? null : idTokenClaimsSet.getACR().getValue();
-        acrValidator.validate(acr, requestedAcrValues);
+    private void validateIdTokenClaimSet(IDTokenClaimsSet idTokenClaimsSet) {
+        acrValidator.validate(idTokenClaimsSet.getACR() == null ? null : idTokenClaimsSet.getACR().getValue());
+    }
+
+    public List<String> supportedAcrValues() {
+        return acrValidator.supportedAcrValues();
     }
 
     public String userinfo(AccessToken accessToken) {
