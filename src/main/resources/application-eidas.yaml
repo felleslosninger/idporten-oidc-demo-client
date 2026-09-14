@@ -15,4 +15,7 @@ oidc-demo-client:
       supported-acr-values:
             - eidas-loa-substantial
             - eidas-loa-high
+      acr-levels:
+        - [eidas-loa-substantial]
+        - [eidas-loa-high]
       ui-locale: nb

@@ -10,6 +10,9 @@ oidc-demo-client:
       supported-acr-values:
             - substantial
             - high
+      acr-levels:
+        - [substantial]
+        - [high]
       ui-locale: nb
 
   oidc-integration:

@@ -17,4 +17,9 @@ oidc-demo-client:
         - substantial-limited
         - high
         - entraid
+      acr-levels:
+        - [substantial-limited]
+        - [entraid]
+        - [substantial]
+        - [high]
       ui-locale: nb

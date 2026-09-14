@@ -25,5 +25,7 @@ public class ThemeProperties {
         private String uiLocale = "en";
         private String acrValue = "low";
         private List<String> supportedAcrValues = List.of("substantial", "high");
+        // ascending level of assurance; values in the same inner list are equivalent
+        private List<List<String>> acrLevels = List.of(List.of("low"), List.of("substantial-limited"), List.of("substantial"), List.of("high"));
         }
 }

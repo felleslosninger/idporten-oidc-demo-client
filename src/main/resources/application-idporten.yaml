@@ -20,4 +20,10 @@ oidc-demo-client:
         - eidas-loa-low
         - eidas-loa-substantial
         - eidas-loa-high
+      acr-levels:
+        - [selfregistered-email]
+        - [eidas-loa-low]
+        - [idporten-loa-substantial-limited]
+        - [idporten-loa-substantial, eidas-loa-substantial]
+        - [idporten-loa-high, eidas-loa-high]
       ui-locale: nb

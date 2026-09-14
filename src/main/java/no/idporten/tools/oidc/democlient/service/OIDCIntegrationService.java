@@ -57,8 +57,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class OIDCIntegrationService {
 
-    public static final String ACR_SUBSTANTIAL = "substantial";
-    public static final String ACR_HIGH = "high";
     private final OIDCIntegrationProperties oidcIntegrationProperties;
     private final Optional<KeyProvider> keyProvider;
     private final IDTokenValidator idTokenValidator;
@@ -69,6 +67,7 @@ public class OIDCIntegrationService {
     private final SignatureCertificateValidator signatureCertificateValidator;
     private final RemoteJWKSet remoteJWKSet;
     private final ThemeProperties themeProperties;
+    private final AcrValidator acrValidator;
 
     public com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest(AuthorizationRequest authorizationRequest) {
         try {
@@ -259,17 +258,8 @@ public class OIDCIntegrationService {
     }
 
     private void validateIdTokenClaimSet(IDTokenClaimsSet idTokenClaimsSet, List<String> requestedAcrValues) {
-        if (idTokenClaimsSet.getACR().toString().endsWith(ACR_SUBSTANTIAL) && requestedAcrValues.stream().allMatch(acr -> acr.endsWith(ACR_HIGH))) {
-            throw new OIDCIntegrationException(idTokenClaimsSet.getACR().toString() + ": given when asked for " +
-                    String.join(", ", requestedAcrValues.getFirst()));
-        }
-
-        if (!themeProperties.getFormDefaults().getSupportedAcrValues().contains(idTokenClaimsSet.getACR().toString())) {
-            throw new OIDCIntegrationException(idTokenClaimsSet.getACR().toString() + ": is not one of valid values: " +
-                    String.join(", ", themeProperties.getFormDefaults().getSupportedAcrValues()));
-        }
-
-
+        String acr = idTokenClaimsSet.getACR() == null ? null : idTokenClaimsSet.getACR().getValue();
+        acrValidator.validate(acr, requestedAcrValues);
     }
 
     public String userinfo(AccessToken accessToken) {
