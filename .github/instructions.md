@@ -136,8 +136,10 @@ gh api repos/<owner>/<repo>/contents/<path> --jq .content | base64 -d
   (`call-buildimage.yml`). A change for one product is deployed to all three.
 - PR: read `.github/pull_request_template.md` and use it. Fill `SAK:` with the Jira id and set the `Eigar:`
   checkboxes. `Kodeles:` is the reviewer's — leave it untouched.
-- Keep the PR text short: a few brief bullets on what the change is, nothing else. Anything covered by a
-  checklist line (dependabots, `.trivyignore`, …) needs no text — the tick is the whole statement.
+- Keep the PR text short: one bare bullet per change, a few words each, e.g. `Legg til AI-instruksjonar`. No
+  file lists, no parentheticals, no background on where something came from — the reviewer reads the diff.
+- Anything covered by a checklist line gets no bullet. Merged dependabot PRs are stated only by ticking
+  `Har oppdatert dependabots`; the same goes for `.trivyignore`, catalog-info and the rest of the list.
 - Never tick `Vurdert Manual deploy`, `Vurdert "internal"` or `Har kjørt opp lokalt med docker-compose og testet
   en innlogging` — a human does those when the PR is ready.
 - Never reword a checklist line or append notes to it. Copy the template text verbatim and only set `[x]`/`[ ]`;
