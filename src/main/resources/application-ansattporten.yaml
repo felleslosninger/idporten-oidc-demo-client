@@ -14,6 +14,7 @@ oidc-demo-client:
       acr-value: substantial
       supported-acr-values:
         - substantial
+        - substantial-limited
         - high
         - entraid
       ui-locale: nb

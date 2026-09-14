@@ -14,6 +14,10 @@ oidc-demo-client:
       acr-value: idporten-loa-substantial
       supported-acr-values:
         - idporten-loa-substantial
+        - idporten-loa-substantial-limited
         - idporten-loa-high
         - selfregistered-email
+        - eidas-loa-low
+        - eidas-loa-substantial
+        - eidas-loa-high
       ui-locale: nb
