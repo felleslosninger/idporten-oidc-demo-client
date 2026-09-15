@@ -147,7 +147,9 @@ gh api repos/<owner>/<repo>/contents/<path> --jq .content | base64 -d
   anything that needs saying goes in the bullets above the checklist.
 - `Har oppdatert dependabots` means: list open dependabot PRs (`gh pr list --author app/dependabot`) and
   consider merging them into this branch so those PRs become redundant — fewer deploys. Requires the branch to
-  be up to date with `main` first.
+  be up to date with `main` first. Do this before `Trimmet .trivyignore`: a bump can remove the need for an
+  entry. A dependabot PR whose version `main` already has is stale — comment `@dependabot rebase` on it
+  (`gh pr comment <n> --body '@dependabot rebase'`) and dependabot closes it within a minute.
 - `Evt nye avhengigheter … catalog-info`: `catalog-info.yaml` holds one Backstage component per deployment; a new
   runtime dependency on another component is declared there.
 - Every PR: consider whether `README.md` needs updating — it is the only documentation in the repo.
