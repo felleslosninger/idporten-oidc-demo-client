@@ -29,6 +29,9 @@ knappen for å generere permlenka. Denne legger seg på clipboard.
 En typiske lenke vil se slik ut: http://demo-client.idporten.dev/idporten-oidc-demo-client?scopes=openid+profile+difitest%3Akrrrctrigger&acrValues=idporten-loa-substantial&uiLocales=nb
 
 
+## Sikkerhetsnivå (acr)
+Hvilke `acr`-verdier som kan brukes hentes fra `acr_values_supported` i discovery-dokumentet til ID-porten (`/.well-known/openid-configuration`) og vises i skjemaet. Etter innlogging validerer klienten at `acr` i ID-token er en av disse verdiene; hvis ikke, vises feilsiden. Standardverdien i skjemaet settes per produkt med `oidc-demo-client.theme.form-defaults.acr-value`.
+
 ## Begrensninger
 ### Applikasjonen er ikke et startpunkt for å integrere med ID-porten
 Applikasjonen er ikke et eksempel på hvordan en Spring Boot-basert applikasjon kan integreres med ID-porten.  Applikasjonen samler opp interaksjonene og viser hva som skjer under en autentisering.  Integrasjon mot ID-porten fra en kundeapplikasjon, gjøres best med kjente biblioteker på den plattformen kunden selv foretrekker.  

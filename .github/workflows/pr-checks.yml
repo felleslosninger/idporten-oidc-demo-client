@@ -1,0 +1,24 @@
+name: Pull request
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
+    branches:
+      - main
+
+jobs:
+  pull-request-checks:
+    uses: felleslosninger/github-workflows/.github/workflows/ci-pr-checks.yml@main
+    permissions:
+      contents: write
+      pull-requests: write
+    with:
+      java-version: 25
+      application-type: spring-boot
+      pull-request-title: ${{ github.event.pull_request.title }}
+      pull-request-allowed-prefixes: "Bump,PF-,ID-"
+    secrets: inherit
