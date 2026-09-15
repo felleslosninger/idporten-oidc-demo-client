@@ -213,7 +213,7 @@ public class OIDCIntegrationService {
     }
 
     public List<X509Certificate> getSignatureCertChain(JWT idToken) {
-        if (!(idToken.getHeader() instanceof JWSHeader jwsHeader)) {
+        if (idToken == null || !(idToken.getHeader() instanceof JWSHeader jwsHeader)) {
             return List.of();
         }
         try {
