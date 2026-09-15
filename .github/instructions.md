@@ -9,6 +9,15 @@ One image, three deployments (`idporten-`, `ansattporten-`, `eidas-oidc-demo-cli
 `README.md` (Norwegian) = purpose, supported features, limitations, how to run. It is explicitly *not* a reference
 integration — keep it a demo, do not turn it into a library or a starting point for customers.
 
+## Skills
+
+Step-by-step procedures live in [`.claude/skills/<name>/SKILL.md`](../.claude/skills/). Claude Code offers them as
+`/<name>`; any other assistant reads the file and follows it. Add a row here when adding a skill.
+
+| Skill | Use when |
+|---|---|
+| [`create-pr`](../.claude/skills/create-pr/SKILL.md) | opening a PR to `main`: tests, push, title, template, dependabots, `.trivyignore` |
+
 ## Build, test, run
 
 ```bash
@@ -41,7 +50,7 @@ docker-compose -f docker-compose-test.yaml up --build   # profile docker-test �
 - `OIDCIntegrationService` wraps Nimbus `oauth2-oidc-sdk`: `AuthenticationRequest` when scope contains `openid`,
   plain `AuthorizationRequest` otherwise; optional PAR (feature switch), PKCE, JARM (`response-mode: query.jwt`),
   client auth `client_secret_basic | client_secret_post | client_secret_jwt | private_key_jwt` (keystore via
-  `KeyStoreProvider`/`KeyProvider`). `IDTokenValidator`, `JARMValidator`, `RemoteJWKSet`, `OIDCProviderMetadata`
+  `KeyStoreProvider`/`KeyProvider`). `IDTokenValidator`, `JARMValidator`, `JWKSource` (built with `JWKSourceBuilder`), `OIDCProviderMetadata`
   are beans in `OIDCIntegrationConfiguration` (`@Profile("!test")`).
 - `AcrValidator` rejects an ID token whose `acr` is not in the provider's `acr_values_supported` (discovery); the
   same list feeds the acr label on the form. There is deliberately no level ranking — do not reintroduce
@@ -75,7 +84,7 @@ docker-compose -f docker-compose-test.yaml up --build   # profile docker-test �
 - Secrets are env vars (`${OIDC_DEMO_CLIENT_SECRET}`, `${OIDC_CLIENT_SECRET}`) supplied by the deployment. Never
   commit a real one; the `docker*` profiles' values are local-stack throwaways.
 - Tests use `src/test/resources/application-test.yaml` (+ `unitporten`) and `OIDCIntegrationTestConfiguration`
-  (parsed metadata, mocked `RemoteJWKSet`/`IDTokenValidator`). Every `@SpringBootTest` needs
+  (parsed metadata, mocked `JWKSource`/`IDTokenValidator`). Every `@SpringBootTest` needs
   `@ActiveProfiles("test")`, `@Import(OIDCIntegrationTestConfiguration.class)` and `@MockitoBean JARMValidator`,
   or the context tries to reach a real issuer.
 - New config: property on the class + the profile yaml(s) where it differs + `README.md` if user-visible.
@@ -135,6 +144,8 @@ gh api repos/<owner>/<repo>/contents/<path> --jq .content | base64 -d
   public release notes). Never type it yourself and never add the label.
 - Every merge to `main` builds the image and opens image-update PRs in `idporten-cd` for all three systest apps
   (`call-buildimage.yml`). A change for one product is deployed to all three.
+- Creating a PR: follow the [`create-pr`](../.claude/skills/create-pr/SKILL.md) skill; the bullets below are the
+  rules it encodes.
 - PR: read `.github/pull_request_template.md` and use it. Fill `SAK:` with the Jira id and set the `Eigar:`
   checkboxes. `Kodeles:` is the reviewer's — leave it untouched.
 - Keep the PR text short: one bare bullet per change, a few words each, e.g. `Legg til AI-instruksjonar`. No
@@ -147,7 +158,9 @@ gh api repos/<owner>/<repo>/contents/<path> --jq .content | base64 -d
   anything that needs saying goes in the bullets above the checklist.
 - `Har oppdatert dependabots` means: list open dependabot PRs (`gh pr list --author app/dependabot`) and
   consider merging them into this branch so those PRs become redundant — fewer deploys. Requires the branch to
-  be up to date with `main` first.
+  be up to date with `main` first. Do this before `Trimmet .trivyignore`: a bump can remove the need for an
+  entry. A dependabot PR whose version `main` already has is stale — comment `@dependabot rebase` on it
+  (`gh pr comment <n> --body '@dependabot rebase'`) and dependabot closes it within a minute.
 - `Evt nye avhengigheter … catalog-info`: `catalog-info.yaml` holds one Backstage component per deployment; a new
   runtime dependency on another component is declared there.
 - Every PR: consider whether `README.md` needs updating — it is the only documentation in the repo.

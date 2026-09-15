@@ -6,7 +6,12 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.crypto.RSASSASigner;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
+import com.nimbusds.jose.KeySourceException;
+import com.nimbusds.jose.jwk.JWKMatcher;
+import com.nimbusds.jose.jwk.JWKSelector;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -64,7 +69,7 @@ public class OIDCIntegrationService {
     private final ProtocolTracerService oidcProtocolTracerService;
     private final FeatureSwitchProperties featureSwitchProperties;
     private final SignatureCertificateValidator signatureCertificateValidator;
-    private final RemoteJWKSet remoteJWKSet;
+    private final JWKSource<SecurityContext> jwkSource;
     private final AcrValidator acrValidator;
 
     public com.nimbusds.oauth2.sdk.AuthorizationRequest authorizationRequest(AuthorizationRequest authorizationRequest) {
@@ -208,11 +213,17 @@ public class OIDCIntegrationService {
     }
 
     public List<X509Certificate> getSignatureCertChain(JWT idToken) {
-        final var jwks = remoteJWKSet.getCachedJWKSet();
-        if (jwks == null || jwks.isEmpty()) {
+        if (idToken == null || !(idToken.getHeader() instanceof JWSHeader jwsHeader)) {
             return List.of();
         }
-        return SignatureCertificateValidator.getSignatureCertChain(jwks, idToken);
+        try {
+            // an unknown kid makes the source re-read the JWKS before giving up
+            JWKSet jwks = new JWKSet(jwkSource.get(new JWKSelector(JWKMatcher.forJWSHeader(jwsHeader)), null));
+            return SignatureCertificateValidator.getSignatureCertChain(jwks, idToken);
+        } catch (KeySourceException e) {
+            log.warn("Unable to read JWKS for signing certificate validation", e);
+            return List.of();
+        }
     }
 
     public List<ValidationResult> validateSignatureCertificate(JWT idToken) {

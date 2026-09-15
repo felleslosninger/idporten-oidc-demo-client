@@ -30,7 +30,7 @@ En typiske lenke vil se slik ut: http://demo-client.idporten.dev/idporten-oidc-d
 
 
 ## Sikkerhetsnivå (acr)
-Hvilke `acr`-verdier som kan brukes hentes fra `acr_values_supported` i discovery-dokumentet til ID-porten (`/.well-known/openid-configuration`) og vises i skjemaet. Etter innlogging validerer klienten at `acr` i ID-token er en av disse verdiene; hvis ikke, vises feilsiden. Standardverdien i skjemaet settes per produkt med `oidc-demo-client.theme.form-defaults.acr-value`.
+Hvilke `acr`-verdier som kan brukes hentes fra `acr_values_supported` i discovery-dokumentet til ID-porten (`/.well-known/openid-configuration`) og vises i skjemaet. Discovery-dokumentet leses på nytt hver gang, så nye verdier fanges opp uten omstart. Etter innlogging validerer klienten at `acr` i ID-token er en av disse verdiene; hvis ikke, vises feilsiden. Standardverdien i skjemaet settes per produkt med `oidc-demo-client.theme.form-defaults.acr-value`.
 
 ## Begrensninger
 ### Applikasjonen er ikke et startpunkt for å integrere med ID-porten
