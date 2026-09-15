@@ -135,6 +135,8 @@ gh api repos/<owner>/<repo>/contents/<path> --jq .content | base64 -d
   public release notes). Never type it yourself and never add the label.
 - Every merge to `main` builds the image and opens image-update PRs in `idporten-cd` for all three systest apps
   (`call-buildimage.yml`). A change for one product is deployed to all three.
+- Creating a PR: follow the `create-pr` skill in `.claude/skills/create-pr/SKILL.md`; the bullets below are the
+  rules it encodes.
 - PR: read `.github/pull_request_template.md` and use it. Fill `SAK:` with the Jira id and set the `Eigar:`
   checkboxes. `Kodeles:` is the reviewer's — leave it untouched.
 - Keep the PR text short: one bare bullet per change, a few words each, e.g. `Legg til AI-instruksjonar`. No
