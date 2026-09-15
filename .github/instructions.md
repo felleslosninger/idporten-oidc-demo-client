@@ -41,7 +41,7 @@ docker-compose -f docker-compose-test.yaml up --build   # profile docker-test â†
 - `OIDCIntegrationService` wraps Nimbus `oauth2-oidc-sdk`: `AuthenticationRequest` when scope contains `openid`,
   plain `AuthorizationRequest` otherwise; optional PAR (feature switch), PKCE, JARM (`response-mode: query.jwt`),
   client auth `client_secret_basic | client_secret_post | client_secret_jwt | private_key_jwt` (keystore via
-  `KeyStoreProvider`/`KeyProvider`). `IDTokenValidator`, `JARMValidator`, `RemoteJWKSet`, `OIDCProviderMetadata`
+  `KeyStoreProvider`/`KeyProvider`). `IDTokenValidator`, `JARMValidator`, `JWKSource` (built with `JWKSourceBuilder`), `OIDCProviderMetadata`
   are beans in `OIDCIntegrationConfiguration` (`@Profile("!test")`).
 - `AcrValidator` rejects an ID token whose `acr` is not in the provider's `acr_values_supported` (discovery); the
   same list feeds the acr label on the form. There is deliberately no level ranking â€” do not reintroduce
@@ -75,7 +75,7 @@ docker-compose -f docker-compose-test.yaml up --build   # profile docker-test â†
 - Secrets are env vars (`${OIDC_DEMO_CLIENT_SECRET}`, `${OIDC_CLIENT_SECRET}`) supplied by the deployment. Never
   commit a real one; the `docker*` profiles' values are local-stack throwaways.
 - Tests use `src/test/resources/application-test.yaml` (+ `unitporten`) and `OIDCIntegrationTestConfiguration`
-  (parsed metadata, mocked `RemoteJWKSet`/`IDTokenValidator`). Every `@SpringBootTest` needs
+  (parsed metadata, mocked `JWKSource`/`IDTokenValidator`). Every `@SpringBootTest` needs
   `@ActiveProfiles("test")`, `@Import(OIDCIntegrationTestConfiguration.class)` and `@MockitoBean JARMValidator`,
   or the context tries to reach a real issuer.
 - New config: property on the class + the profile yaml(s) where it differs + `README.md` if user-visible.

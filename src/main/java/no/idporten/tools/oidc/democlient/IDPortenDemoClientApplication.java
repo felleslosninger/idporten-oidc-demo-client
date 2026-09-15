@@ -3,7 +3,9 @@ package no.idporten.tools.oidc.democlient;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKMatcher;
 import com.nimbusds.jose.jwk.JWKSelector;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
@@ -17,7 +19,8 @@ import org.springframework.context.event.EventListener;
 @SpringBootApplication
 public class IDPortenDemoClientApplication {
 
-	private final RemoteJWKSet remoteJWKSet;
+	private final JWKSource<SecurityContext> jwkSource;
+	private final OIDCProviderMetadata oidcProviderMetadata;
 
 	public static void main(String[] args) {
 		SpringApplication.run(IDPortenDemoClientApplication.class, args);
@@ -35,12 +38,12 @@ public class IDPortenDemoClientApplication {
 	}
 
 	protected void loadJwks() throws Exception {
-		remoteJWKSet.get(new JWKSelector(
+		jwkSource.get(new JWKSelector(
 						new JWKMatcher.Builder()
 								.algorithm(JWSAlgorithm.RS256)
 								.build()),
 				null);
-		log.info("Cached JWKS from {}", remoteJWKSet.getJWKSetURL());
+		log.info("Cached JWKS from {}", oidcProviderMetadata.getJWKSetURI());
 	}
 
 }

@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,7 +21,7 @@ class AcrValidatorTest {
 
     private static final List<String> PUBLISHED = List.of("idporten-loa-substantial", "idporten-loa-high", "eidas-loa-substantial", "eidas-loa-high");
 
-    private static AcrValidator validator(List<String> acrValuesSupported) {
+    private static OIDCProviderMetadata metadata(List<String> acrValuesSupported) {
         OIDCProviderMetadata metadata = new OIDCProviderMetadata(
                 new Issuer("https://junit.idporten.no"),
                 List.of(SubjectType.PUBLIC),
@@ -28,7 +29,12 @@ class AcrValidatorTest {
         if (acrValuesSupported != null) {
             metadata.setACRs(acrValuesSupported.stream().map(ACR::new).toList());
         }
-        return new AcrValidator(metadata);
+        return metadata;
+    }
+
+    private static AcrValidator validator(List<String> acrValuesSupported) {
+        OIDCProviderMetadata metadata = metadata(acrValuesSupported);
+        return new AcrValidator(() -> metadata);
     }
 
     @Nested
@@ -61,6 +67,22 @@ class AcrValidatorTest {
         @DisplayName("then a missing acr claim is rejected")
         void testMissing() {
             assertThrows(OIDCIntegrationException.class, () -> validator.validate(null));
+        }
+    }
+
+    @Nested
+    @DisplayName("and the provider changes acr_values_supported after startup")
+    class ChangedAfterStartupTests {
+
+        @Test
+        @DisplayName("then the current values are used on every call")
+        void testReadsCurrentMetadataOnEveryCall() {
+            Iterator<OIDCProviderMetadata> published = List.of(metadata(PUBLISHED), metadata(List.of("idporten-loa-substantial-limited"))).iterator();
+            AcrValidator validator = new AcrValidator(published::next);
+            assertAll(
+                    () -> assertThrows(OIDCIntegrationException.class, () -> validator.validate("idporten-loa-substantial-limited")),
+                    () -> assertDoesNotThrow(() -> validator.validate("idporten-loa-substantial-limited"))
+            );
         }
     }
 
