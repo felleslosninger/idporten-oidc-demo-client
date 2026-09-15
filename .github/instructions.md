@@ -9,6 +9,15 @@ One image, three deployments (`idporten-`, `ansattporten-`, `eidas-oidc-demo-cli
 `README.md` (Norwegian) = purpose, supported features, limitations, how to run. It is explicitly *not* a reference
 integration — keep it a demo, do not turn it into a library or a starting point for customers.
 
+## Skills
+
+Step-by-step procedures live in [`.claude/skills/<name>/SKILL.md`](../.claude/skills/). Claude Code offers them as
+`/<name>`; any other assistant reads the file and follows it. Add a row here when adding a skill.
+
+| Skill | Use when |
+|---|---|
+| [`create-pr`](../.claude/skills/create-pr/SKILL.md) | opening a PR to `main`: tests, push, title, template, dependabots, `.trivyignore` |
+
 ## Build, test, run
 
 ```bash
@@ -135,7 +144,7 @@ gh api repos/<owner>/<repo>/contents/<path> --jq .content | base64 -d
   public release notes). Never type it yourself and never add the label.
 - Every merge to `main` builds the image and opens image-update PRs in `idporten-cd` for all three systest apps
   (`call-buildimage.yml`). A change for one product is deployed to all three.
-- Creating a PR: follow the `create-pr` skill in `.claude/skills/create-pr/SKILL.md`; the bullets below are the
+- Creating a PR: follow the [`create-pr`](../.claude/skills/create-pr/SKILL.md) skill; the bullets below are the
   rules it encodes.
 - PR: read `.github/pull_request_template.md` and use it. Fill `SAK:` with the Jira id and set the `Eigar:`
   checkboxes. `Kodeles:` is the reviewer's — leave it untouched.
