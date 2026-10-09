@@ -12,13 +12,15 @@ on:
 
 jobs:
   pull-request-checks:
-    uses: felleslosninger/github-workflows/.github/workflows/ci-pr-checks.yml@main
+    uses: felleslosninger/github-workflows/.github/workflows/ci-pr-checks-image.yml@main
     permissions:
       contents: write
       pull-requests: write
     with:
       java-version: 25
       application-type: spring-boot
+      # The golden path skips tests by default; keep running them on PRs as before.
+      maven-skip-tests: false
       pull-request-title: ${{ github.event.pull_request.title }}
       pull-request-allowed-prefixes: "Bump,PF-,ID-"
     secrets: inherit
