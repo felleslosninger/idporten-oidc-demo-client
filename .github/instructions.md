@@ -101,6 +101,8 @@ docker-compose -f docker-compose-test.yaml up --build   # profile docker-test â†
   icons â€” they were removed on purpose.
 - `static.resources.host` is set per environment and `docker*` profile (prod uses the property default) and
   must match the one in that profile's `csp-header`; change both together.
+- `ds-version` is pinned in `application.yaml` for test and prod; the `-systest` and `docker*` profiles override it
+  with `latest`. Bump the pin once the new version has been seen working in systest.
 - Local scripts are loaded with Subresource Integrity. Editing `static/dcscript-0.5.js` or `static/permlink.js`
   means recomputing the `integrity` attribute in the template
   (`openssl dgst -sha384 -binary <file> | base64`) or the browser silently refuses the script. Versioned file

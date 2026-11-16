@@ -11,6 +11,7 @@ oidc-demo-client:
   static:
     resources:
       host: https://static.idporten.dev
+      ds-version: latest
   features:
     authorization-details-enabled: true
     use-pushed-authorization-requests: true

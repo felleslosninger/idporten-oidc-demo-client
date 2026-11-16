@@ -11,6 +11,7 @@ oidc-demo-client:
   static:
     resources:
       host: https://static.idporten.dev
+      ds-version: latest
   oidc-integration:
     connect-timeout-millis: 5000
     read-timeout-millis: 5000
