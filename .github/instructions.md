@@ -96,9 +96,11 @@ docker-compose -f docker-compose-test.yaml up --build   # profile docker-test �
   `protocoltrace.html`. Model attributes `theme`, `features`, `staticResourcesDsBaseUri` are added by
   `TestClientControllerAdvice` for every view, error pages included.
 - UI is Digdir designsystemet (`ds-*` classes, `data-variant`, `data-color`, `data-size`) loaded from
-  `static.idporten.no/ds/<ds-version>`; Inter font from altinncdn.no. Local CSS: `layers.css` (layer order
+  `<static.resources.host>/ds/<ds-version>`; Inter font from altinncdn.no. Local CSS: `layers.css` (layer order
   bootstrap < ds), `main.css`, `bootstrap.css` (layout only), `override.css`. Do not reintroduce Bootstrap JS or
   icons — they were removed on purpose.
+- `static.resources.host` is set per environment and `docker*` profile (prod uses the property default) and
+  must match the one in that profile's `csp-header`; change both together.
 - Local scripts are loaded with Subresource Integrity. Editing `static/dcscript-0.5.js` or `static/permlink.js`
   means recomputing the `integrity` attribute in the template
   (`openssl dgst -sha384 -binary <file> | base64`) or the browser silently refuses the script. Versioned file
@@ -120,7 +122,7 @@ gh api repos/<owner>/<repo>/contents/<path> --jq .content | base64 -d
 |---|---|
 | actuator / health / info / version | `felleslosninger/idporten-actuator-starter` |
 | access log fields | `felleslosninger/idporten-access-log-spring-boot-starter` |
-| designsystem markup or `ds-version` | what `static.idporten.no/ds/<version>` actually serves; designsystemet.no docs |
+| designsystem markup or `ds-version` | what `/ds/<version>` actually serves in every environment; designsystemet.no docs |
 | deployment, env vars, profiles, secrets | `felleslosninger/idporten-cd` `apps/{idporten,ansattporten,eidas}/*/*-oidc-demo-client/` |
 | CI | `felleslosninger/github-workflows` (`ci-pr-checks`, `ci-spring-boot-build-publish-image`, `on-pr-label`) |
 | user-facing behaviour | `felleslosninger/docs` — several `_docs/` pages link to the demo client (`gh search code 'demo-client' --repo felleslosninger/docs`) |

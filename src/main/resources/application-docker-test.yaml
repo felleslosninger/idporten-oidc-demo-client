@@ -8,6 +8,9 @@ server:
     context-path: /idporten-oidc-demo-client
 
 oidc-demo-client:
+  static:
+    resources:
+      host: https://static.idporten.dev
   features:
     authorization-details-enabled: true
     use-pushed-authorization-requests: true
@@ -32,11 +35,11 @@ oidc-demo-client:
   csp-header:
     - "default-src 'self';"
     - "img-src 'self' data:;"
-    - "font-src 'self' static.idporten.no static.test.idporten.no altinncdn.no;"
-    - "style-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
-    - "connect-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
+    - "font-src 'self' static.idporten.dev altinncdn.no;"
+    - "style-src 'self' cdn.jsdelivr.net static.idporten.dev altinncdn.no;"
+    - "connect-src 'self' cdn.jsdelivr.net static.idporten.dev altinncdn.no;"
     - "form-action 'self' login.test.ansattporten.no;"
-    - "script-src 'self' static.idporten.no static.test.idporten.no;"
+    - "script-src 'self' static.idporten.dev;"
 
 management:
   server:
