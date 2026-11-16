@@ -6,7 +6,8 @@ spring:
 oidc-demo-client:
   static:
     resources:
-      host: https://static.test.idporten.no
+      host: https://static.idporten.dev
+      ds-version: latest
   theme:
     heading: Login with EIDAS (systest)
   oidc-integration:
@@ -19,9 +20,9 @@ oidc-demo-client:
   csp-header:
     - "default-src 'self';"
     - "img-src 'self' data:;"
-    - "font-src 'self' static.idporten.no static.test.idporten.no altinncdn.no;"
-    - "style-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
-    - "connect-src 'self' cdn.jsdelivr.net static.idporten.no static.test.idporten.no altinncdn.no;"
+    - "font-src 'self' static.idporten.dev altinncdn.no;"
+    - "style-src 'self' cdn.jsdelivr.net static.idporten.dev altinncdn.no;"
+    - "connect-src 'self' cdn.jsdelivr.net static.idporten.dev altinncdn.no;"
     - "form-action 'self' login.idporten.dev;"
-    - "script-src 'self' static.idporten.no static.test.idporten.no;"
+    - "script-src 'self' static.idporten.dev;"
 

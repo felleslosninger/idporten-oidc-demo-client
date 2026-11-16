@@ -10,6 +10,8 @@ spec:
   lifecycle: production
   owner: team-idporten
   system: ansattporten
+  dependsOn:
+    - component:idporten-static-resources
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
@@ -23,6 +25,8 @@ spec:
   lifecycle: production
   owner: team-idporten
   system: idporten
+  dependsOn:
+    - component:idporten-static-resources
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Component
@@ -36,3 +40,5 @@ spec:
   lifecycle: production
   owner: team-idporten
   system: eidas
+  dependsOn:
+    - component:idporten-static-resources
